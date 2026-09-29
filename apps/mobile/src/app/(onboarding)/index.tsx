@@ -1,75 +1,159 @@
-import { useState, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  ScrollView,
+  View,
+  useWindowDimensions,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
 } from "react-native"
 import { useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useColorScheme } from "nativewind"
 import { useSession } from "@/lib/auth-client"
 import { useOnboarding, DEFAULT_PREFS, type OnboardingPrefs } from "@/hooks/useOnboarding"
-import SlideIndicator from "@/components/onboarding/SlideIndicator"
-import UsernameSlide from "@/components/onboarding/UsernameSlide"
-import UnitsSlide from "@/components/onboarding/UnitsSlide"
-import DisplaySlide from "@/components/onboarding/DisplaySlide"
+import ProgressHeader from "@/components/ui/onboarding/ProgressHeader"
+import WelcomeSlide from "@/components/ui/onboarding/WelcomeSlide"
+import UsernameSlide from "@/components/ui/onboarding/UsernameSlide"
+import UnitsSystemSlide from "@/components/ui/onboarding/UnitsSystemSlide"
+import UnitsDetailSlide from "@/components/ui/onboarding/UnitsDetailSlide"
+import AppearanceSlide from "@/components/ui/onboarding/AppearanceSlide"
+import ReviewSlide from "@/components/ui/onboarding/ReviewSlide"
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window")
-const TOTAL_SLIDES = 3
+/** Slide order. The username slide sits at index 1 so index 0 is the welcome. */
+const SLIDE = {
+  welcome: 0,
+  username: 1,
+  unitsSystem: 2,
+  unitsDetail: 3,
+  appearance: 4,
+  review: 5,
+} as const
+
+const TOTAL_SLIDES = 6
+
+const SKIP_DISABLED_ON: readonly number[] = [SLIDE.welcome, SLIDE.username]
+
+function clamp(index: number) {
+  return Math.min(Math.max(index, 0), TOTAL_SLIDES - 1)
+}
 
 export default function OnboardingScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const { width } = useWindowDimensions()
   const { data: session } = useSession()
-  const { isLoading, error, updateUsername, completeOnboarding, skipOnboarding } = useOnboarding()
+  const { isLoading, updateUsername, completeOnboarding, skipOnboarding } = useOnboarding()
 
   const scrollRef = useRef<ScrollView>(null)
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [currentSlide, setCurrentSlide] = useState<number>(SLIDE.welcome)
   const [username, setUsername] = useState("")
+  const [hasUsername, setHasUsername] = useState(false)
   const [prefs, setPrefs] = useState<OnboardingPrefs>(DEFAULT_PREFS)
+  const [isSavingUsername, setIsSavingUsername] = useState(false)
+  const [isFinishing, setIsFinishing] = useState(false)
+  const [finishError, setFinishError] = useState<string | null>(null)
 
+  /* ── Live theme preview ──────────────────────────────────────────────
+   * Tapping a theme on the appearance slide repaints the running app. If the
+   * user leaves without finishing, the override is dropped so the rest of the
+   * app keeps following the system appearance.
+   */
+  const { setColorScheme } = useColorScheme()
+  const setColorSchemeRef = useRef(setColorScheme)
+  setColorSchemeRef.current = setColorScheme
+
+  const didCommit = useRef(false)
+
+  const applyColorScheme = useCallback((theme: OnboardingPrefs["theme"]) => {
+    try {
+      setColorSchemeRef.current(theme)
+    } catch {
+      // `setColorScheme` needs `darkMode: "class"`. If a stale Tailwind build
+      // is cached, the preview simply does nothing — never a crash.
+    }
+  }, [])
+
+  useEffect(
+    () => () => {
+      if (!didCommit.current) applyColorScheme("system")
+    },
+    [applyColorScheme],
+  )
+
+  // Declared as a plain generic function rather than a `useCallback` wrapper:
+  // hoisting the generic into a callback erases it, leaving `K` as the union of
+  // every pref and letting a slide write the wrong value into a field.
   function updatePref<K extends keyof OnboardingPrefs>(key: K, value: OnboardingPrefs[K]) {
     setPrefs((prev) => ({ ...prev, [key]: value }))
   }
 
-  function scrollTo(index: number) {
-    scrollRef.current?.scrollTo({ x: index * SCREEN_WIDTH, animated: true })
-    setCurrentSlide(index)
+  /* ── Navigation ──────────────────────────────────────────────────── */
+  const goTo = useCallback(
+    (index: number) => {
+      const next = clamp(index)
+      scrollRef.current?.scrollTo({ x: next * width, animated: true })
+      setCurrentSlide(next)
+    },
+    [width],
+  )
+
+  function handleMomentumEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const next = clamp(Math.round(event.nativeEvent.contentOffset.x / width))
+    setCurrentSlide((prev) => (prev === next ? prev : next))
   }
 
-  async function handleSkip() {
-    Alert.alert(
-      "Skip setup?",
-      "Default settings will be applied. You can always update them later in your profile.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Skip",
-          style: "destructive",
-          onPress: async () => {
-            const err = await skipOnboarding()
-            if (err) {
-              Alert.alert("Error", err)
-            } else {
-              router.replace("/(app)/dashboard" as any)
-            }
-          },
-        },
-      ]
-    )
+  /* ── Actions ─────────────────────────────────────────────────────── */
+  async function handleSaveUsername(next: string): Promise<string | null> {
+    setIsSavingUsername(true)
+    const err = await updateUsername(next)
+    setIsSavingUsername(false)
+    if (!err) setHasUsername(true)
+    return err
   }
 
   async function handleFinish() {
+    // The review screen can be reached by swiping past an unfilled username, so
+    // send them back rather than finishing with a blank profile.
+    if (!hasUsername) {
+      goTo(SLIDE.username)
+      return
+    }
+
+    setFinishError(null)
+    setIsFinishing(true)
     const err = await completeOnboarding(prefs)
-    if (err) return   // DisplaySlide shows the error inline
+    setIsFinishing(false)
+
+    if (err) {
+      setFinishError(err)
+      return
+    }
+
+    didCommit.current = true
+    applyColorScheme(prefs.theme)
     router.replace("/(app)/dashboard" as any)
   }
 
-  const userName = session?.user.name ?? "there"
+  async function handleSkip() {
+    setIsFinishing(true)
+    const err = await skipOnboarding()
+    setIsFinishing(false)
+
+    if (err) {
+      setFinishError(err)
+      goTo(SLIDE.review)
+      return
+    }
+
+    didCommit.current = true
+    applyColorScheme("system")
+    router.replace("/(app)/dashboard" as any)
+  }
+
+  const canSkip = !SKIP_DISABLED_ON.includes(currentSlide)
+  const userName = (session?.user.name ?? "").trim()
 
   return (
     <KeyboardAvoidingView
@@ -77,96 +161,87 @@ export default function OnboardingScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View
-        className="flex-1 bg-white dark:bg-slate-950"
-        style={{ paddingTop: Math.max(insets.top, 20) }}
+        className="flex-1 bg-gray-50 dark:bg-slate-950"
+        style={{ paddingTop: Math.max(insets.top, 12) }}
       >
-        {/* ── Top bar ── */}
-        <View className="flex-row items-center justify-between px-6 pb-4">
-          {/* Left: Step counter */}
-          <Text className="text-xs font-semibold text-gray-400 dark:text-slate-500">
-            Step {currentSlide + 1} of {TOTAL_SLIDES}
-          </Text>
-
-          {/* Right: Skip */}
-          <TouchableOpacity onPress={handleSkip} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Text className="text-xs font-semibold text-gray-400 dark:text-slate-500">
-              Skip
-            </Text>
-          </TouchableOpacity>
+        {/* ── Progress + skip ── */}
+        <View className="pb-5">
+          <ProgressHeader
+            step={currentSlide + 1}
+            total={TOTAL_SLIDES}
+            onSkip={canSkip ? handleSkip : undefined}
+          />
         </View>
-
-        {/* ── Progress bar ── */}
-        <View className="flex-row px-6 gap-2 mb-6">
-          {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
-            <View
-              key={i}
-              className={`h-1 flex-1 rounded-full ${
-                i <= currentSlide ? "bg-strava" : "bg-gray-200 dark:bg-slate-700"
-              }`}
-            />
-          ))}
-        </View>
-
-        {/* ── Greeting (Slide 0 only) ── */}
-        {currentSlide === 0 && (
-          <View className="px-6 mb-4">
-            <Text className="text-base text-gray-500 dark:text-slate-400">
-              Welcome, <Text className="font-semibold text-gray-700 dark:text-white">{userName}</Text>! 👋
-            </Text>
-            <Text className="text-xs text-gray-400 dark:text-slate-500 mt-1">
-              Let's get your profile set up — takes under a minute.
-            </Text>
-          </View>
-        )}
 
         {/* ── Slides ── */}
         <ScrollView
           ref={scrollRef}
           horizontal
           pagingEnabled
-          scrollEnabled={false}          // we control swiping programmatically
           showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          onMomentumScrollEnd={handleMomentumEnd}
           style={{ flex: 1 }}
-          contentContainerStyle={{ width: SCREEN_WIDTH * TOTAL_SLIDES }}
+          contentContainerStyle={{ width: width * TOTAL_SLIDES }}
         >
-          {/* Slide 1: Username */}
-          <View style={{ width: SCREEN_WIDTH }}>
+          <View style={{ width }}>
+            <WelcomeSlide name={userName} onNext={() => goTo(SLIDE.username)} />
+          </View>
+
+          <View style={{ width }}>
             <UsernameSlide
               username={username}
               onChange={setUsername}
-              onSave={updateUsername}
-              onNext={() => scrollTo(1)}
-              isSaving={isLoading && currentSlide === 0}
+              onSave={handleSaveUsername}
+              onNext={() => goTo(SLIDE.unitsSystem)}
+              isSaving={isSavingUsername || isLoading}
             />
           </View>
 
-          {/* Slide 2: Units */}
-          <View style={{ width: SCREEN_WIDTH }}>
-            <UnitsSlide
+          <View style={{ width }}>
+            <UnitsSystemSlide
               prefs={prefs}
               onChange={updatePref}
-              onNext={() => scrollTo(2)}
-              onBack={() => scrollTo(0)}
+              onNext={() => goTo(SLIDE.unitsDetail)}
             />
           </View>
 
-          {/* Slide 3: Display */}
-          <View style={{ width: SCREEN_WIDTH }}>
-            <DisplaySlide
+          <View style={{ width }}>
+            <UnitsDetailSlide
               prefs={prefs}
               onChange={updatePref}
+              onNext={() => goTo(SLIDE.appearance)}
+            />
+          </View>
+
+          <View style={{ width }}>
+            <AppearanceSlide
+              prefs={prefs}
+              onChange={(key, value) => {
+                updatePref(key, value)
+                // Repaint immediately so the choice is seen, not described.
+                if (key === "theme") {
+                  applyColorScheme(value as OnboardingPrefs["theme"])
+                }
+              }}
+              onNext={() => goTo(SLIDE.review)}
+            />
+          </View>
+
+          <View style={{ width }}>
+            <ReviewSlide
+              prefs={prefs}
+              username={username}
+              hasUsername={hasUsername}
+              onEdit={goTo}
               onFinish={handleFinish}
-              onBack={() => scrollTo(1)}
-              isSaving={isLoading && currentSlide === 2}
-              error={currentSlide === 2 ? (error ?? null) : null}
+              isSaving={isFinishing}
+              error={finishError}
             />
           </View>
         </ScrollView>
 
-        {/* ── Dot Indicator ── */}
-        <View style={{ paddingBottom: Math.max(insets.bottom, 24) }} className="pt-2">
-          <SlideIndicator total={TOTAL_SLIDES} current={currentSlide} />
-        </View>
+        <View style={{ height: Math.max(insets.bottom, 20) }} />
       </View>
     </KeyboardAvoidingView>
   )
