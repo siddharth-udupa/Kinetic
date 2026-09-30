@@ -28,7 +28,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      {/* `min-h-full`, not `h-full`: a definite height here makes the column
+          clip any page taller than the viewport instead of letting the document
+          scroll. Full-height pages take a viewport-based height of their own —
+          see the onboarding flow and `app/maps`. */}
+      <body className="flex min-h-full flex-col">
         <Navbar />
         {children}
         </body>
