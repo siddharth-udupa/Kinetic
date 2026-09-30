@@ -13,6 +13,8 @@ export type OnboardingColors = {
   textSecondary: string
   textMuted: string
   accent: string
+  /** Accent for *text*. Clears AA where a fill only has to clear 3:1. */
+  accentText: string
   accentSoft: string
   onAccent: string
   danger: string
@@ -36,6 +38,13 @@ const LIGHT: OnboardingColors = {
   textSecondary: "#4B5563",
   textMuted: "#6B7280",
   accent: "#FC4C02",
+  /**
+   * Accent as *text*, which has to clear 4.5:1 rather than the 3:1 that a
+   * filled shape needs. The brand orange is only 3.4:1 on white, so the pure
+   * brand value is kept for fills and this deeper tint carries the words —
+   * the selected segment label, eyebrows, links.
+   */
+  accentText: "#C2410C",
   accentSoft: "rgba(252, 76, 2, 0.07)",
   onAccent: "#FFFFFF",
   danger: "#DC2626",
@@ -55,8 +64,16 @@ const DARK: OnboardingColors = {
   borderStrong: "#334155",
   text: "#F8FAFC",
   textSecondary: "#94A3B8",
-  textMuted: "#64748B",
+  // 5.2:1 on the page and 4.6:1 on a card. The previous slate-500 sat at 4.2:1
+  // and 3.8:1, so helper text under WCAG AA on the dark surfaces it is used
+  // on — and 3.8:1 fails outright on a card.
+  textMuted: "#748399",
   accent: "#FC4C02",
+  /**
+   * Accent as text. On the dark theme the brand orange drops to 3.0:1 against
+   * the raised pill, so words lifted a step to clear AA; fills stay #FC4C02.
+   */
+  accentText: "#FF9A6E",
   accentSoft: "rgba(252, 76, 2, 0.16)",
   onAccent: "#FFFFFF",
   danger: "#F87171",

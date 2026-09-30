@@ -1,10 +1,8 @@
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { PreferencesType } from "@repo/types"
-import { createUserPreferences, updateUserPreference } from "@repo/db"
-import OnboardingWizard from "@/components/onBoardingUI/OnboardingWizard"
-
+import { createUserPreferences } from "@repo/db"
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow"
 
 export default async function OnBoarding() {
   const session = await auth.api.getSession({
@@ -16,17 +14,18 @@ export default async function OnBoarding() {
 
   if (userPreferences.onBoarded) redirect("/dashboard")
 
-  async function submitPreferences(data: PreferencesType) {
-    "use server"
-    await updateUserPreference(session!.user.id, data)
-    redirect("/dashboard")
-  }
-
   return (
-    <OnboardingWizard
-      userName={session.user.name}
-      userId={session.user.id}
-      submitPreferences={submitPreferences}
+    <OnboardingFlow
+      userName={(session.user.name ?? "").trim()}
+      initialPrefs={{
+        theme: userPreferences.theme,
+        distanceUnit: userPreferences.distanceUnit,
+        elevationUnit: userPreferences.elevationUnit,
+        paceUnit: userPreferences.paceUnit,
+        speedUnit: userPreferences.speedUnit,
+        weightUnit: userPreferences.weightUnit,
+        timeFormat: userPreferences.timeFormat,
+      }}
     />
   )
 }

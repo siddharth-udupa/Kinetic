@@ -85,7 +85,7 @@ export function SlideHeading({
       {eyebrow ? (
         <Text
           className="text-xs font-semibold uppercase tracking-widest mb-2.5"
-          style={{ color: colors.accent }}
+          style={{ color: colors.accentText }}
         >
           {eyebrow}
         </Text>
@@ -230,10 +230,10 @@ export function TextAction({
       hitSlop={8}
       className="self-start flex-row items-center gap-1 py-2 active:opacity-60"
     >
-      <Text className="text-sm font-semibold" style={{ color: colors.accent }}>
+      <Text className="text-sm font-semibold" style={{ color: colors.accentText }}>
         {label}
       </Text>
-      <Ionicons name={icon} size={14} color={colors.accent} />
+      <Ionicons name={icon} size={14} color={colors.accentText} />
     </Pressable>
   )
 }
@@ -370,7 +370,7 @@ export function Segmented<T extends string>({
             <Text
               className="text-[13px] font-semibold"
               numberOfLines={1}
-              style={{ color: selected ? colors.accent : colors.textSecondary }}
+              style={{ color: selected ? colors.accentText : colors.textSecondary }}
             >
               {option.label}
             </Text>

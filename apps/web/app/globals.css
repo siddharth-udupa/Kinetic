@@ -9,3 +9,51 @@
   pointer-events: none;
   cursor: default;
 }
+
+/* Height of the sticky app shell header: `h-14` (56px) plus its 1px bottom
+   border, going to `h-16` (64px) plus border from the `lg` breakpoint up.
+
+   A full-height page needs it because the body column is `min-h-full`: without
+   a definite height there is no free space for a `flex-1` child to grow into,
+   so the page would be sized by its content and scroll the document instead of
+   scrolling its own body. */
+:root {
+  --shell-header-h: 3.5625rem;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --shell-header-h: 4.0625rem;
+  }
+}
+
+/* Onboarding flow — the fade the mobile stack plays on push, and a scrollbar
+   the flow hides the way the native ScrollView does. */
+@keyframes ob-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ob-slide-in {
+  animation: ob-slide-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ob-scroll {
+  scrollbar-width: none;
+}
+
+.ob-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-slide-in {
+    animation: none;
+  }
+}

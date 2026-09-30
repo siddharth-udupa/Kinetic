@@ -100,7 +100,7 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
                 />
                 <Text
                   className="text-[13px] font-semibold"
-                  style={{ color: selected ? colors.accent : colors.textSecondary }}
+                  style={{ color: selected ? colors.accentText : colors.textSecondary }}
                 >
                   {THEME_LABELS[option.value]}
                 </Text>
