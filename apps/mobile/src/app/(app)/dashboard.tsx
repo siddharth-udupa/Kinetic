@@ -1,48 +1,41 @@
-import React, { useState, Suspense, lazy } from "react"
-import { View, Text, TouchableOpacity, StatusBar, ActivityIndicator } from "react-native"
-import { type EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context"
+import { useState, Suspense, lazy } from "react"
+import { View, Text, ScrollView, StatusBar, ActivityIndicator, Pressable } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useSession, signOut } from "@/lib/auth-client"
 import { Redirect, useRouter } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import ActivityFeed from "@/components/ActivityFeed"
 import { useActivities } from "@/hooks/useActivities"
 import { clearPreferences } from "@/lib/preferencesStore"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { TabBar, TopBar, type TabKey } from "@/components/ui/shell/Navigation"
 
 // Lazy-load MapScreen component
 const LazyMapScreen = lazy(() => import("@/components/MapScreen"))
-
-type ActiveTabType = "home" | "maps" | "groups" | "you"
 
 export default function DashboardScreen() {
   const { data: session } = useSession()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const [activeTab, setActiveTab] = useState<ActiveTabType>("home")
-  
+  const { isDark, colors } = useOnboardingTheme()
+  const [activeTab, setActiveTab] = useState<TabKey>("home")
+
   const { activities, isLoading, refreshing, error, refetch } = useActivities(session?.user.id)
 
   if (!session) {
     return <Redirect href={"/(auth)/sign-in" as any} />
   }
 
-  const handleSignOut = async () => {
-    await signOut()
-    // Drop the in-memory snapshot so the next account to sign in on this
-    // device never sees the previous one's units or theme.
-    clearPreferences()
-  }
-
-  // Bottom bar height: pt-2 (8) + icon+label area (~44) + paddingBottom = ~52 + Math.max(insets.bottom, 25)
-  // FAB sits 12px above the top edge of the bottom bar
-  const bottomBarHeight = 52 + Math.max(insets.bottom, 25)
-  const fabBottom = bottomBarHeight + 12
+  // Bottom bar height: pt-2 (8) + plate (32) + label (13 + 4 margin) + bottom inset
+  const bottomBarHeight = 57 + Math.max(insets.bottom, 10)
 
   return (
-    <View className="flex-1 bg-gray-100 dark:bg-slate-950">
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <View className="flex-1" style={{ backgroundColor: colors.page }}>
+      {/* Follows the resolved theme rather than being pinned to
+          `dark-content`, which put dark glyphs on a dark bar in dark mode. */}
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
-      {/* TOP NAV BAR */}
-      <TopBar insets={insets} handleSignOut={handleSignOut} />
+      <TopBar />
 
       {/* DYNAMIC TAB CONTENT */}
       {activeTab === "home" && (
@@ -53,18 +46,15 @@ export default function DashboardScreen() {
           refreshing={refreshing}
           onRefresh={refetch}
           error={error}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 70 }}
+          contentContainerStyle={{ paddingBottom: bottomBarHeight + 16 }}
         />
       )}
 
       {activeTab === "maps" && (
         <Suspense
           fallback={
-            <View className="flex-1 justify-center items-center bg-gray-100 dark:bg-slate-950">
-              <ActivityIndicator size="large" color="#FC5200" />
-              <Text className="text-gray-500 dark:text-slate-400 text-xs mt-2 font-semibold">
-                Loading Map Screen...
-              </Text>
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" />
             </View>
           }
         >
@@ -72,164 +62,126 @@ export default function DashboardScreen() {
         </Suspense>
       )}
 
-      {activeTab !== "home" && activeTab !== "maps" && (
-        <View className="flex-1 justify-center items-center p-4 bg-white dark:bg-slate-900">
-          <Ionicons name="construct-outline" size={48} color="#FC5200" />
-          <Text className="text-gray-900 dark:text-white font-bold text-lg mt-2 capitalize">
-            {activeTab} View
-          </Text>
-          <Text className="text-gray-500 dark:text-slate-400 text-xs mt-1">
-            This view is currently under development.
-          </Text>
-        </View>
-      )}
+      {activeTab === "you" ? (
+        <AccountTab user={session.user} />
+      ) : null}
 
-      {/* BOTTOM TAB BAR */}
-      <BottomBar
-        insets={insets}
+      {activeTab !== "home" && activeTab !== "maps" && activeTab !== "you" ? (
+        <PlaceholderTab tab={activeTab} />
+      ) : null}
+
+      {/* BOTTOM TAB BAR — in flow rather than absolutely positioned, so the
+          content above it is never hidden underneath it. */}
+      <TabBar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onRecordPress={() => router.push("/(app)/recorder/recorder" as any)}
+        onSelect={setActiveTab}
+        onRecord={() => router.push("/(app)/recorder/recorder" as any)}
       />
-
-      {/* FLOATING ADD ACTIVITY BUTTON — sits above the bottom bar on the left */}
-      <TouchableOpacity
-        onPress={() => router.push("/(app)/upload/manual" as any)}
-        style={{ bottom: fabBottom, right: 16 }}
-        className="absolute z-40 w-14 h-14 rounded-full bg-[#FC5200] items-center justify-center shadow-lg shadow-[#FC5200]/40"
-        activeOpacity={0.8}
-        accessibilityLabel="Log activity manually"
-        accessibilityRole="button"
-      >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
     </View>
   )
 }
 
-function TopBar({ insets, handleSignOut }: { insets: EdgeInsets; handleSignOut: () => Promise<void> }) {
+/**
+ * The account tab.
+ *
+ * Sign-out moved here from the header. It used to be a red pill in the top bar,
+ * one tap from the home screen; here it sits under the profile it acts on, as a
+ * full-width row rather than an icon, so the consequence of the tap is legible
+ * before it happens.
+ */
+function AccountTab({ user }: { user: { name?: string | null; email?: string | null; image?: string | null } }) {
+  const { colors } = useOnboardingTheme()
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  async function handleSignOut() {
+    setIsSigningOut(true)
+    await signOut()
+    // Drop the in-memory snapshot so the next account to sign in on this
+    // device never sees the previous one's units or theme.
+    clearPreferences()
+  }
+
   return (
-    <View
-      style={{ paddingTop: Math.max(insets.top, 35) }}
-      className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 pb-3"
-    >
-      <View className="flex-row items-center justify-between">
-        <Text className="text-[#FC5200] text-2xl font-black tracking-wider">
-          STRAVA - CLONE
-        </Text>
-        <View className="flex-row items-center space-x-3">
-          <TouchableOpacity
-            onPress={handleSignOut}
-            className="p-2 rounded-full bg-red-50 dark:bg-red-500/20 border border-red-200 dark:border-red-500/40"
+    <ScrollView className="flex-1">
+      <View className="px-4 pt-6 pb-10">
+        <View
+          className="flex-row items-center gap-4 rounded-2xl border p-5"
+          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+        >
+          <View
+            className="size-14 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.accentSoft }}
           >
-            <Ionicons name="log-out-outline" size={18} color="#EF4444" />
-          </TouchableOpacity>
+            <Ionicons name="person" size={26} color={colors.accent} />
+          </View>
+
+          <View className="flex-1">
+            <Text className="text-[17px] font-bold" style={{ color: colors.text }}>
+              {user.name || "Athlete"}
+            </Text>
+            <Text className="mt-1 text-[13px]" style={{ color: colors.textMuted }}>
+              {user.email}
+            </Text>
+          </View>
+        </View>
+
+        <Text
+          className="mt-7 mb-2.5 text-[11px] font-semibold uppercase"
+          style={{ color: colors.textMuted, letterSpacing: 1.4 }}
+        >
+          Session
+        </Text>
+
+        <View
+          className="overflow-hidden rounded-2xl border"
+          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+        >
+          {/*
+            Preferences have no screen yet — onboarding is the only place the
+            units and theme can be changed today. Rather than link to a route that
+            does not exist and throw on tap, the row is left out until there is
+            somewhere for it to go.
+          */}
+
+          <Pressable
+            onPress={handleSignOut}
+            disabled={isSigningOut}
+            accessibilityRole="button"
+            accessibilityLabel="Sign out"
+            accessibilityState={{ disabled: isSigningOut, busy: isSigningOut }}
+            className="flex-row items-center gap-3 px-4 py-4 active:opacity-70"
+          >
+            <Ionicons name="log-out-outline" size={19} color={colors.danger} />
+            <Text className="flex-1 text-[15px] font-medium" style={{ color: colors.danger }}>
+              {isSigningOut ? "Signing out…" : "Sign out"}
+            </Text>
+          </Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
-function BottomBar({
-  insets,
-  activeTab,
-  setActiveTab,
-  onRecordPress,
-}: {
-  insets: EdgeInsets
-  activeTab: ActiveTabType
-  setActiveTab: React.Dispatch<React.SetStateAction<ActiveTabType>>
-  onRecordPress: () => void
-}) {
+/** A tab with no screen yet — same object as the real tabs, minus the content. */
+function PlaceholderTab({ tab }: { tab: TabKey }) {
+  const { colors } = useOnboardingTheme()
+  const label = tab.charAt(0).toUpperCase() + tab.slice(1)
+
   return (
-    <View
-      style={{ paddingBottom: Math.max(insets.bottom, 25) }}
-      className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex-row justify-around items-center pt-2 px-2 shadow-lg"
-    >
-      <TouchableOpacity
-        onPress={() => setActiveTab("home")}
-        className="items-center justify-center flex-1 py-1"
+    <View className="flex-1 items-center justify-center px-8">
+      <View
+        className="mb-4 size-16 items-center justify-center rounded-2xl"
+        style={{ backgroundColor: colors.accentSoft }}
       >
-        <Ionicons
-          name={activeTab === "home" ? "home" : "home-outline"}
-          size={22}
-          color={activeTab === "home" ? "#FC5200" : "#6B7280"}
-        />
-        <Text
-          className={`text-[10px] font-bold mt-1 ${
-            activeTab === "home" ? "text-[#FC5200]" : "text-gray-500 dark:text-gray-400"
-          }`}
-        >
-          Home
-        </Text>
-      </TouchableOpacity>
+        <Ionicons name="construct-outline" size={28} color={colors.accent} />
+      </View>
 
-      <TouchableOpacity
-        onPress={() => setActiveTab("maps")}
-        className="items-center justify-center flex-1 py-1"
-      >
-        <Ionicons
-          name={activeTab === "maps" ? "map" : "map-outline"}
-          size={22}
-          color={activeTab === "maps" ? "#FC5200" : "#6B7280"}
-        />
-        <Text
-          className={`text-[10px] font-bold mt-1 ${
-            activeTab === "maps" ? "text-[#FC5200]" : "text-gray-500 dark:text-gray-400"
-          }`}
-        >
-          Maps
-        </Text>
-      </TouchableOpacity>
-
-      {/* Record CTA Center Button */}
-      <TouchableOpacity
-        onPress={onRecordPress}
-        className="items-center justify-center flex-1 -mt-4"
-      >
-        <View className="w-13 h-13 rounded-full bg-[#FC5200] items-center justify-center shadow-lg shadow-[#FC5200]/40 border-4 border-gray-100 dark:border-slate-950 p-2">
-          <Ionicons name="reload-circle-outline" size={26} color="#FFFFFF" />
-        </View>
-        <Text className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-0.5">
-          Record
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => setActiveTab("groups")}
-        className="items-center justify-center flex-1 py-1"
-      >
-        <Ionicons
-          name={activeTab === "groups" ? "people" : "people-outline"}
-          size={22}
-          color={activeTab === "groups" ? "#FC5200" : "#6B7280"}
-        />
-        <Text
-          className={`text-[10px] font-bold mt-1 ${
-            activeTab === "groups" ? "text-[#FC5200]" : "text-gray-500 dark:text-gray-400"
-          }`}
-        >
-          Groups
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => setActiveTab("you")}
-        className="items-center justify-center flex-1 py-1"
-      >
-        <Ionicons
-          name={activeTab === "you" ? "person" : "person-outline"}
-          size={22}
-          color={activeTab === "you" ? "#FC5200" : "#6B7280"}
-        />
-        <Text
-          className={`text-[10px] font-bold mt-1 ${
-            activeTab === "you" ? "text-[#FC5200]" : "text-gray-500 dark:text-gray-400"
-          }`}
-        >
-          You
-        </Text>
-      </TouchableOpacity>
+      <Text className="text-[17px] font-bold" style={{ color: colors.text }}>
+        {label}
+      </Text>
+      <Text className="mt-1.5 text-[14px] text-center" style={{ color: colors.textMuted }}>
+        This view is still being built.
+      </Text>
     </View>
   )
 }
