@@ -90,7 +90,7 @@ export async function startBackgroundLocationTask(): Promise<boolean> {
       if (Platform.OS === "android") {
         taskOptions.foregroundService = {
           notificationTitle: "Recording Activity",
-          notificationBody: "Strava Clone is recording your route in the background.",
+          notificationBody: "Kinetic is recording your route in the background.",
           notificationColor: "#FC5200",
         }
       }

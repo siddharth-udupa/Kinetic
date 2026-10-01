@@ -168,7 +168,7 @@ export default function ActivityCard({
 					<button
 						type="button"
 						onClick={clickHandler}
-						className="relative shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stravaorange"
+						className="relative shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
 						aria-label={`View activities by ${userName || "user"}`}
 					>
 						<Image
@@ -185,7 +185,7 @@ export default function ActivityCard({
 						<button
 							type="button"
 							onClick={clickHandler}
-							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-slate-900 transition-colors hover:text-stravaorange focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stravaorange sm:text-base dark:text-white dark:hover:text-orange-400"
+							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-slate-900 transition-colors hover:text-brand focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:text-base dark:text-white dark:hover:text-orange-400"
 						>
 							{userName || "User"}
 						</button>
@@ -199,7 +199,7 @@ export default function ActivityCard({
 
 					<div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 ring-1 ring-inset ring-orange-100 dark:bg-orange-500/15 dark:ring-orange-500/20 sm:size-12">
 						<SportIcon
-							className="size-5 text-stravaorange sm:size-5.5"
+							className="size-5 text-brand sm:size-5.5"
 							strokeWidth={2.25}
 							aria-hidden="true"
 						/>
@@ -207,15 +207,15 @@ export default function ActivityCard({
 				</header>
 
 				<div className="mt-5 sm:mt-6">
-					<p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-stravaorange">
+					<p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-brand">
 						{sport.label}
 					</p>
 					<button
 						type="button"
 						onClick={clickHandler}
-						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-stravaorange"
+						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
 					>
-						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-slate-950 transition-colors group-hover/title:text-stravaorange sm:text-[26px] dark:text-white dark:group-hover/title:text-orange-400">
+						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-slate-950 transition-colors group-hover/title:text-brand sm:text-[26px] dark:text-white dark:group-hover/title:text-orange-400">
 							{activities.title || "Untitled activity"}
 						</h2>
 					</button>
@@ -288,7 +288,7 @@ export default function ActivityCard({
 				<div className="ml-auto flex items-center gap-2">
 					<button
 						type="button"
-						className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold text-slate-700 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-stravaorange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stravaorange active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
+						className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold text-slate-700 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
 						aria-label="Give kudos"
 					>
 						<ThumbsUp className="size-4.5" aria-hidden="true" />
@@ -296,7 +296,7 @@ export default function ActivityCard({
 					</button>
 					<button
 						type="button"
-						className="flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-stravaorange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stravaorange active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
+						className="flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
 						aria-label="View comments"
 					>
 						<MessageSquare className="size-4.5" aria-hidden="true" />

@@ -50,7 +50,7 @@ export default function ActivityDetailScreen() {
   const [activeTab, setActiveTab] = useState<TabType>("overview")
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
 
-  // 3 Strava-like snap positions (Y coordinate offset from top of screen)
+  // 3 snap positions (Y coordinate offset from top of screen)
   const EXPANDED_Y = SCREEN_HEIGHT * 0.08  // 8% from top
   const HALF_Y = SCREEN_HEIGHT * 0.50      // 50% from top
   const COLLAPSED_Y = SCREEN_HEIGHT * 0.78 // 78% from top

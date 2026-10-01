@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "Kinetic",
     "slug": "strava-clone",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,9 +16,9 @@
           "location",
           "fetch"
         ],
-        "NSLocationWhenInUseUsageDescription": "Strava Clone needs location access to track your runs and rides.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Strava Clone needs background location access to track your activity when the screen is off.",
-        "NSLocationAlwaysUsageDescription": "Strava Clone needs background location access to track your activity."
+        "NSLocationWhenInUseUsageDescription": "Kinetic needs location access to track your runs and rides.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Kinetic needs background location access to track your activity when the screen is off.",
+        "NSLocationAlwaysUsageDescription": "Kinetic needs background location access to track your activity."
       }
     },
     "android": {
@@ -59,7 +59,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Strava Clone to track your activity in the background.",
+          "locationAlwaysAndWhenInUsePermission": "Allow Kinetic to track your activity in the background.",
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
         }

@@ -10,7 +10,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        strava: "#FC4C02",
+        /*
+         * The brand accent, for the surfaces that predate the onboarding theme
+         * (activity cards). Same value as the theme's `accent`; anything that
+         * can reach `useOnboardingTheme()` should prefer that instead, since it
+         * also resolves the dark-mode variant.
+         */
+        brand: "#FC4C02",
       },
     },
   },

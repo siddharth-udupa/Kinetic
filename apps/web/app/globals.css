@@ -2,7 +2,13 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme {
-  --color-stravaorange: #FC5200;
+  /*
+   * The legacy single-token brand colour, kept for the surfaces that predate
+   * the onboarding design system (activity cards, upload forms). It is the same
+   * orange the newer system uses as its `accent`, at the value that token has
+   * always been.
+   */
+  --color-brand: #FC5200;
 }
 
 .static-map-container {
@@ -12,6 +18,7 @@
 
 /* Height of the sticky app shell header: `h-14` (56px) plus its 1px bottom
    border, going to `h-16` (64px) plus border from the `lg` breakpoint up.
+   These track `components/shell/Navbar.tsx` — change one, change the other.
 
    A full-height page needs it because the body column is `min-h-full`: without
    a definite height there is no free space for a `flex-1` child to grow into,

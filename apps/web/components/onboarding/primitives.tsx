@@ -319,8 +319,8 @@ export function ChoiceCard({
       onClick={onPress}
       className={`mb-3 w-full cursor-pointer rounded-2xl border-2 p-5 text-start transition active:opacity-80 ${FOCUS} ${
         selected
-          ? "bg-[color:var(--ob-accent-soft)]"
-          : "bg-[color:var(--ob-card)] hover:bg-[color:var(--ob-card-hover)]"
+          ? "bg-(--ob-accent-soft)"
+          : "bg-(--ob-card) hover:bg-(--ob-card-hover)"
       }`}
       style={{ borderColor: selected ? colors.accent : colors.border }}
     >
@@ -398,7 +398,7 @@ export function Segmented<T extends string>({
             className={`flex h-10 flex-1 cursor-pointer items-center justify-center rounded-lg border px-1 transition active:opacity-70 ${FOCUS} ${
               /* Only the unselected state is left to the class, so the hover
                  tint is not overridden by an inline transparent background. */
-              selected ? "" : "hover:bg-[color:var(--ob-track-hover)]"
+              selected ? "" : "hover:bg-(--ob-track-hover)"
             }`}
             style={
               selected

@@ -157,7 +157,7 @@ export default function RecorderScreen() {
 					onRequestPermissions={requestLocationPermissions}
 				/>
 
-				{/* Strava Curved Bottom Panel */}
+				{/* Curved bottom panel */}
 				<BottomControlPanel
 					status={status}
 					activityType={activityType}

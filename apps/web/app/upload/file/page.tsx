@@ -71,7 +71,7 @@ export default function GPXUploadPage() {
     return "Failed to upload GPX activity."
   }
 
-  const handleUpload = async (e: React.SubmitEvent) => {
+  const handleUpload = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!file) {
@@ -166,12 +166,12 @@ export default function GPXUploadPage() {
             GPX File <span className="text-red-500">*</span>
           </label>
           
-          <div className="border-2 border-dashed border-gray-300 hover:border-stravaorange rounded-xl p-8 bg-gray-50/50 hover:bg-orange-50/30 transition-colors flex flex-col items-center justify-center text-center">
-            <UploadCloud className="w-10 h-10 text-stravaorange mb-3" />
+          <div className="border-2 border-dashed border-gray-300 hover:border-brand rounded-xl p-8 bg-gray-50/50 hover:bg-orange-50/30 transition-colors flex flex-col items-center justify-center text-center">
+            <UploadCloud className="w-10 h-10 text-brand mb-3" />
             
             {file ? (
               <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-xs">
-                <FileUp className="w-5 h-5 text-stravaorange" />
+                <FileUp className="w-5 h-5 text-brand" />
                 <div className="text-left">
                   <p className="text-sm font-semibold text-gray-900">{file.name}</p>
                   <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
@@ -195,7 +195,7 @@ export default function GPXUploadPage() {
                 </p>
                 <label
                   htmlFor="gpx-upload"
-                  className="px-4 py-2 bg-white border border-gray-300 hover:border-stravaorange text-gray-700 text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-stravaorange transition-colors"
+                  className="px-4 py-2 bg-white border border-gray-300 hover:border-brand text-gray-700 text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-brand transition-colors"
                 >
                   Browse Files
                 </label>
@@ -222,7 +222,7 @@ export default function GPXUploadPage() {
             placeholder="Morning Ride"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-stravaorange text-gray-900 placeholder:text-gray-400"
+            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400"
           />
         </div>
 
@@ -235,7 +235,7 @@ export default function GPXUploadPage() {
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-stravaorange text-gray-900 placeholder:text-gray-400 resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400 resize-y"
           />
         </div>
 
@@ -246,7 +246,7 @@ export default function GPXUploadPage() {
             disabled={!file || isUploading}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               file && !isUploading
-                ? "bg-stravaorange text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                ? "bg-brand text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
                 : "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed select-none opacity-80"
             }`}
           >

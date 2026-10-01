@@ -28,7 +28,7 @@ export type { ChartPoint } from "./chartMath"
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
 
 // ── Theme ─────────────────────────────────────────────────────────────────────
-// Strava-orange line, soft fill, hairline grids tuned for small mobile screens.
+// Accent line, soft fill, hairline grids tuned for small mobile screens.
 const CHART = {
   line: "#FC5200",
   fill: "#FC5200",

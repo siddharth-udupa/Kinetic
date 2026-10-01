@@ -42,7 +42,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
               type="button"
               onClick={onSkip}
               aria-label="Skip setup"
-              className="flex h-9 cursor-pointer items-center gap-1 rounded-full pr-3 pl-4 text-sm font-semibold transition active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--ob-accent)]"
+              className="flex h-9 cursor-pointer items-center gap-1 rounded-full pr-3 pl-4 text-sm font-semibold transition active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent)"
               style={{ backgroundColor: colors.cardMuted }}
             >
               <span style={{ color: colors.textSecondary }}>Skip</span>
@@ -63,7 +63,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
           aria-label={`Step ${step} of ${total}`}
         >
           <div
-            className="h-1.5 rounded-full transition-[width] duration-[380ms] ease-[cubic-bezier(0.215,0.61,0.355,1)]"
+            className="h-1.5 rounded-full transition-[width] duration-380 ease-[cubic-bezier(0.215,0.61,0.355,1)]"
             style={{
               width: `${Math.max((step / total) * 100, 7)}%`,
               backgroundColor: colors.accent,

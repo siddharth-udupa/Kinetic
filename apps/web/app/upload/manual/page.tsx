@@ -368,7 +368,7 @@ export default function Manual() {
             placeholder="e.g. Morning Run"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-stravaorange text-gray-900 placeholder:text-gray-400"
+            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400"
           />
         </div>
 
@@ -381,7 +381,7 @@ export default function Manual() {
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-stravaorange text-gray-900 placeholder:text-gray-400 resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400 resize-y"
           />
         </div>
 
@@ -392,7 +392,7 @@ export default function Manual() {
             disabled={!isFormValid || isSubmitting}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               isFormValid && !isSubmitting
-                ? "bg-stravaorange text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                ? "bg-brand text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
                 : "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed select-none opacity-80"
             }`}
           >
