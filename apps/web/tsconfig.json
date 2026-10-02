@@ -10,6 +10,7 @@
       "@/*": ["./*"],
       "@repo/db": ["../../packages/db/src"],
       "@repo/db/*": ["../../packages/db/src/*"],
+      "@repo/shared": ["../../packages/shared/src"],
       "@repo/validation": ["../../packages/validation/src"],
       "@repo/validation/*": ["../../packages/validation/src/*"]
     }

@@ -13,6 +13,7 @@
     "@repo/db": "workspace:*",
     "@repo/gpx": "workspace:*",
     "@repo/maps": "workspace:*",
+    "@repo/shared": "workspace:*",
     "@repo/units": "workspace:*",
     "@repo/validation": "workspace:*",
     "better-auth": "^1.6.21",

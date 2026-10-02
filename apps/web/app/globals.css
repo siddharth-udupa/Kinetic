@@ -1,14 +1,94 @@
 @import "tailwindcss";
 @import "maplibre-gl/dist/maplibre-gl.css";
 
-@theme {
+/*
+ * Colour utilities, named.
+ *
+ * `inline` makes Tailwind emit the `var()` reference itself rather than
+ * substituting a resolved value, so these utilities follow whatever palette
+ * `packages/shared/src/colors.ts` currently defines — the values live in
+ * TypeScript and reach the DOM as `--ob-*` custom properties on the shell
+ * wrapper (`components/shell/AppShell.tsx`).
+ *
+ * Prefer these (`bg-surface`, `text-ink`, `border-line`, `bg-brand`) over raw
+ * `var(--ob-*)` or arbitrary hex classes like `bg-[#FC5200]`. Anything you add
+ * here needs a matching key in the shared tokens first.
+ */
+@theme inline {
+  /* Surfaces */
+  --color-page: var(--ob-page);
+  --color-surface: var(--ob-card);
+  --color-surface-hover: var(--ob-card-hover);
+  --color-surface-pressed: var(--ob-card-pressed);
+  --color-surface-muted: var(--ob-card-muted);
+  --color-surface-muted-hover: var(--ob-card-muted-hover);
+  --color-raised: var(--ob-raised);
+  --color-raised-hover: var(--ob-raised-hover);
+  --color-raised-pressed: var(--ob-raised-pressed);
+  --color-disabled: var(--ob-control-disabled);
+
+  /* Borders */
+  --color-line: var(--ob-border);
+  --color-line-strong: var(--ob-border-strong);
+  --color-line-muted: var(--ob-border-muted);
+
+  /* Text */
+  --color-ink: var(--ob-text);
+  --color-ink-secondary: var(--ob-text-secondary);
+  --color-ink-muted: var(--ob-text-muted);
+  --color-ink-disabled: var(--ob-text-disabled);
+  --color-ink-inverse: var(--ob-text-inverse);
+
   /*
-   * The legacy single-token brand colour, kept for the surfaces that predate
-   * the onboarding design system (activity cards, upload forms). It is the same
-   * orange the newer system uses as its `accent`, at the value that token has
-   * always been.
+   * The brand orange for the surfaces that predate the shared tokens. Kept as a
+   * single token so it cannot drift from the `accent` the design system uses —
+   * `BRAND_COLOR` in `@repo/shared` feeds both this and the palette.
    */
-  --color-brand: #FC5200;
+  --color-brand: #fc4c02;
+
+  /* Accent */
+  --color-accent: var(--ob-accent);
+  --color-accent-hover: var(--ob-accent-hover);
+  --color-accent-pressed: var(--ob-accent-pressed);
+  --color-accent-text: var(--ob-accent-text);
+  --color-accent-soft: var(--ob-accent-soft);
+  --color-on-accent: var(--ob-on-accent);
+
+  /* Status */
+  --color-danger: var(--ob-danger);
+  --color-danger-hover: var(--ob-danger-hover);
+  --color-danger-pressed: var(--ob-danger-pressed);
+  --color-danger-text: var(--ob-danger-text);
+  --color-danger-soft: var(--ob-danger-soft);
+  --color-success: var(--ob-success);
+  --color-success-hover: var(--ob-success-hover);
+  --color-success-pressed: var(--ob-success-pressed);
+  --color-success-text: var(--ob-success-text);
+  --color-success-soft: var(--ob-success-soft);
+  --color-warning: var(--ob-warning);
+  --color-warning-hover: var(--ob-warning-hover);
+  --color-warning-pressed: var(--ob-warning-pressed);
+  --color-warning-text: var(--ob-warning-text);
+  --color-warning-soft: var(--ob-warning-soft);
+  --color-info: var(--ob-info);
+  --color-info-hover: var(--ob-info-hover);
+  --color-info-pressed: var(--ob-info-pressed);
+  --color-info-text: var(--ob-info-text);
+  --color-info-soft: var(--ob-info-soft);
+
+  /* Interaction */
+  --color-track-hover: var(--ob-track-hover);
+  --color-track-pressed: var(--ob-track-pressed);
+  --color-focus-ring: var(--ob-focus-ring);
+  --color-overlay: var(--ob-overlay);
+
+  /* Charts */
+  --color-chart-line: var(--ob-chart-line);
+  --color-chart-fill: var(--ob-chart-fill);
+  --color-chart-grid: var(--ob-chart-grid);
+  --color-chart-axis: var(--ob-chart-axis);
+  --color-chart-label: var(--ob-chart-label);
+  --color-chart-crosshair: var(--ob-chart-crosshair);
 }
 
 .static-map-container {

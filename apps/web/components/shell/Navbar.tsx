@@ -17,7 +17,7 @@ import {
   Zap,
 } from "lucide-react"
 import { useSession, signOut } from "@/lib/auth-client"
-import { APP_NAME } from "@/lib/brand"
+import { APP_NAME } from "@repo/shared"
 import { useOnboardingTheme } from "@/components/onboarding/theme"
 import {
   Avatar,

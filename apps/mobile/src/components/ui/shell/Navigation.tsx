@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons"
 import type { ComponentProps, ReactNode } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useOnboardingTheme } from "../onboarding/theme"
-import { APP_NAME } from "@/lib/brand"
+import { APP_NAME } from "@repo/shared"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
 

@@ -244,6 +244,9 @@ importers:
       '@repo/maps':
         specifier: workspace:*
         version: link:../../packages/maps
+      '@repo/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@repo/units':
         specifier: workspace:*
         version: link:../../packages/units
@@ -408,6 +411,9 @@ importers:
       '@repo/maps':
         specifier: workspace:*
         version: link:../../packages/maps
+      '@repo/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@repo/units':
         specifier: workspace:*
         version: link:../../packages/units
@@ -507,6 +513,8 @@ importers:
       '@maplibre/maplibre-gl-style-spec':
         specifier: 24.8.5
         version: 24.8.5
+
+  packages/shared: {}
 
   packages/tiles:
     dependencies:

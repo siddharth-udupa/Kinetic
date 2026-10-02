@@ -10,6 +10,7 @@
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@repo/gpx": "workspace:*",
     "@repo/maps": "workspace:*",
+    "@repo/shared": "workspace:*",
     "@repo/units": "workspace:*",
     "@repo/validation": "workspace:*",
     "@shopify/react-native-skia": "^2.11.2",
