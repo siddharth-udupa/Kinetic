@@ -10,8 +10,8 @@ export default function AuthPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-1 items-center justify-center bg-gray-50">
-          <span className="text-sm font-medium text-gray-400">Loading…</span>
+        <div className="flex flex-1 items-center justify-center bg-page">
+          <span className="text-sm font-medium text-ink-disabled">Loading…</span>
         </div>
       }
     >

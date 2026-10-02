@@ -159,20 +159,20 @@ export default function Manual() {
 
   return (
     <div className="w-full max-w-4xl">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">Manual Entry</h1>
+      <h1 className="text-4xl font-bold text-ink mb-6">Manual Entry</h1>
 
       {feedback && (
         <div
           className={`mb-6 p-4 rounded-lg flex items-start gap-3 border text-sm font-medium ${
             feedback.type === "success"
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
+              ? "bg-success-soft text-success-text border-success-text"
+              : "bg-danger-soft text-danger-text border-danger-text"
           }`}
         >
           {feedback.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
           )}
           <span>{feedback.message}</span>
         </div>
@@ -181,15 +181,16 @@ export default function Manual() {
       <form onSubmit={submitHandler} autoComplete="off" className="space-y-0">
 
         {/* Row 1: Distance, Duration, Elevation */}
-        <div className="flex flex-wrap gap-8 pb-6 border-b border-gray-200">
+        <div className="flex flex-wrap gap-8 pb-6 border-b border-line">
 
           {/* Distance */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="distance" className="text-xs font-medium text-gray-700">
-              Distance <span className="text-red-500">*</span>
+            <label htmlFor="distance" className="text-xs font-medium text-ink">
+              Distance <span className="text-danger-text">*</span>
             </label>
-            <div className={`flex items-center border rounded bg-white overflow-hidden h-9 ${
-              !isDistanceValid && data.distance === 0 ? "border-gray-300" : "border-gray-300"
+            {/* Both branches collapse to one token — the invalid-distance case never had its own colour. */}
+            <div className={`flex items-center border rounded bg-surface overflow-hidden h-9 ${
+              !isDistanceValid && data.distance === 0 ? "border-line-strong" : "border-line-strong"
             }`}>
               <input
                 id="distance"
@@ -199,14 +200,14 @@ export default function Manual() {
                 placeholder="0"
                 value={data.distance || ""}
                 onChange={e => updateField("distance", parseFloat(e.target.value) || 0)}
-                className="w-24 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-24 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
-              <div className="h-full w-px bg-gray-200" />
+              <div className="h-full w-px bg-line" />
               <select
                 aria-label="Distance unit"
                 value={metaData.distanceUnit}
                 onChange={e => updateMetaData("distanceUnit", e.target.value)}
-                className="h-full px-2 pr-1 text-sm bg-white outline-none cursor-pointer text-gray-700"
+                className="h-full px-2 pr-1 text-sm bg-surface outline-none cursor-pointer text-ink"
               >
                 <option value="metric">kilometers</option>
                 <option value="imperial">miles</option>
@@ -216,20 +217,20 @@ export default function Manual() {
 
           {/* Duration */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="duration-hr" className="text-xs font-medium text-gray-700">
-              Duration <span className="text-red-500">*</span>
+            <label htmlFor="duration-hr" className="text-xs font-medium text-ink">
+              Duration <span className="text-danger-text">*</span>
             </label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <input
                 id="duration-hr"
                 type="number"
                 min={0}
                 value={data.duration.hr}
                 onChange={e => updateDuration("hr", parseInt(e.target.value) || 0)}
-                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
-              <span className="text-xs text-gray-400 pr-2">hr</span>
-              <div className="h-full w-px bg-gray-200" />
+              <span className="text-xs text-ink-disabled pr-2">hr</span>
+              <div className="h-full w-px bg-line" />
               <input
                 id="duration-min"
                 type="number"
@@ -237,10 +238,10 @@ export default function Manual() {
                 max={59}
                 value={data.duration.min}
                 onChange={e => updateDuration("min", parseInt(e.target.value) || 0)}
-                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
-              <span className="text-xs text-gray-400 pr-2">min</span>
-              <div className="h-full w-px bg-gray-200" />
+              <span className="text-xs text-ink-disabled pr-2">min</span>
+              <div className="h-full w-px bg-line" />
               <input
                 id="duration-sec"
                 type="number"
@@ -248,15 +249,15 @@ export default function Manual() {
                 max={59}
                 value={data.duration.sec}
                 onChange={e => updateDuration("sec", parseInt(e.target.value) || 0)}
-                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-10 px-1 h-full text-sm outline-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
             </div>
           </div>
 
           {/* Elevation Gain */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="elevationGain" className="text-xs text-gray-600">Elev Gain</label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <label htmlFor="elevationGain" className="text-xs text-ink-secondary">Elev Gain</label>
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <input
                 id="elevationGain"
                 type="number"
@@ -264,14 +265,14 @@ export default function Manual() {
                 step="any"
                 value={data.elevationGain || ""}
                 onChange={e => updateField("elevationGain", parseFloat(e.target.value) || 0)}
-                className="w-20 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-20 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
-              <div className="h-full w-px bg-gray-200" />
+              <div className="h-full w-px bg-line" />
               <select
                 aria-label="Elevation gain unit"
                 value={metaData.elevUnitGain}
                 onChange={e => updateMetaData("elevUnitGain", e.target.value)}
-                className="h-full px-2 pr-1 text-sm bg-white outline-none cursor-pointer text-gray-700"
+                className="h-full px-2 pr-1 text-sm bg-surface outline-none cursor-pointer text-ink"
               >
                 <option value="meters">meters</option>
                 <option value="feet">feet</option>
@@ -281,8 +282,8 @@ export default function Manual() {
 
           {/* Elevation Loss */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="elevationLoss" className="text-xs text-gray-600">Elev Loss</label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <label htmlFor="elevationLoss" className="text-xs text-ink-secondary">Elev Loss</label>
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <input
                 id="elevationLoss"
                 type="number"
@@ -290,14 +291,14 @@ export default function Manual() {
                 step="any"
                 value={data.elevationLoss || ""}
                 onChange={e => updateField("elevationLoss", parseFloat(e.target.value) || 0)}
-                className="w-20 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-gray-900"
+                className="w-20 px-2 h-full text-sm outline-none text-right [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-ink"
               />
-              <div className="h-full w-px bg-gray-200" />
+              <div className="h-full w-px bg-line" />
               <select
                 aria-label="Elevation loss unit"
                 value={metaData.elevUnitLoss}
                 onChange={e => updateMetaData("elevUnitLoss", e.target.value)}
-                className="h-full px-2 pr-1 text-sm bg-white outline-none cursor-pointer text-gray-700"
+                className="h-full px-2 pr-1 text-sm bg-surface outline-none cursor-pointer text-ink"
               >
                 <option value="meters">meters</option>
                 <option value="feet">feet</option>
@@ -307,17 +308,17 @@ export default function Manual() {
         </div>
 
         {/* Row 2: Sport, Start Time, End Time */}
-        <div className="flex flex-wrap gap-8 py-6 border-b border-gray-200">
+        <div className="flex flex-wrap gap-8 py-6 border-b border-line">
 
           {/* Sport */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="sport" className="text-xs font-medium text-gray-700">Sport</label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <label htmlFor="sport" className="text-xs font-medium text-ink">Sport</label>
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <select
                 id="sport"
                 value={data.type}
                 onChange={e => updateField("type", e.target.value)}
-                className="h-full px-3 pr-8 text-sm bg-white outline-none cursor-pointer min-w-40 text-gray-900"
+                className="h-full px-3 pr-8 text-sm bg-surface outline-none cursor-pointer min-w-40 text-ink"
               >
                 {SPORTS.map(sport => (
                   <option key={sport} value={sport}>
@@ -330,28 +331,28 @@ export default function Manual() {
 
           {/* Start Time */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="startTime" className="text-xs font-medium text-gray-700">Start Time</label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <label htmlFor="startTime" className="text-xs font-medium text-ink">Start Time</label>
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <input
                 id="startTime"
                 type="datetime-local"
                 value={data.startTime}
                 onChange={e => updateField("startTime", e.target.value)}
-                className="h-full px-2 text-sm bg-white outline-none cursor-pointer text-gray-900"
+                className="h-full px-2 text-sm bg-surface outline-none cursor-pointer text-ink"
               />
             </div>
           </div>
 
           {/* End Time */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="endTime" className="text-xs text-gray-600">End Time</label>
-            <div className="flex items-center border border-gray-300 rounded bg-white overflow-hidden h-9">
+            <label htmlFor="endTime" className="text-xs text-ink-secondary">End Time</label>
+            <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
               <input
                 id="endTime"
                 type="datetime-local"
                 value={data.endTime}
                 onChange={e => updateField("endTime", e.target.value)}
-                className="h-full px-2 text-sm bg-white outline-none cursor-pointer text-gray-900"
+                className="h-full px-2 text-sm bg-surface outline-none cursor-pointer text-ink"
               />
             </div>
           </div>
@@ -359,8 +360,8 @@ export default function Manual() {
 
         {/* Title */}
         <div className="flex flex-col gap-1.5 py-6">
-          <label htmlFor="title" className="text-xs font-medium text-gray-700">
-            Title <span className="text-red-500">*</span>
+          <label htmlFor="title" className="text-xs font-medium text-ink">
+            Title <span className="text-danger-text">*</span>
           </label>
           <input
             id="title"
@@ -368,20 +369,20 @@ export default function Manual() {
             placeholder="e.g. Morning Run"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400"
+            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled"
           />
         </div>
 
         {/* Description */}
-        <div className="flex flex-col gap-1.5 pb-6 border-b border-gray-200">
-          <label htmlFor="description" className="text-xs text-gray-600">Description</label>
+        <div className="flex flex-col gap-1.5 pb-6 border-b border-line">
+          <label htmlFor="description" className="text-xs text-ink-secondary">Description</label>
           <textarea
             id="description"
             placeholder="How'd it go? Share more about your activity..."
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400 resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled resize-y"
           />
         </div>
 
@@ -392,8 +393,8 @@ export default function Manual() {
             disabled={!isFormValid || isSubmitting}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               isFormValid && !isSubmitting
-                ? "bg-brand text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
-                : "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed select-none opacity-80"
+                ? "bg-brand text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                : "bg-disabled text-ink-disabled border-line-strong cursor-not-allowed select-none opacity-80"
             }`}
           >
             {isSubmitting ? (
@@ -407,7 +408,7 @@ export default function Manual() {
           </button>
 
           {!isFormValid && (
-            <span className="text-xs text-gray-500 italic">
+            <span className="text-xs text-ink-muted italic">
               Please enter a title, distance, and duration to save.
             </span>
           )}

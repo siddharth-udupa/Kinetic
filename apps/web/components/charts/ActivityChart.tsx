@@ -2,6 +2,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { metersToDistance, metersToElevation, speedToMps, type DistanceUnit, type ElevationUnit, type SpeedUnit } from "@repo/units"
+import { useOnboardingTheme } from "@/components/onboarding/theme"
 
 type ActivityChartsClientProps = {
   distanceData: number[]
@@ -73,16 +74,19 @@ function ChartTooltip(
   if (!active || !payload?.length) return null
   const point = payload[0].payload as ChartPoint
   return (
-    <div className="bg-white border border-gray-200 shadow-md rounded px-3 py-2 text-xs text-gray-600 space-y-0.5">
-      <p>Dist: <span className="font-semibold text-gray-800">{point.distance}</span> {distLabel}</p>
-      <p>Elev: <span className="font-semibold text-gray-800">{point.altitude}</span> {elevLabel}</p>
-      <p>Grade: <span className="font-semibold text-gray-800">{point.grade}</span> %</p>
+    <div className="bg-surface border-line shadow-md rounded px-3 py-2 text-xs text-ink-secondary space-y-0.5">
+      <p>Dist: <span className="font-semibold text-ink">{point.distance}</span> {distLabel}</p>
+      <p>Elev: <span className="font-semibold text-ink">{point.altitude}</span> {elevLabel}</p>
+      <p>Grade: <span className="font-semibold text-ink">{point.grade}</span> %</p>
     </div>
   )
 }
 
 
 export default function ActivityChart({ distanceData, altitudeData, speedData, distanceUnit, elevationUnit, speedUnit }: ActivityChartsClientProps) {
+  // Recharts draws into SVG attributes rather than class names, so the axes and
+  // grid need resolved values instead of the `chart-*` utilities.
+  const { colors } = useOnboardingTheme()
 
   const data = buildChartData(
     distanceData,
@@ -104,11 +108,11 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
           <AreaChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 6 }}>
             <defs>
               <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#36a2eb" stopOpacity={0.35} />
-                <stop offset="95%" stopColor="#36a2eb" stopOpacity={0.02} />
+                <stop offset="5%" stopColor={colors.info} stopOpacity={0.35} />
+                <stop offset="95%" stopColor={colors.info} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.chartGrid} />
             <XAxis
               dataKey="distance"
               type="number"
@@ -119,16 +123,16 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
                 return Array.from({ length: count }, (_, i) => i + 1)
               })()}
               tickFormatter={(v: number) => `${v}`}
-              tick={{ fontSize: 11, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: colors.chartLabel }}
               tickLine={false}
-              axisLine={{ stroke: "#e5e7eb" }}
-              label={{ value: distLabel, position: "insideBottomRight", offset: -4, fontSize: 11, fill: "#9ca3af" }}
+              axisLine={{ stroke: colors.chartAxis }}
+              label={{ value: distLabel, position: "insideBottomRight", offset: -4, fontSize: 11, fill: colors.chartLabel }}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: colors.chartLabel }}
               tickLine={false}
               axisLine={false}
-              label={{ value: elevLabel, position: "insideTopLeft", offset: 10, fontSize: 11, fill: "#9ca3af" }}
+              label={{ value: elevLabel, position: "insideTopLeft", offset: 10, fontSize: 11, fill: colors.chartLabel }}
             />
             <Tooltip
               content={
@@ -141,33 +145,33 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
             <Area
               type="monotone"
               dataKey="altitude"
-              stroke="#36a2eb"
+              stroke={colors.info}
               strokeWidth={1.5}
               fill="url(#elevGrad)"
               dot={false}
-              activeDot={{ r: 3, strokeWidth: 1.5, fill: "#fff", stroke: "#36a2eb" }}
+              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.card, stroke: colors.info }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
       {/* ── Speed Chart ── */}
       {/* <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Speed</h3>
+        <h3 className="text-sm font-semibold text-ink mb-3">Speed</h3>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.chartGrid} />
             <XAxis
               dataKey="distance"
-              tick={{ fontSize: 11, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: colors.chartLabel }}
               tickLine={false}
-              axisLine={{ stroke: "#e5e7eb" }}
-              label={{ value: distLabel, position: "insideBottomRight", offset: -4, fontSize: 11, fill: "#9ca3af" }}
+              axisLine={{ stroke: colors.chartAxis }}
+              label={{ value: distLabel, position: "insideBottomRight", offset: -4, fontSize: 11, fill: colors.chartLabel }}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: colors.chartLabel }}
               tickLine={false}
               axisLine={false}
-              label={{ value: speedUnit, position: "insideTopLeft", offset: 10, fontSize: 11, fill: "#9ca3af" }}
+              label={{ value: speedUnit, position: "insideTopLeft", offset: 10, fontSize: 11, fill: colors.chartLabel }}
             />
             <Tooltip
               content={
@@ -180,10 +184,10 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
             <Line
               type="monotone"
               dataKey="speed"
-              stroke="#fc5200"
+              stroke={colors.chartLine}
               strokeWidth={1.5}
               dot={false}
-              activeDot={{ r: 3, strokeWidth: 1.5, fill: "#fff", stroke: "#fc5200" }}
+              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.card, stroke: colors.chartLine }}
             />
           </LineChart>
         </ResponsiveContainer>

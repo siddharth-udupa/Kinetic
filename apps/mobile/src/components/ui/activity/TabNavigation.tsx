@@ -20,8 +20,8 @@ export default function ActivityTabNavigation({
   onSelectTab,
 }: ActivityTabNavigationProps) {
   return (
-    <View className="mb-6 bg-[#0B1220] px-5">
-      <View className="flex-row bg-[#0F1929] border border-[#223149] rounded-2xl p-1">
+    <View className="mb-6 bg-activity-page px-5">
+      <View className="flex-row bg-activity-panel border border-activity-line rounded-2xl p-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key
 
@@ -30,7 +30,7 @@ export default function ActivityTabNavigation({
               key={tab.key}
               onPress={() => onSelectTab(tab.key)}
               className={`flex-1 items-center justify-center rounded-xl py-3 ${
-                isActive ? "bg-[#FC5200]" : "bg-transparent"
+                isActive ? "bg-accent" : "bg-transparent"
               }`}
               activeOpacity={0.8}
               accessibilityRole="tab"
@@ -38,7 +38,7 @@ export default function ActivityTabNavigation({
             >
               <Text
                 className={`text-[11px] font-bold tracking-wide text-center ${
-                  isActive ? "text-white" : "text-[#8A9AB2]"
+                  isActive ? "text-on-accent" : "text-activity-ink-muted"
                 }`}
               >
                 {tab.label}

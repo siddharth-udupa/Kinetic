@@ -6,6 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
+import { COLORS } from '@repo/shared'
 
 type MapClientProps = {
   encodedPolyline?: string
@@ -76,7 +77,7 @@ export default function MapClient({
           'line-join': 'round',
         },
         paint: {
-          'line-color': '#FC4C02',
+          'line-color': COLORS.light.accent,
           'line-width': 4,
           'line-opacity': 0.9,
         },

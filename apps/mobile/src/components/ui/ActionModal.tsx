@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type ModalButtonVariant =
   | "primary"
@@ -98,6 +99,8 @@ export function ActionModal({
   iconVariant = "default",
   className = "",
 }: ActionModalProps) {
+  const { colors } = useOnboardingTheme()
+
   // Resolve primary button configuration
   const resolvedPrimary: ModalButtonConfig | null = primaryButton
     ? primaryButton
@@ -131,21 +134,21 @@ export function ActionModal({
   const renderIcon = () => {
     if (!icon) return null
 
-    let bgClass = "bg-orange-500/10 dark:bg-orange-500/20"
-    let iconColor = "#FC5200"
+    let bgClass = "bg-accent-soft"
+    let iconColor = colors.accent
 
     if (iconVariant === "danger") {
-      bgClass = "bg-red-500/10 dark:bg-red-500/20"
-      iconColor = "#EF4444"
+      bgClass = "bg-danger-soft"
+      iconColor = colors.danger
     } else if (iconVariant === "warning") {
-      bgClass = "bg-amber-500/10 dark:bg-amber-500/20"
-      iconColor = "#F59E0B"
+      bgClass = "bg-warning-soft"
+      iconColor = colors.warning
     } else if (iconVariant === "success") {
-      bgClass = "bg-emerald-500/10 dark:bg-emerald-500/20"
-      iconColor = "#10B981"
+      bgClass = "bg-success-soft"
+      iconColor = colors.success
     } else if (iconVariant === "info") {
-      bgClass = "bg-blue-500/10 dark:bg-blue-500/20"
-      iconColor = "#3B82F6"
+      bgClass = "bg-info-soft"
+      iconColor = colors.info
     }
 
     return (
@@ -165,34 +168,34 @@ export function ActionModal({
     switch (variant) {
       case "destructive":
         return {
-          container: "bg-red-600 dark:bg-red-600 border border-transparent active:bg-red-700",
-          text: "text-white font-bold",
-          spinnerColor: "#FFFFFF",
+          container: "bg-danger border border-transparent active:bg-danger-hover",
+          text: "text-on-accent font-bold",
+          spinnerColor: colors.onAccent,
         }
       case "secondary":
         return {
-          container: "bg-slate-900 dark:bg-slate-100 border border-transparent active:bg-slate-800 dark:active:bg-white",
-          text: "text-white dark:text-slate-900 font-bold",
-          spinnerColor: "#FFFFFF",
+          container: "bg-ink border border-transparent active:bg-ink-secondary",
+          text: "text-ink-inverse font-bold",
+          spinnerColor: colors.textInverse,
         }
       case "outline":
         return {
-          container: "bg-gray-100 dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 active:bg-gray-200 dark:active:bg-slate-700",
-          text: "text-gray-900 dark:text-slate-100 font-semibold",
-          spinnerColor: "#6B7280",
+          container: "bg-surface-muted border border-line-strong active:bg-surface-muted-hover",
+          text: "text-ink font-semibold",
+          spinnerColor: colors.textMuted,
         }
       case "ghost":
         return {
-          container: "bg-transparent border border-transparent active:bg-gray-100 dark:active:bg-slate-800",
-          text: "text-gray-600 dark:text-slate-400 font-semibold",
-          spinnerColor: "#6B7280",
+          container: "bg-transparent border border-transparent active:bg-surface-muted",
+          text: "text-ink-secondary font-semibold",
+          spinnerColor: colors.textMuted,
         }
       case "primary":
       default:
         return {
-          container: "bg-[#FC5200] border border-transparent active:opacity-90 shadow-sm",
-          text: "text-white font-bold",
-          spinnerColor: "#FFFFFF",
+          container: "bg-accent border border-transparent active:opacity-90 shadow-sm",
+          text: "text-on-accent font-bold",
+          spinnerColor: colors.onAccent,
         }
     }
   }
@@ -244,21 +247,21 @@ export function ActionModal({
       onRequestClose={handleBackdropPress}
     >
       <TouchableWithoutFeedback onPress={handleBackdropPress}>
-        <View className="flex-1 justify-center items-center p-5 bg-black/60 dark:bg-slate-950/75">
+        <View className="flex-1 justify-center items-center p-5 bg-overlay">
           {/* Glassmorphic backdrop blur card */}
           <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
             <View
               style={styles.modalCard}
-              className={`bg-white/95 dark:bg-slate-900/95 rounded-3xl p-6 w-full max-w-sm border border-gray-100 dark:border-slate-800 shadow-2xl ${className}`}
+              className={`bg-surface/95 rounded-3xl p-6 w-full max-w-sm border border-line-muted shadow-2xl ${className}`}
             >
               {/* Close Icon in top-right */}
               {onClose && (
                 <TouchableOpacity
                   onPress={onClose}
-                  className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-gray-100 dark:bg-slate-800 active:opacity-75"
+                  className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-surface-muted active:opacity-75"
                   accessibilityLabel="Close modal"
                 >
-                  <Ionicons name="close" size={18} color="#9CA3AF" />
+                  <Ionicons name="close" size={18} color={colors.textDisabled} />
                 </TouchableOpacity>
               )}
 
@@ -266,14 +269,14 @@ export function ActionModal({
               {renderIcon()}
 
               {/* Title */}
-              <Text className="text-gray-900 dark:text-white text-xl font-bold text-center mb-2">
+              <Text className="text-ink text-xl font-bold text-center mb-2">
                 {title}
               </Text>
 
               {/* Description / Body text */}
               {description ? (
                 typeof description === "string" ? (
-                  <Text className="text-gray-600 dark:text-slate-300 text-sm font-normal text-center leading-5 mb-6">
+                  <Text className="text-ink-secondary text-sm font-normal text-center leading-5 mb-6">
                     {description}
                   </Text>
                 ) : (

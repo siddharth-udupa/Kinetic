@@ -1,6 +1,7 @@
 import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type ActivitySocialBarProps = {
   onKudosPress?: () => void
@@ -13,39 +14,41 @@ export default function ActivitySocialBar({
   onCommentPress,
   onSharePress,
 }: ActivitySocialBarProps) {
+  const { colors } = useOnboardingTheme()
+
   return (
     <View className="flex-row items-center px-5 mb-7">
       <TouchableOpacity
         onPress={onKudosPress}
-        className="flex-1 flex-row items-center justify-center bg-[#111C2D] border border-[#223149] rounded-2xl py-3 mr-1.5 active:bg-[#17263B]"
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mr-1.5 active:bg-line-muted"
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="Give kudos"
       >
-        <Ionicons name="thumbs-up-outline" size={17} color="#FF8A5C" />
-        <Text className="text-[#D5DDE8] text-[11px] font-bold ml-1.5">Kudos</Text>
+        <Ionicons name="thumbs-up-outline" size={17} color={colors.accentText} />
+        <Text className="text-activity-ink text-[11px] font-bold ml-1.5">Kudos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={onCommentPress}
-        className="flex-1 flex-row items-center justify-center bg-[#111C2D] border border-[#223149] rounded-2xl py-3 mx-0.75 active:bg-[#17263B]"
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mx-0.75 active:bg-line-muted"
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="View comments"
       >
-        <Ionicons name="chatbubble-outline" size={16} color="#A78BFA" />
-        <Text className="text-[#D5DDE8] text-[11px] font-bold ml-1.5">Comments</Text>
+        <Ionicons name="chatbubble-outline" size={16} color={colors.purpleText} />
+        <Text className="text-activity-ink text-[11px] font-bold ml-1.5">Comments</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={onSharePress}
-        className="flex-1 flex-row items-center justify-center bg-[#111C2D] border border-[#223149] rounded-2xl py-3 ml-1.5 active:bg-[#17263B]"
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 ml-1.5 active:bg-line-muted"
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="Share activity"
       >
-        <Feather name="share-2" size={16} color="#60A5FA" />
-        <Text className="text-[#D5DDE8] text-[11px] font-bold ml-1.5">Share</Text>
+        <Feather name="share-2" size={16} color={colors.info} />
+        <Text className="text-activity-ink text-[11px] font-bold ml-1.5">Share</Text>
       </TouchableOpacity>
     </View>
   )

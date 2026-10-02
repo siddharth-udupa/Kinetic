@@ -162,7 +162,7 @@ export default function ActivityCard({
 		router.push(`/activities/${activities.activityId}`);
 
 	return (
-		<article className="mx-auto my-5 w-[calc(100%-1.5rem)] max-w-2xl overflow-hidden rounded-3xl border border-slate-200/80 bg-white text-slate-900 shadow-[0_10px_35px_-18px_rgba(15,23,42,0.28)] transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50 sm:my-7 sm:w-[calc(100%-3rem)] dark:shadow-[0_16px_40px_-24px_rgba(0,0,0,0.8)]">
+		<article className="mx-auto my-5 w-[calc(100%-1.5rem)] max-w-2xl overflow-hidden rounded-3xl border border-line/80 bg-surface text-ink shadow-card transition-colors duration-200 sm:my-7 sm:w-[calc(100%-3rem)]">
 			<div className="p-4 sm:p-6">
 				<header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
 					<button
@@ -176,20 +176,20 @@ export default function ActivityCard({
 							height={48}
 							src="/temphoto.png"
 							alt={userName || "User Profile"}
-							className="size-12 rounded-full object-cover ring-2 ring-white transition-transform duration-200 hover:scale-105 dark:ring-slate-900 sm:size-13"
+							className="size-12 rounded-full object-cover ring-2 ring-surface transition-transform duration-200 hover:scale-105 sm:size-13"
 						/>
-						<span className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900" />
+						<span className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full border-2 border-surface bg-success" />
 					</button>
 
 					<div className="min-w-0">
 						<button
 							type="button"
 							onClick={clickHandler}
-							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-slate-900 transition-colors hover:text-brand focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:text-base dark:text-white dark:hover:text-orange-400"
+							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-ink transition-colors hover:text-brand dark:hover:text-accent-text focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:text-base"
 						>
 							{userName || "User"}
 						</button>
-						<div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+						<div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
 							<CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
 							<span className="truncate">
 								{formattedDate} · {formattedTime}
@@ -197,7 +197,7 @@ export default function ActivityCard({
 						</div>
 					</div>
 
-					<div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 ring-1 ring-inset ring-orange-100 dark:bg-orange-500/15 dark:ring-orange-500/20 sm:size-12">
+					<div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft ring-1 ring-inset ring-accent/20 sm:size-12">
 						<SportIcon
 							className="size-5 text-brand sm:size-5.5"
 							strokeWidth={2.25}
@@ -215,24 +215,24 @@ export default function ActivityCard({
 						onClick={clickHandler}
 						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
 					>
-						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-slate-950 transition-colors group-hover/title:text-brand sm:text-[26px] dark:text-white dark:group-hover/title:text-orange-400">
+						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-ink transition-colors group-hover/title:text-brand dark:group-hover/title:text-accent-text sm:text-[26px]">
 							{activities.title || "Untitled activity"}
 						</h2>
 					</button>
 					{activities.description ? (
-						<p className="mt-2.5 line-clamp-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
+						<p className="mt-2.5 line-clamp-4 text-sm leading-6 text-ink-secondary">
 							{activities.description}
 						</p>
 					) : null}
 				</div>
 
-				<div className="mt-5 grid grid-cols-3 divide-x divide-slate-200 rounded-2xl bg-slate-50 px-2 py-3.5 ring-1 ring-inset ring-slate-100 sm:mt-6 sm:px-3 sm:py-4 dark:divide-slate-700/80 dark:bg-slate-800/65 dark:ring-slate-700/70">
+				<div className="mt-5 grid grid-cols-3 divide-x divide-line-strong rounded-2xl bg-surface-muted-hover px-2 py-3.5 ring-1 ring-inset ring-line-muted sm:mt-6 sm:px-3 sm:py-4">
 					{stats.map(({ label, value, icon: StatIcon }) => (
 						<div
 							key={label}
 							className="min-w-0 px-1.5 first:pl-1 sm:px-3 sm:first:pl-3"
 						>
-							<div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+							<div className="flex items-center gap-1.5 text-ink-muted">
 								<StatIcon
 									className="hidden size-3.5 shrink-0 sm:block"
 									aria-hidden="true"
@@ -241,7 +241,7 @@ export default function ActivityCard({
 									{label}
 								</span>
 							</div>
-							<p className="mt-1 truncate text-base font-extrabold tabular-nums tracking-[-0.035em] text-slate-950 sm:text-xl dark:text-white">
+							<p className="mt-1 truncate text-base font-extrabold tabular-nums tracking-[-0.035em] text-ink sm:text-xl">
 								{value}
 							</p>
 						</div>
@@ -249,7 +249,7 @@ export default function ActivityCard({
 				</div>
 
 				{activities.location ? (
-					<div className="mt-3.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+					<div className="mt-3.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
 						<MapPin className="size-3.5 shrink-0" aria-hidden="true" />
 						<span className="truncate">{activities.location}</span>
 					</div>
@@ -260,13 +260,13 @@ export default function ActivityCard({
 				<Link
 					ref={mapContainerRef}
 					href={`/activities/${activities.activityId}`}
-					className="relative mx-3 block h-64 w-[calc(100%-1.5rem)] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:mx-6 sm:h-80 sm:w-[calc(100%-3rem)] dark:border-slate-800 dark:bg-slate-800"
+					className="relative mx-3 block h-64 w-[calc(100%-1.5rem)] overflow-hidden rounded-2xl border border-line bg-surface-muted sm:mx-6 sm:h-80 sm:w-[calc(100%-3rem)]"
 					aria-label="Open activity map"
 				>
 					{isVisible ? (
 						<Suspense
 							fallback={
-								<div className="h-full w-full animate-pulse bg-slate-100 dark:bg-slate-800" />
+								<div className="h-full w-full animate-pulse bg-surface-muted" />
 							}
 						>
 							<ActivityMap
@@ -276,19 +276,19 @@ export default function ActivityCard({
 							/>
 						</Suspense>
 					) : (
-						<div className="h-full w-full bg-slate-100 dark:bg-slate-800" />
+						<div className="h-full w-full bg-surface-muted" />
 					)}
 				</Link>
 			) : null}
 
-			<footer className="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3.5 sm:mt-5 sm:px-6 sm:py-4 dark:border-slate-800">
-				<p className="hidden min-w-0 truncate text-xs font-medium text-slate-500 sm:block dark:text-slate-400">
+			<footer className="mt-4 flex items-center justify-between gap-3 border-t border-line-muted px-4 py-3.5 sm:mt-5 sm:px-6 sm:py-4">
+				<p className="hidden min-w-0 truncate text-xs font-medium text-ink-muted sm:block">
 					Enjoyed this activity?
 				</p>
 				<div className="ml-auto flex items-center gap-2">
 					<button
 						type="button"
-						className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold text-slate-700 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
+						className="flex h-10 items-center gap-2 rounded-xl border border-line-strong bg-surface-muted-hover px-3.5 text-sm font-semibold text-ink transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-brand dark:hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"
 						aria-label="Give kudos"
 					>
 						<ThumbsUp className="size-4.5" aria-hidden="true" />
@@ -296,7 +296,7 @@ export default function ActivityCard({
 					</button>
 					<button
 						type="button"
-						className="flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-all hover:border-orange-200 hover:bg-orange-50 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-400"
+						className="flex size-10 items-center justify-center rounded-xl border border-line-strong bg-surface-muted-hover text-ink-secondary transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-brand dark:hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"
 						aria-label="View comments"
 					>
 						<MessageSquare className="size-4.5" aria-hidden="true" />

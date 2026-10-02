@@ -28,7 +28,7 @@ export default async function Dashboard() {
       <div className="flex justify-end">
         <Link
           href={"/upload"}
-          className="m-4 px-6 py-4 bg-brand text-white text-xl rounded-xl"
+          className="m-4 px-6 py-4 bg-brand text-on-accent text-xl rounded-xl"
         >Upload Activitiy</Link>
       </div>
       {initialActivities ? <ActivityFeed initialActivities={initialActivities} userPreferences={userPreferences} userId={userId} userName={userName} /> : <div>Something went wrong. Try again later</div>}

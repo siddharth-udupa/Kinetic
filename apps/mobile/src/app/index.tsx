@@ -2,15 +2,17 @@ import { Redirect } from "expo-router"
 import { View, ActivityIndicator } from "react-native"
 import { useSession } from "@/lib/auth-client"
 import { usePreferences } from "@/lib/preferencesStore"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export default function Index() {
   const { data: session, isPending } = useSession()
   const { status, preferences } = usePreferences()
+  const { colors } = useOnboardingTheme()
 
   if (isPending) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#FC4C02" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }
@@ -24,7 +26,7 @@ export default function Index() {
   if (status !== "ready") {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#FC4C02" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }

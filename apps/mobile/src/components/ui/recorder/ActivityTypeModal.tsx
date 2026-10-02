@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity, Modal } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { ActivityTypes } from "@repo/types"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type ActivityTypeModalProps = {
   visible: boolean
@@ -16,6 +17,8 @@ export default function ActivityTypeModal({
   onSelectActivity,
   onClose,
 }: ActivityTypeModalProps) {
+  const { colors } = useOnboardingTheme()
+
   const options: Array<{ type: ActivityTypes; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
     { type: "run", label: "Run", icon: "footsteps" },
     { type: "ride", label: "Ride", icon: "bicycle" },
@@ -29,9 +32,9 @@ export default function ActivityTypeModal({
       transparent={true}
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black/50 justify-center items-center p-6">
-        <View className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-sm border border-gray-200 dark:border-slate-800 shadow-2xl">
-          <Text className="text-gray-900 dark:text-white text-lg font-bold mb-4">
+      <View className="flex-1 bg-overlay justify-center items-center p-6">
+        <View className="bg-surface rounded-3xl p-6 w-full max-w-sm border border-line shadow-2xl">
+          <Text className="text-ink text-lg font-bold mb-4">
             Select Activity Type
           </Text>
 
@@ -46,16 +49,16 @@ export default function ActivityTypeModal({
                 }}
                 className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${
                   isSelected
-                    ? "bg-orange-50 dark:bg-[#FC5200]/15 border-[#FC5200]"
-                    : "bg-gray-50 dark:bg-slate-800/60 border-gray-200 dark:border-slate-800"
+                    ? "bg-accent-soft border-accent"
+                    : "bg-surface-muted-hover border-line"
                 }`}
               >
-                <Ionicons name={opt.icon} size={24} color="#FC5200" />
-                <Text className="font-bold text-gray-900 dark:text-white text-base ml-3 flex-1">
+                <Ionicons name={opt.icon} size={24} color={colors.accent} />
+                <Text className="font-bold text-ink text-base ml-3 flex-1">
                   {opt.label}
                 </Text>
                 {isSelected && (
-                  <Ionicons name="checkmark-circle" size={22} color="#FC5200" />
+                  <Ionicons name="checkmark-circle" size={22} color={colors.accent} />
                 )}
               </TouchableOpacity>
             )
@@ -63,9 +66,9 @@ export default function ActivityTypeModal({
 
           <TouchableOpacity
             onPress={onClose}
-            className="mt-3 py-3 rounded-xl bg-gray-100 dark:bg-slate-800 items-center"
+            className="mt-3 py-3 rounded-xl bg-surface-muted items-center"
           >
-            <Text className="font-semibold text-gray-600 dark:text-slate-400">Cancel</Text>
+            <Text className="font-semibold text-ink-secondary">Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>

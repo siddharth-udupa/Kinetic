@@ -1,6 +1,7 @@
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import { ActivityTypes } from "@repo/types"
 
 export type ActivityAthleteHeaderProps = {
@@ -39,6 +40,7 @@ export default function ActivityAthleteHeader({
   endTime,
   onAddDescription,
 }: ActivityAthleteHeaderProps) {
+  const { colors } = useOnboardingTheme()
   const formattedDate = new Date(createdAt).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
@@ -67,33 +69,33 @@ export default function ActivityAthleteHeader({
     <View className="mb-5">
       <View className="flex-row items-center justify-between mb-5">
         <View className="flex-row items-center flex-1 mr-3">
-          <View className="w-12 h-12 rounded-2xl bg-[#1B2A40] border border-[#FC5200]/50 items-center justify-center overflow-hidden">
+          <View className="w-12 h-12 rounded-2xl bg-activity-card border border-accent/50 items-center justify-center overflow-hidden">
             <Image source={{ uri: avatarUrl }} className="w-full h-full" />
           </View>
           <View className="flex-1 justify-center ml-3">
-            <Text className="text-white font-black text-base leading-tight mb-1">{userName}</Text>
-            <Text className="text-[#8A9AB2] text-xs leading-none">{formattedDate}</Text>
+            <Text className="text-activity-ink font-black text-base leading-tight mb-1">{userName}</Text>
+            <Text className="text-activity-ink-muted text-xs leading-none">{formattedDate}</Text>
           </View>
         </View>
 
-        <View className="bg-[#FC5200]/15 border border-[#FC5200]/30 px-3 py-2 rounded-xl flex-row items-center">
-          <MaterialCommunityIcons name={getIconName(activityType)} size={15} color="#FC5200" />
-          <Text className="text-[#FF8A5C] font-black text-[10px] uppercase tracking-[1px] ml-1.5 leading-none">
+        <View className="bg-accent-soft border border-accent/30 px-3 py-2 rounded-xl flex-row items-center">
+          <MaterialCommunityIcons name={getIconName(activityType)} size={15} color={colors.accent} />
+          <Text className="text-accent-text font-black text-[10px] uppercase tracking-[1px] ml-1.5 leading-none">
             {activityType}
           </Text>
         </View>
       </View>
 
-      <View className="h-px bg-[#223149] mb-5" />
+      <View className="h-px bg-activity-line mb-5" />
 
-      <Text className="text-white text-[30px] font-black tracking-[-0.5px] leading-[1.1] mb-2">
+      <Text className="text-activity-ink text-[30px] font-black tracking-[-0.5px] leading-[1.1] mb-2">
         {title || "Untitled activity"}
       </Text>
       {description ? (
-        <Text className="text-[#A5B1C2] text-sm mb-4 leading-6">{description}</Text>
+        <Text className="text-activity-ink-secondary text-sm mb-4 leading-6">{description}</Text>
       ) : (
         <TouchableOpacity onPress={onAddDescription} className="mb-4 self-start active:opacity-70">
-          <Text className="text-[#8A9AB2] text-xs italic bg-[#111C2D] border border-[#223149] px-3 py-2 rounded-lg leading-tight">
+          <Text className="text-activity-ink-muted text-xs italic bg-activity-card border border-activity-line px-3 py-2 rounded-lg leading-tight">
             + Add a description
           </Text>
         </TouchableOpacity>
@@ -101,17 +103,17 @@ export default function ActivityAthleteHeader({
 
       <View className="flex-row items-center flex-wrap">
         {location ? (
-          <View className="flex-row items-center bg-[#111C2D] border border-[#223149] rounded-full px-3 py-2 mr-2 mb-2">
-            <MaterialCommunityIcons name="map-marker-outline" size={14} color="#60A5FA" />
-            <Text className="text-[#B8C3D3] text-xs font-semibold ml-1.5" numberOfLines={1}>
+          <View className="flex-row items-center bg-activity-card border border-activity-line rounded-full px-3 py-2 mr-2 mb-2">
+            <MaterialCommunityIcons name="map-marker-outline" size={14} color={colors.info} />
+            <Text className="text-activity-ink-secondary text-xs font-semibold ml-1.5" numberOfLines={1}>
               {location}
             </Text>
           </View>
         ) : null}
         {startLabel ? (
-          <View className="flex-row items-center bg-[#111C2D] border border-[#223149] rounded-full px-3 py-2 mr-2 mb-2">
-            <MaterialCommunityIcons name="clock-outline" size={14} color="#A78BFA" />
-            <Text className="text-[#B8C3D3] text-xs font-semibold ml-1.5">
+          <View className="flex-row items-center bg-activity-card border border-activity-line rounded-full px-3 py-2 mr-2 mb-2">
+            <MaterialCommunityIcons name="clock-outline" size={14} color={colors.purpleText} />
+            <Text className="text-activity-ink-secondary text-xs font-semibold ml-1.5">
               {startLabel}{endLabel ? ` – ${endLabel}` : ""}
             </Text>
           </View>

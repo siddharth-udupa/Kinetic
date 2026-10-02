@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { View, Text, TouchableOpacity, Modal, ScrollView, StyleProp, ViewStyle } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { tileProviders, DEFAULT_TILE_PROVIDER, type TileProviderId } from "@repo/maps"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type TileProviderPickerProps = {
   currentProviderId: TileProviderId
@@ -15,6 +16,7 @@ export default function TileProviderPicker({
   triggerStyle,
 }: TileProviderPickerProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const { colors } = useOnboardingTheme()
   const activeProvider = tileProviders[currentProviderId] || tileProviders[DEFAULT_TILE_PROVIDER]
 
   return (
@@ -23,13 +25,13 @@ export default function TileProviderPicker({
       <TouchableOpacity
         onPress={() => setIsPickerOpen(true)}
         style={triggerStyle}
-        className="absolute top-3 right-3 z-10 bg-white/90 dark:bg-slate-900/90 border border-gray-200 dark:border-slate-700/80 px-3 py-1.5 rounded-full shadow-md flex-row items-center active:opacity-80"
+        className="absolute top-3 right-3 z-10 bg-surface/90 border border-line-strong px-3 py-1.5 rounded-full shadow-md flex-row items-center active:opacity-80"
       >
-        <Ionicons name="layers" size={16} color="#FC5200" />
-        <Text className="text-gray-800 dark:text-slate-200 text-xs font-semibold ml-1.5" numberOfLines={1}>
+        <Ionicons name="layers" size={16} color={colors.accent} />
+        <Text className="text-ink text-xs font-semibold ml-1.5" numberOfLines={1}>
           {activeProvider.name.split(" ")[0]}
         </Text>
-        <Ionicons name="chevron-down" size={12} color="#6B7280" style={{ marginLeft: 4 }} />
+        <Ionicons name="chevron-down" size={12} color={colors.textMuted} style={{ marginLeft: 4 }} />
       </TouchableOpacity>
 
       {/* Tile Provider Picker Sheet Modal */}
@@ -39,18 +41,18 @@ export default function TileProviderPicker({
         transparent={true}
         onRequestClose={() => setIsPickerOpen(false)}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 rounded-t-3xl p-5 max-h-[70%] shadow-2xl">
-            <View className="flex-row items-center justify-between mb-4 border-b border-gray-200 dark:border-slate-800 pb-3">
+        <View className="flex-1 bg-overlay justify-end">
+          <View className="bg-surface border-t border-line rounded-t-3xl p-5 max-h-[70%] shadow-2xl">
+            <View className="flex-row items-center justify-between mb-4 border-b border-line pb-3">
               <View className="flex-row items-center">
-                <Ionicons name="layers" size={20} color="#FC5200" />
-                <Text className="text-gray-900 dark:text-white font-bold text-lg ml-2">Choose Map Style</Text>
+                <Ionicons name="layers" size={20} color={colors.accent} />
+                <Text className="text-ink font-bold text-lg ml-2">Choose Map Style</Text>
               </View>
               <TouchableOpacity
                 onPress={() => setIsPickerOpen(false)}
-                className="bg-gray-100 dark:bg-slate-800 p-1.5 rounded-full"
+                className="bg-surface-muted p-1.5 rounded-full"
               >
-                <Ionicons name="close" size={20} color="#6B7280" />
+                <Ionicons name="close" size={20} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
 
@@ -67,24 +69,24 @@ export default function TileProviderPicker({
                     }}
                     className={`p-3.5 rounded-xl border flex-row items-center justify-between my-1 ${
                       isSelected
-                        ? "bg-orange-50 dark:bg-[#FC5200]/15 border-[#FC5200]"
-                        : "bg-gray-50 dark:bg-slate-800/60 border-gray-200 dark:border-slate-800"
+                        ? "bg-accent-soft border-accent"
+                        : "bg-surface-muted-hover border-line"
                     }`}
                   >
                     <View className="flex-1 mr-2">
                       <Text
                         className={`font-semibold text-sm ${
-                          isSelected ? "text-[#FC5200]" : "text-gray-900 dark:text-white"
+                          isSelected ? "text-accent" : "text-ink"
                         }`}
                       >
                         {provider.name}
                       </Text>
-                      <Text className="text-gray-500 dark:text-slate-400 text-xs mt-0.5" numberOfLines={1}>
+                      <Text className="text-ink-muted text-xs mt-0.5" numberOfLines={1}>
                         {provider.id} ({provider.type})
                       </Text>
                     </View>
                     {isSelected && (
-                      <Ionicons name="checkmark-circle" size={22} color="#FC5200" />
+                      <Ionicons name="checkmark-circle" size={22} color={colors.accent} />
                     )}
                   </TouchableOpacity>
                 )

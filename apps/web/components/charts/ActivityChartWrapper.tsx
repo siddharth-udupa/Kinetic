@@ -5,7 +5,7 @@ import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
 const ActivityChartsClient = dynamic(() => import("./ActivityChart"), {
   ssr: false,
-  loading: () => <div className="h-115 w-full bg-gray-100 animate-pulse rounded" />,
+  loading: () => <div className="h-115 w-full bg-surface-muted animate-pulse rounded" />,
 })
 
 type ActivityChartsProps = {

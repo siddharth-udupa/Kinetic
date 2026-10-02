@@ -2,34 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Semantic aliases, all `@apply`ing the shared tokens from
+ * `packages/shared/src/colors.ts`. The palette lives in TypeScript; this file
+ * only names the roles, so `bg-card-main` follows the resolved scheme on its own.
+ */
 @layer utilities {
   /* Theme background utility classes */
   .bg-app {
-    @apply bg-gray-100 dark:bg-slate-950;
+    @apply bg-page;
   }
   .bg-card-main {
-    @apply bg-white dark:bg-slate-900;
+    @apply bg-surface;
   }
   .bg-card-subtle {
-    @apply bg-gray-50 dark:bg-slate-900/80;
+    @apply bg-surface-muted-hover;
   }
   .bg-pill {
-    @apply bg-gray-100 dark:bg-slate-800;
+    @apply bg-surface-muted;
   }
 
   /* Theme border utility classes */
   .border-app {
-    @apply border-gray-200 dark:border-slate-800;
+    @apply border-line;
   }
   .border-app-subtle {
-    @apply border-gray-100 dark:border-slate-800/60;
+    @apply border-line-muted;
   }
 
   /* Theme text utility classes */
   .text-primary-app {
-    @apply text-gray-900 dark:text-white;
+    @apply text-ink;
   }
   .text-secondary-app {
-    @apply text-gray-500 dark:text-slate-400;
+    @apply text-ink-muted;
   }
 }

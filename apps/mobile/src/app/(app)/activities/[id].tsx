@@ -15,6 +15,7 @@ import { metersToDistance, metersToElevation, formatDurationShort, formatPace } 
 import type { ActivityDetailsType } from "@repo/types"
 import { authClient, useSession } from "@/lib/auth-client"
 import { removeActivityFromCache } from "@/hooks/useActivities"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import {
   ActivityNotFound,
   ActivityHeaderOverlay,
@@ -43,6 +44,7 @@ export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const { isDark, colors } = useOnboardingTheme()
 
   const [data, setdata] = useState<ActivityDetailsType | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -201,9 +203,9 @@ export default function ActivityDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white dark:bg-slate-950 items-center justify-center">
-        <StatusBar barStyle="dark-content" />
-        <ActivityIndicator size="large" color="#FC5200" />
+      <View className="flex-1 bg-page items-center justify-center">
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }
@@ -224,8 +226,8 @@ export default function ActivityDetailScreen() {
   const averageSpeed = data.duration > 0 ? data.distance / data.duration : null
 
   return (
-    <View className="flex-1 bg-gray-100 dark:bg-slate-950">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+    <View className="flex-1 bg-page">
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor="transparent" translucent />
 
       {/* MAP LAYER (Interactive & Fixed Background Map) */}
       <View className="flex-1">
@@ -270,17 +272,17 @@ export default function ActivityDetailScreen() {
           },
           animatedSheetStyle,
         ]}
-        className="bg-[#0B1220] border-t border-[#26354C] rounded-t-[32px] shadow-2xl z-30 overflow-hidden"
+        className="bg-activity-page border-t border-activity-line rounded-t-[32px] shadow-2xl z-30 overflow-hidden"
       >
         {/* Drag Handle & Top Athlete Header Region */}
         <GestureDetector gesture={handlePanGesture}>
-          <View className="w-full bg-[#0B1220]">
+          <View className="w-full bg-activity-page">
             <View
               className="w-full items-center py-3.5 active:opacity-70"
               hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
               style={{ cursor: "grab" as any }}
             >
-              <View className="w-12 h-1.5 rounded-full bg-[#43536B]" />
+              <View className="w-12 h-1.5 rounded-full bg-activity-handle" />
             </View>
 
             <View className="px-5 pb-2">
@@ -306,14 +308,14 @@ export default function ActivityDetailScreen() {
           overScrollMode="never"
           stickyHeaderHiddenOnScroll={false}
           stickyHeaderIndices={[1]}
-          style={{ flex: 1, backgroundColor: "#0B1220" }}
+          style={{ flex: 1, backgroundColor: colors.activityPage }}
           contentContainerStyle={{
             paddingBottom: Math.max(insets.bottom + 80, 100),
           }}
         >
           <ActivitySocialBar />
 
-          <View style={{ zIndex: 10, backgroundColor: "#0B1220" }}>
+          <View style={{ zIndex: 10, backgroundColor: colors.activityPage }}>
             <ActivityTabNavigation activeTab={activeTab} onSelectTab={setActiveTab} />
           </View>
 

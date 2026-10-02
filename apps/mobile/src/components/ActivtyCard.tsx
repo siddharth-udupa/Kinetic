@@ -162,7 +162,7 @@ export default function ActivityCard({
 	};
 
 	return (
-		<View className="w-full max-w-[680px] self-center mx-2.5 sm:mx-4 my-2 rounded-3xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 md:p-6 shadow-[0_8px_20px_-14px_rgba(15,23,42,0.45)] dark:shadow-[0_10px_24px_-18px_rgba(0,0,0,0.9)]">
+		<View className="w-full max-w-[680px] self-center mx-2.5 sm:mx-4 my-2 rounded-3xl border border-line bg-surface p-4 sm:p-5 md:p-6 shadow-card">
 			<TouchableOpacity
 				onPress={handlePressCard}
 				activeOpacity={0.75}
@@ -175,15 +175,15 @@ export default function ActivityCard({
 						source={user.image}
 						contentFit="cover"
 						transition={150}
-						className="size-12 rounded-full bg-gray-200 dark:bg-slate-800"
+						className="size-12 rounded-full bg-line"
 						accessibilityLabel={`${user?.name || "User"} profile photo`}
 					/>
 				) : (
-					<View className="size-12 rounded-full items-center justify-center bg-gray-200 dark:bg-slate-800">
+					<View className="size-12 rounded-full items-center justify-center bg-line">
 						<Ionicons
 							name="person-outline"
 							size={24}
-							className="text-slate-500 dark:text-slate-400"
+							className="text-ink-muted"
 						/>
 					</View>
 				)}
@@ -191,7 +191,7 @@ export default function ActivityCard({
 				<View className="flex-1 min-w-0 ml-3">
 					<Text
 						numberOfLines={1}
-						className="text-base font-bold leading-[21px] text-slate-900 dark:text-white"
+						className="text-base font-bold leading-[21px] text-ink"
 					>
 						{user?.name || "User"}
 					</Text>
@@ -199,18 +199,18 @@ export default function ActivityCard({
 						<Ionicons
 							name="calendar-outline"
 							size={13}
-							className="text-slate-500 dark:text-slate-400"
+							className="text-ink-muted"
 						/>
 						<Text
 							numberOfLines={1}
-							className="shrink text-xs leading-4 font-medium text-slate-500 dark:text-slate-400 ml-1.5"
+							className="shrink text-xs leading-4 font-medium text-ink-muted ml-1.5"
 						>
 							{formattedDate} · {formattedTime}
 						</Text>
 					</View>
 				</View>
 
-				<View className="size-11 ml-3 rounded-2xl items-center justify-center bg-orange-50 dark:bg-brand/20">
+				<View className="size-11 ml-3 rounded-2xl items-center justify-center bg-accent-soft dark:bg-brand/20">
 					{getSportIcon(activity.type)}
 				</View>
 			</TouchableOpacity>
@@ -225,32 +225,30 @@ export default function ActivityCard({
 				<Text className="text-[11px] leading-[15px] font-extrabold tracking-[1.1px] uppercase text-brand mb-1.5">
 					{getSportLabel(activity.type)}
 				</Text>
-				<Text className="text-[23px] md:text-[26px] font-extrabold leading-[30px] tracking-[-0.5px] text-slate-900 dark:text-white">
+				<Text className="text-[23px] md:text-[26px] font-extrabold leading-[30px] tracking-[-0.5px] text-ink">
 					{activity.title || "Untitled activity"}
 				</Text>
 				{activity.description ? (
 					<Text
 						numberOfLines={4}
-						className="mt-2 text-sm leading-[21px] text-slate-600 dark:text-slate-300"
+						className="mt-2 text-sm leading-[21px] text-ink-secondary"
 					>
 						{activity.description}
 					</Text>
 				) : null}
 			</TouchableOpacity>
 
-			<View className="w-full flex-row mt-5 md:mt-6 py-3.5 px-1.5 rounded-[17px] bg-slate-50 dark:bg-slate-800/70">
+			<View className="w-full flex-row mt-5 md:mt-6 py-3.5 px-1.5 rounded-[17px] bg-surface-muted-hover">
 				{stats.map((stat, index) => (
 					<View
 						key={stat.label}
 						className={`flex-1 min-w-0 px-2 ${
-							index > 0
-								? "border-l border-slate-200 dark:border-slate-700/80"
-								: ""
+							index > 0 ? "border-l border-line-strong" : ""
 						}`}
 					>
 						<Text
 							numberOfLines={1}
-							className="mb-1 text-[10px] leading-[14px] font-bold tracking-[0.5px] uppercase text-slate-500 dark:text-slate-400"
+							className="mb-1 text-[10px] leading-[14px] font-bold tracking-[0.5px] uppercase text-ink-muted"
 						>
 							{stat.label}
 						</Text>
@@ -258,7 +256,7 @@ export default function ActivityCard({
 							numberOfLines={1}
 							adjustsFontSizeToFit
 							minimumFontScale={0.72}
-							className="text-[21px] md:text-[23px] font-extrabold leading-7 tracking-[-0.4px] text-slate-900 dark:text-white"
+							className="text-[21px] md:text-[23px] font-extrabold leading-7 tracking-[-0.4px] text-ink"
 						>
 							{stat.value}
 						</Text>
@@ -271,11 +269,11 @@ export default function ActivityCard({
 					<Ionicons
 						name="location-outline"
 						size={15}
-						className="text-slate-500 dark:text-slate-400"
+						className="text-ink-muted"
 					/>
 					<Text
 						numberOfLines={1}
-						className="flex-1 text-xs leading-4 font-medium text-slate-500 dark:text-slate-400 ml-1.5"
+						className="flex-1 text-xs leading-4 font-medium text-ink-muted ml-1.5"
 					>
 						{activity.location}
 					</Text>
@@ -288,7 +286,7 @@ export default function ActivityCard({
 					activeOpacity={0.92}
 					accessibilityRole="button"
 					accessibilityLabel="Open activity map"
-					className="w-full h-72 mt-4 rounded-[18px] overflow-hidden border border-gray-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800"
+					className="w-full h-72 mt-4 rounded-[18px] overflow-hidden border border-line bg-surface-muted"
 				>
 					<ActivityMap
 						encodedPolyline={activity.encodedPolyline}
@@ -298,8 +296,8 @@ export default function ActivityCard({
 				</TouchableOpacity>
 			) : null}
 
-			<View className="w-full flex-row items-center justify-between mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800">
-				<Text className="flex-1 text-xs leading-4 font-medium text-slate-500 dark:text-slate-400 mr-3">
+			<View className="w-full flex-row items-center justify-between mt-4 pt-3.5 border-t border-line-muted">
+				<Text className="flex-1 text-xs leading-4 font-medium text-ink-muted mr-3">
 					Enjoyed this activity?
 				</Text>
 				<View className="flex-row items-center gap-2">
@@ -307,24 +305,24 @@ export default function ActivityCard({
 						activeOpacity={0.7}
 						accessibilityRole="button"
 						accessibilityLabel="Give kudos"
-						className="size-10 items-center justify-center rounded-[13px] border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70"
+						className="size-10 items-center justify-center rounded-[13px] border border-line-strong bg-surface-muted-hover"
 					>
 						<Ionicons
 							name="thumbs-up-outline"
 							size={18}
-							className="text-slate-600 dark:text-slate-300"
+							className="text-ink-secondary"
 						/>
 					</TouchableOpacity>
 					<TouchableOpacity
 						activeOpacity={0.7}
 						accessibilityRole="button"
 						accessibilityLabel="View comments"
-						className="size-10 items-center justify-center rounded-[13px] border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70"
+						className="size-10 items-center justify-center rounded-[13px] border border-line-strong bg-surface-muted-hover"
 					>
 						<Ionicons
 							name="chatbubble-outline"
 							size={18}
-							className="text-slate-600 dark:text-slate-300"
+							className="text-ink-secondary"
 						/>
 					</TouchableOpacity>
 				</View>

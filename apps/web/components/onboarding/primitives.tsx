@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { COLORS, getColors } from "@repo/shared"
 import { ICONS, type IconName } from "./icons"
 import { useOnboardingTheme } from "./theme"
 import type { OnboardingPrefs } from "./prefs"
@@ -560,20 +561,17 @@ export function ReviewSection({ title, children }: { title: string; children: Re
   )
 }
 
-const PREVIEW_PALETTE = {
-  light: { bg: "#FFFFFF", line: "#E5E7EB", strong: "#D1D5DB" },
-  dark: { bg: "#0F172A", line: "#1E293B", strong: "#334155" },
-} as const
-
 /** Hoisted: declared inside the renderer, it would remount on every render. */
 function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
-  const p = PREVIEW_PALETTE[tone]
+  // Deliberately the palette for `tone` rather than the live one — showing the
+  // theme the athlete has not picked yet is the whole point of the thumbnail.
+  const p = getColors(tone)
 
   return (
-    <div className="h-full flex-1 px-1.5 py-2" style={{ backgroundColor: p.bg }}>
-      <div className="mb-1 h-1 w-4 rounded-full" style={{ backgroundColor: p.strong }} />
-      <div className="mb-1 h-1 w-6 rounded-full" style={{ backgroundColor: p.line }} />
-      <div className="h-1 w-5 rounded-full" style={{ backgroundColor: "#FC4C02" }} />
+    <div className="h-full flex-1 px-1.5 py-2" style={{ backgroundColor: p.card }}>
+      <div className="mb-1 h-1 w-4 rounded-full" style={{ backgroundColor: p.borderStrong }} />
+      <div className="mb-1 h-1 w-6 rounded-full" style={{ backgroundColor: p.border }} />
+      <div className="h-1 w-5 rounded-full" style={{ backgroundColor: p.accent }} />
     </div>
   )
 }
@@ -588,13 +586,13 @@ export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }
   return (
     <div
       className="h-16 w-full overflow-hidden rounded-xl border"
-      style={{ borderColor: PREVIEW_PALETTE[dominant].strong }}
+      style={{ borderColor: getColors(dominant).borderStrong }}
     >
       <div className="flex h-full flex-1">
         {scheme === "system" ? (
           <>
             <PreviewHalf tone="light" />
-            <div className="w-px" style={{ backgroundColor: "#9CA3AF" }} />
+            <div className="w-px" style={{ backgroundColor: COLORS.light.textDisabled }} />
             <PreviewHalf tone="dark" />
           </>
         ) : (

@@ -25,7 +25,15 @@
   --color-raised: var(--ob-raised);
   --color-raised-hover: var(--ob-raised-hover);
   --color-raised-pressed: var(--ob-raised-pressed);
+  --color-raised-border: var(--ob-raised-border);
   --color-disabled: var(--ob-control-disabled);
+
+  /* Activity detail */
+  --color-activity-page: var(--ob-activity-page);
+  --color-activity-panel: var(--ob-activity-panel);
+  --color-activity-card: var(--ob-activity-card);
+  --color-activity-line: var(--ob-activity-border);
+  --color-activity-handle: var(--ob-activity-handle);
 
   /* Borders */
   --color-line: var(--ob-border);
@@ -38,6 +46,9 @@
   --color-ink-muted: var(--ob-text-muted);
   --color-ink-disabled: var(--ob-text-disabled);
   --color-ink-inverse: var(--ob-text-inverse);
+  --color-activity-ink: var(--ob-activity-text);
+  --color-activity-ink-secondary: var(--ob-activity-text-secondary);
+  --color-activity-ink-muted: var(--ob-activity-text-muted);
 
   /*
    * The brand orange for the surfaces that predate the shared tokens. Kept as a
@@ -75,12 +86,21 @@
   --color-info-pressed: var(--ob-info-pressed);
   --color-info-text: var(--ob-info-text);
   --color-info-soft: var(--ob-info-soft);
+  --color-purple-text: var(--ob-purple-text);
+  --color-purple-soft: var(--ob-purple-soft);
 
   /* Interaction */
   --color-track-hover: var(--ob-track-hover);
   --color-track-pressed: var(--ob-track-pressed);
   --color-focus-ring: var(--ob-focus-ring);
   --color-overlay: var(--ob-overlay);
+
+  /*
+   * Elevation. Not a colour utility — `shadow-card` resolves to the whole
+   * `box-shadow` value from the shared palette, so the geometry and its alpha
+   * stay in one place instead of being retyped per app.
+   */
+  --shadow-card: var(--ob-card-shadow);
 
   /* Charts */
   --color-chart-line: var(--ob-chart-line);

@@ -139,20 +139,20 @@ export default function GPXUploadPage() {
 
   return (
     <div className="w-full max-w-4xl">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">GPX File Upload</h1>
+      <h1 className="text-4xl font-bold text-ink mb-6">GPX File Upload</h1>
 
       {feedback && (
         <div
           className={`mb-6 p-4 rounded-lg flex items-start gap-3 border text-sm font-medium ${
             feedback.type === "success"
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
+              ? "bg-success-soft text-success-text border-success-text"
+              : "bg-danger-soft text-danger-text border-danger-text"
           }`}
         >
           {feedback.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
           )}
           <span>{feedback.message}</span>
         </div>
@@ -161,25 +161,25 @@ export default function GPXUploadPage() {
       <form onSubmit={handleUpload} className="space-y-0">
         
         {/* GPX File Drop / Input Box */}
-        <div className="pb-6 border-b border-gray-200">
-          <label className="text-xs font-medium text-gray-700 mb-2 block">
-            GPX File <span className="text-red-500">*</span>
+        <div className="pb-6 border-b border-line">
+          <label className="text-xs font-medium text-ink mb-2 block">
+            GPX File <span className="text-danger-text">*</span>
           </label>
           
-          <div className="border-2 border-dashed border-gray-300 hover:border-brand rounded-xl p-8 bg-gray-50/50 hover:bg-orange-50/30 transition-colors flex flex-col items-center justify-center text-center">
+          <div className="border-2 border-dashed border-line-strong hover:border-brand rounded-xl p-8 bg-surface-muted-hover hover:bg-accent-soft transition-colors flex flex-col items-center justify-center text-center">
             <UploadCloud className="w-10 h-10 text-brand mb-3" />
             
             {file ? (
-              <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-xs">
+              <div className="flex items-center gap-3 bg-surface px-4 py-2 rounded-lg border border-line shadow-xs">
                 <FileUp className="w-5 h-5 text-brand" />
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-900">{file.name}</p>
-                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                  <p className="text-sm font-semibold text-ink">{file.name}</p>
+                  <p className="text-xs text-ink-muted">{formatFileSize(file.size)}</p>
                 </div>
                 <button
                   type="button"
                   onClick={removeFile}
-                  className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 ml-2"
+                  className="p-1 hover:bg-surface-muted rounded-full text-ink-disabled hover:text-ink-secondary ml-2"
                   title="Remove file"
                 >
                   <X className="w-4 h-4" />
@@ -187,15 +187,15 @@ export default function GPXUploadPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm font-semibold text-gray-800 mb-1">
+                <p className="text-sm font-semibold text-ink mb-1">
                   Choose a .gpx file to upload
                 </p>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-ink-muted mb-4">
                   GPS exchange format files exported from Garmin, Wahoo, Apple Watch, or Suunto
                 </p>
                 <label
                   htmlFor="gpx-upload"
-                  className="px-4 py-2 bg-white border border-gray-300 hover:border-brand text-gray-700 text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-brand transition-colors"
+                  className="px-4 py-2 bg-surface border border-line-strong hover:border-brand text-ink text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-brand transition-colors"
                 >
                   Browse Files
                 </label>
@@ -213,8 +213,8 @@ export default function GPXUploadPage() {
 
         {/* Title */}
         <div className="flex flex-col gap-1.5 py-6">
-          <label htmlFor="title" className="text-xs text-gray-600">
-            Title <span className="text-gray-400 font-normal">(optional - defaults to file name)</span>
+          <label htmlFor="title" className="text-xs text-ink-secondary">
+            Title <span className="text-ink-disabled font-normal">(optional - defaults to file name)</span>
           </label>
           <input
             id="title"
@@ -222,20 +222,20 @@ export default function GPXUploadPage() {
             placeholder="Morning Ride"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400"
+            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled"
           />
         </div>
 
         {/* Description */}
-        <div className="flex flex-col gap-1.5 pb-6 border-b border-gray-200">
-          <label htmlFor="description" className="text-xs text-gray-600">Description</label>
+        <div className="flex flex-col gap-1.5 pb-6 border-b border-line">
+          <label htmlFor="description" className="text-xs text-ink-secondary">Description</label>
           <textarea
             id="description"
             placeholder="How'd it go? Share details about your activity..."
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-gray-300 rounded bg-white outline-none focus:border-brand text-gray-900 placeholder:text-gray-400 resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled resize-y"
           />
         </div>
 
@@ -246,8 +246,8 @@ export default function GPXUploadPage() {
             disabled={!file || isUploading}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               file && !isUploading
-                ? "bg-brand text-white hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
-                : "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed select-none opacity-80"
+                ? "bg-brand text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                : "bg-disabled text-ink-disabled border-line-strong cursor-not-allowed select-none opacity-80"
             }`}
           >
             {isUploading ? (
@@ -261,7 +261,7 @@ export default function GPXUploadPage() {
           </button>
 
           {!file && (
-            <span className="text-xs text-gray-500 italic">
+            <span className="text-xs text-ink-muted italic">
               Please select a .gpx file to upload.
             </span>
           )}

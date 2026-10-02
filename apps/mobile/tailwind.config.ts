@@ -91,22 +91,18 @@ function themeColor(token: keyof typeof COLORS.light) {
 }
 
 /**
- * Only the surface tokens are exposed as themed class names.
+ * Every token the app uses is exposed as a themed class name.
  *
- * A themed name is one class that resolves correctly in both schemes. That is
- * not free: each entry costs a `light:`/`dark:` pair in a component, and the
- * existing mobile code is already written against raw Tailwind palette classes
- * (`bg-gray-100 dark:bg-slate-950`) with no tokens to migrate from. So this stays
- * deliberately narrow — the surfaces and text tiers most new UI needs — rather
- * than expanding to all 60+ tokens and inviting a half-finished sweep.
+ * A themed name is one class that resolves correctly in both schemes, so a
+ * component writes `bg-surface` once instead of a `light:`/`dark:` pair and the
+ * palette stays the only place a colour is defined.
  *
- * Anything not listed here is still available, as a literal from the shared
+ * Anything not listed here is still available as a literal from the shared
  * palette: `useOnboardingTheme().colors.accent` returns the resolved value for
  * the active scheme, which is the right tool for native components (icons,
  * Skia, Reanimated) that need a concrete colour rather than a class.
  *
- * `brand` stays flat and unthemed for the surfaces that predate the shared
- * tokens, matching what `globals.css` does on the web.
+ * `brand` stays flat and unthemed, matching what `globals.css` does on the web.
  */
 const COLORS_THEMED = {
   // ── Surfaces ──────────────────────────────────────────────────────────
@@ -118,7 +114,15 @@ const COLORS_THEMED = {
   "surface-pressed": "cardPressed",
   raised: "raised",
   "raised-hover": "raisedHover",
+  "raised-pressed": "raisedPressed",
   disabled: "controlDisabled",
+
+  // ── Activity detail ───────────────────────────────────────────────────
+  "activity-page": "activityPage",
+  "activity-panel": "activityPanel",
+  "activity-card": "activityCard",
+  "activity-line": "activityBorder",
+  "activity-handle": "activityHandle",
 
   // ── Borders ───────────────────────────────────────────────────────────
   line: "border",
@@ -131,30 +135,47 @@ const COLORS_THEMED = {
   "ink-muted": "textMuted",
   "ink-disabled": "textDisabled",
   "ink-inverse": "textInverse",
+  "activity-ink": "activityText",
+  "activity-ink-secondary": "activityTextSecondary",
+  "activity-ink-muted": "activityTextMuted",
 
   // ── Brand accent ──────────────────────────────────────────────────────
   accent: "accent",
+  "accent-hover": "accentHover",
+  "accent-pressed": "accentPressed",
   "accent-text": "accentText",
   "accent-soft": "accentSoft",
   "on-accent": "onAccent",
 
   // ── Status ────────────────────────────────────────────────────────────
   danger: "danger",
+  "danger-hover": "dangerHover",
+  "danger-pressed": "dangerPressed",
   "danger-text": "dangerText",
   "danger-soft": "dangerSoft",
   success: "success",
+  "success-hover": "successHover",
+  "success-pressed": "successPressed",
   "success-text": "successText",
   "success-soft": "successSoft",
   warning: "warning",
+  "warning-hover": "warningHover",
+  "warning-pressed": "warningPressed",
   "warning-text": "warningText",
   "warning-soft": "warningSoft",
   info: "info",
+  "info-hover": "infoHover",
+  "info-pressed": "infoPressed",
   "info-text": "infoText",
   "info-soft": "infoSoft",
+  "purple-text": "purpleText",
+  "purple-soft": "purpleSoft",
 
   // ── Interaction ───────────────────────────────────────────────────────
   overlay: "overlay",
   "focus-ring": "focusRing",
+  "track-hover": "trackHover",
+  "track-pressed": "trackPressed",
 
   // ── Charts ────────────────────────────────────────────────────────────
   "chart-line": "chartLine",
@@ -162,6 +183,7 @@ const COLORS_THEMED = {
   "chart-grid": "chartGrid",
   "chart-axis": "chartAxis",
   "chart-label": "chartLabel",
+  "chart-crosshair": "chartCrosshair",
 } as const satisfies Record<string, keyof typeof COLORS.light>
 
 /** @type {import('tailwindcss').Config} */
@@ -176,6 +198,10 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      // `cardShadow` holds a whole `box-shadow` value, so it becomes a shadow
+      // utility rather than a colour. The custom property it points at already
+      // carries the light and dark variants, so `shadow-card` needs no `dark:`.
+      boxShadow: { card: "var(--color-card-shadow)" },
       colors: {
         brand: BRAND_COLOR,
 

@@ -1,6 +1,7 @@
 import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type FloatingMapControlsProps = {
   is3dMode: boolean
@@ -17,15 +18,17 @@ export default function FloatingMapControls({
   onRecenterLocation,
   onOpenInfo,
 }: FloatingMapControlsProps) {
+  const { colors } = useOnboardingTheme()
+
   return (
     <View className="px-4 mb-3 flex-row justify-between items-end">
       {/* Left: Map Info Icon */}
       <TouchableOpacity
         onPress={onOpenInfo}
-        className="w-10 h-10 rounded-full bg-white/90 dark:bg-slate-900/90 border border-gray-200 dark:border-slate-800 justify-center items-center shadow-md active:scale-95"
+        className="w-10 h-10 rounded-full bg-surface/90 border border-line justify-center items-center shadow-md active:scale-95"
         accessibilityLabel="Map info"
       >
-        <Ionicons name="information-outline" size={20} color="#374151" />
+        <Ionicons name="information-outline" size={20} color={colors.textSecondary} />
       </TouchableOpacity>
 
       {/* Right: Stack of 3 Floating Action Buttons */}
@@ -33,10 +36,10 @@ export default function FloatingMapControls({
         {/* Layer Toggle Button */}
         <TouchableOpacity
           onPress={onOpenLayerPicker}
-          className="w-11 h-11 rounded-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 justify-center items-center shadow-lg active:scale-95"
+          className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
           accessibilityLabel="Choose map style"
         >
-          <Ionicons name="layers-outline" size={20} color="#111827" />
+          <Ionicons name="layers-outline" size={20} color={colors.text} />
         </TouchableOpacity>
 
         {/* 3D Mode Toggle Button */}
@@ -44,14 +47,14 @@ export default function FloatingMapControls({
           onPress={onToggle3dMode}
           className={`w-11 h-11 rounded-full border justify-center items-center shadow-lg active:scale-95 ${
             is3dMode
-              ? "bg-[#FC5200] border-[#FC5200]"
-              : "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800"
+              ? "bg-accent border-accent"
+              : "bg-surface border-line"
           }`}
           accessibilityLabel="Toggle 3D mode"
         >
           <Text
             className={`font-black text-xs ${
-              is3dMode ? "text-white" : "text-gray-900 dark:text-white"
+              is3dMode ? "text-on-accent" : "text-ink"
             }`}
           >
             3D
@@ -61,10 +64,10 @@ export default function FloatingMapControls({
         {/* Recenter Button */}
         <TouchableOpacity
           onPress={onRecenterLocation}
-          className="w-11 h-11 rounded-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 justify-center items-center shadow-lg active:scale-95"
+          className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
           accessibilityLabel="Recenter location"
         >
-          <Ionicons name="locate-outline" size={20} color="#111827" />
+          <Ionicons name="locate-outline" size={20} color={colors.text} />
         </TouchableOpacity>
       </View>
     </View>

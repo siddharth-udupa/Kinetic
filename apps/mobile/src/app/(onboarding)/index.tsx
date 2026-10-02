@@ -161,7 +161,7 @@ export default function OnboardingScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View
-        className="flex-1 bg-gray-50 dark:bg-slate-950"
+        className="flex-1 bg-page"
         style={{ paddingTop: Math.max(insets.top, 12) }}
       >
         {/* ── Progress + skip ── */}

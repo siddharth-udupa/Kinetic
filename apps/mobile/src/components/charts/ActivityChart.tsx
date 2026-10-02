@@ -18,6 +18,8 @@ import type {
   ElevationUnit,
   SpeedUnit,
 } from "@repo/units"
+import type { ColorTokens } from "@repo/shared"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import { buildChartData } from "./chartMath"
 
 export { buildChartData } from "./chartMath"
@@ -28,17 +30,24 @@ export type { ChartPoint } from "./chartMath"
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
 
 // ── Theme ─────────────────────────────────────────────────────────────────────
-// Accent line, soft fill, hairline grids tuned for small mobile screens.
-const CHART = {
-  line: "#FC5200",
-  fill: "#FC5200",
-  fillOpacity: 0.16,
-  grid: "rgba(148, 163, 184, 0.16)",
-  frame: "rgba(148, 163, 184, 0.35)",
-  label: "#94a3b8",
-  crosshair: "#64748b",
-  hint: "Touch and drag on the chart",
-} as const
+// Accent line, soft fill, hairline grids tuned for small mobile screens. Skia and
+// Victory take literal colours rather than classes, so these are read off the
+// shared palette per render instead of hardcoded here.
+const CHART_HINT = "Touch and drag on the chart"
+
+function chartPalette(colors: ColorTokens) {
+  return {
+    line: colors.chartLine,
+    fill: colors.chartFill,
+    fillOpacity: 1,
+    grid: colors.chartGrid,
+    frame: colors.chartAxis,
+    label: colors.chartLabel,
+    crosshair: colors.chartCrosshair,
+    surface: colors.card,
+    hint: CHART_HINT,
+  }
+}
 
 export type ActivityChartsClientProps = {
   distanceData: number[]
@@ -58,6 +67,9 @@ export default function ActivityChart({
   speedUnit,
 }: ActivityChartsClientProps) {
   // ── Hooks first, unconditionally — early returns come after. ──
+  const { colors } = useOnboardingTheme()
+  const CHART = useMemo(() => chartPalette(colors), [colors])
+
   const data = useMemo(
     () =>
       buildChartData(
@@ -143,14 +155,14 @@ export default function ActivityChart({
   return (
     <View className="my-4 w-full">
       {/* Readout card — values update on the UI thread, zero React re-renders */}
-      <View className="flex-row items-stretch rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950/60">
+      <View className="flex-row items-stretch rounded-xl border border-line bg-surface-muted-hover px-3 py-2">
         <Stat label="DIST" animatedProps={distProps} flex />
         <Divider />
         <Stat label="ELEV" animatedProps={elevProps} flex />
         <Divider />
         <Stat label="GRADE" animatedProps={gradeProps} accent />
       </View>
-      <Text className="px-1 pb-1 pt-1.5 text-[11px] italic text-gray-400 dark:text-slate-500">
+      <Text className="px-1 pb-1 pt-1.5 text-[11px] italic text-ink-disabled">
         {CHART.hint}
       </Text>
 
@@ -212,6 +224,7 @@ export default function ActivityChart({
                 y={state.y.altitude.position}
                 bottom={chartBounds.bottom}
                 isActive={state.isActive}
+                chart={CHART}
               />
             </>
           )}
@@ -235,7 +248,7 @@ function Stat({
 }) {
   return (
     <View className={flex ? "flex-1 items-center" : "items-center px-1"}>
-      <Text className="text-[10px] font-semibold tracking-widest text-gray-400 dark:text-slate-500">
+      <Text className="text-[10px] font-semibold tracking-widest text-ink-disabled">
         {label}
       </Text>
       <AnimatedTextInput
@@ -245,8 +258,8 @@ function Stat({
         selectTextOnFocus={false}
         defaultValue="-"
         className={`mt-0.5 p-0 text-[13px] font-bold tabular-nums ${accent
-          ? "text-[#FC5200]"
-          : "text-gray-900 dark:text-slate-100"
+          ? "text-accent"
+          : "text-ink"
           }`}
       />
     </View>
@@ -254,7 +267,7 @@ function Stat({
 }
 
 function Divider() {
-  return <View className="mx-2 w-px self-stretch bg-gray-200 dark:bg-slate-800" />
+  return <View className="mx-2 w-px self-stretch bg-line" />
 }
 
 // ── ToolTip ───────────────────────────────────────────────────────────────────
@@ -265,9 +278,10 @@ type ToolTipProps = {
   y: SharedValue<number>
   bottom: number
   isActive: SharedValue<boolean>
+  chart: ReturnType<typeof chartPalette>
 }
 
-function ToolTip({ x, y, bottom, isActive }: ToolTipProps) {
+function ToolTip({ x, y, bottom, isActive, chart }: ToolTipProps) {
   const opacity = useDerivedValue(() => {
     "worklet"
     return isActive.value ? 1 : 0
@@ -288,9 +302,9 @@ function ToolTip({ x, y, bottom, isActive }: ToolTipProps) {
 
   return (
     <Group opacity={opacity}>
-      <SkiaLine p1={p1} p2={p2} color={CHART.crosshair} strokeWidth={1} opacity={0.6} />
-      <Circle cx={x} cy={y} r={7} color="white" opacity={0.95} />
-      <Circle cx={x} cy={y} r={4.5} color={CHART.line} />
+      <SkiaLine p1={p1} p2={p2} color={chart.crosshair} strokeWidth={1} opacity={0.6} />
+      <Circle cx={x} cy={y} r={7} color={chart.surface} opacity={0.95} />
+      <Circle cx={x} cy={y} r={4.5} color={chart.line} />
     </Group>
   )
 }

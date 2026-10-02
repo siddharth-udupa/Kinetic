@@ -21,6 +21,7 @@ import {
 import MapView from "@/components/map/Map"
 import ActionModal from "@/components/ui/ActionModal"
 import { useActivityRecorder } from "@/hooks/useActivityRecorder"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import {
   getActiveSession,
   computeElapsedSeconds,
@@ -61,6 +62,7 @@ export default function SaveActivityScreen() {
   const [session, setSession] = useState<ActiveSession | null>(null)
   const [loadingSession, setLoadingSession] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const { colors, isDark } = useOnboardingTheme()
 
   const [sportType, setSportType] = useState<ActivityTypes>("run")
   const [title, setTitle] = useState("")
@@ -136,24 +138,24 @@ export default function SaveActivityScreen() {
 
   if (loadingSession) {
     return (
-      <View className="flex-1 bg-white dark:bg-slate-950 justify-center items-center">
-        <ActivityIndicator size="large" color="#FC5200" />
-        <Text className="text-gray-400 text-xs font-semibold mt-3">Loading recorded data...</Text>
+      <View className="flex-1 bg-surface justify-center items-center">
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text className="text-ink-disabled text-xs font-semibold mt-3">Loading recorded data...</Text>
       </View>
     )
   }
 
   return (
-    <View className="flex-1 bg-gray-100 dark:bg-slate-950">
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <View className="flex-1 bg-page">
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.card} />
 
       {/* White Clean Navigation Bar without buttons */}
       <View
         style={{ paddingTop: Math.max(insets.top, 35) }}
-        className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 pb-3 justify-center items-center"
+        className="bg-surface border-b border-line px-4 pb-3 justify-center items-center"
       >
-        <Text className="text-gray-900 dark:text-white font-bold text-lg">Save Activity</Text>
-        <Text className="text-gray-500 dark:text-slate-400 text-[11px] font-medium">Review & publish</Text>
+        <Text className="text-ink font-bold text-lg">Save Activity</Text>
+        <Text className="text-ink-muted text-[11px] font-medium">Review & publish</Text>
       </View>
 
       <ScrollView
@@ -164,17 +166,17 @@ export default function SaveActivityScreen() {
       >
         <View className="pt-3">
           {/* 1. TITLE BOX */}
-          <View className="bg-white dark:bg-slate-900 rounded-2xl mx-4 mb-3 p-4 border border-gray-100 dark:border-slate-800 shadow-sm">
-            <Text className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2">
-              Title <Text className="text-[#FC5200]">*</Text>
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+            <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
+              Title <Text className="text-accent">*</Text>
             </Text>
-            <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 h-11 flex-row items-center">
+            <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-row items-center">
               <TextInput
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Name your activity..."
-                placeholderTextColor="#9CA3AF"
-                className="flex-1 text-base text-gray-900 dark:text-white font-medium"
+                placeholderTextColor={colors.textDisabled}
+                className="flex-1 text-base text-ink font-medium"
                 style={{ paddingVertical: 0 }}
                 maxLength={100}
               />
@@ -182,17 +184,17 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 2. DESCRIPTION */}
-          <View className="bg-white dark:bg-slate-900 rounded-2xl mx-4 mb-3 p-4 border border-gray-100 dark:border-slate-800 shadow-sm">
-            <Text className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+            <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Description
             </Text>
-            <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5">
+            <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 py-2.5">
               <TextInput
                 value={description}
                 onChangeText={setDescription}
                 placeholder="How'd it go? Share details about your workout..."
-                placeholderTextColor="#9CA3AF"
-                className="text-sm text-gray-900 dark:text-white"
+                placeholderTextColor={colors.textDisabled}
+                className="text-sm text-ink"
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -201,15 +203,15 @@ export default function SaveActivityScreen() {
               />
             </View>
             {description.length > 800 && (
-              <Text className="text-right text-[10px] text-gray-400 mt-1">
+              <Text className="text-right text-[10px] text-ink-disabled mt-1">
                 {description.length}/1000
               </Text>
             )}
           </View>
 
           {/* 3. TYPE (SPORT TYPE SELECTOR) */}
-          <View className="bg-white dark:bg-slate-900 rounded-2xl mx-4 mb-3 p-4 border border-gray-100 dark:border-slate-800 shadow-sm">
-            <Text className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+            <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Sport Type
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -222,18 +224,18 @@ export default function SaveActivityScreen() {
                     activeOpacity={0.75}
                     className={`flex-row items-center gap-1.5 px-3.5 py-2.5 rounded-xl border ${
                       isActive
-                        ? "bg-[#FC5200] border-[#FC5200]"
-                        : "bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+                        ? "bg-accent border-accent"
+                        : "bg-surface-muted-hover border-line-strong"
                     }`}
                   >
                     <Ionicons
                       name={sport.icon}
                       size={16}
-                      color={isActive ? "#FFFFFF" : "#9CA3AF"}
+                      color={isActive ? colors.onAccent : colors.textDisabled}
                     />
                     <Text
                       className={`text-xs font-semibold ${
-                        isActive ? "text-white" : "text-gray-700 dark:text-slate-300"
+                        isActive ? "text-on-accent" : "text-ink"
                       }`}
                     >
                       {sport.label}
@@ -245,46 +247,46 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 4. OVERVIEW */}
-          <View className="bg-white dark:bg-slate-900 rounded-2xl mx-4 mb-3 p-4 border border-gray-100 dark:border-slate-800 shadow-sm">
-            <Text className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+            <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-3">
               Overview
             </Text>
 
             <View className="flex-row items-center justify-around py-1">
-              <View className="items-center flex-1 border-r border-gray-100 dark:border-slate-800">
-                <Text className="text-2xl font-black text-gray-900 dark:text-white">
+              <View className="items-center flex-1 border-r border-line-muted">
+                <Text className="text-2xl font-black text-ink">
                   {formattedDistance}
                 </Text>
-                <Text className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 mt-0.5">
+                <Text className="text-[11px] font-semibold text-ink-disabled mt-0.5">
                   Distance (km)
                 </Text>
               </View>
 
-              <View className="items-center flex-1 border-r border-gray-100 dark:border-slate-800">
-                <Text className="text-2xl font-black text-gray-900 dark:text-white">
+              <View className="items-center flex-1 border-r border-line-muted">
+                <Text className="text-2xl font-black text-ink">
                   {formattedTime}
                 </Text>
-                <Text className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 mt-0.5">
+                <Text className="text-[11px] font-semibold text-ink-disabled mt-0.5">
                   Time
                 </Text>
               </View>
 
               <View className="items-center flex-1">
-                <Text className="text-2xl font-black text-gray-900 dark:text-white">
+                <Text className="text-2xl font-black text-ink">
                   {formattedPace}
                 </Text>
-                <Text className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 mt-0.5">
+                <Text className="text-[11px] font-semibold text-ink-disabled mt-0.5">
                   Avg Pace
                 </Text>
               </View>
             </View>
 
             {maxSpeedMps > 0 && (
-              <View className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 flex-row justify-between items-center px-2">
-                <Text className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+              <View className="mt-3 pt-3 border-t border-line-muted flex-row justify-between items-center px-2">
+                <Text className="text-xs text-ink-muted font-medium">
                   Max Speed
                 </Text>
-                <Text className="text-xs font-bold text-gray-900 dark:text-white">
+                <Text className="text-xs font-bold text-ink">
                   {formattedMaxSpeed} km/h
                 </Text>
               </View>
@@ -292,11 +294,11 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 5. MAP */}
-          <View className="mx-4 mb-3 rounded-2xl overflow-hidden bg-slate-900 border border-gray-200 dark:border-slate-800 shadow-sm h-48 relative">
+          <View className="mx-4 mb-3 rounded-2xl overflow-hidden bg-ink border border-line shadow-sm h-48 relative">
             <MapView isStatic={true} livePoints={points} />
-            <View className="absolute bottom-2 left-2 bg-slate-900/80 px-2.5 py-1 rounded-md border border-slate-700/50 flex-row items-center">
-              <Ionicons name="location-sharp" size={12} color="#FC5200" />
-              <Text className="text-white text-[11px] font-bold ml-1">
+            <View className="absolute bottom-2 left-2 bg-ink/80 px-2.5 py-1 rounded-md border border-line-strong/50 flex-row items-center">
+              <Ionicons name="location-sharp" size={12} color={colors.accent} />
+              <Text className="text-ink-inverse text-[11px] font-bold ml-1">
                 {points.length} GPS Points Recorded
               </Text>
             </View>
@@ -307,10 +309,10 @@ export default function SaveActivityScreen() {
             <TouchableOpacity
               onPress={() => setIsDiscardModalVisible(true)}
               activeOpacity={0.8}
-              className="w-full py-3.5 px-4 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 items-center justify-center flex-row gap-2 active:bg-red-100 dark:active:bg-red-500/20"
+              className="w-full py-3.5 px-4 rounded-2xl bg-danger-soft border border-danger/30 items-center justify-center flex-row gap-2 active:opacity-80"
             >
-              <Ionicons name="trash-outline" size={18} color="#EF4444" />
-              <Text className="text-red-600 dark:text-red-400 font-bold text-sm">
+              <Ionicons name="trash-outline" size={18} color={colors.danger} />
+              <Text className="text-danger-text font-bold text-sm">
                 Discard Activity
               </Text>
             </TouchableOpacity>
@@ -321,7 +323,7 @@ export default function SaveActivityScreen() {
       {/* 7. SAVE ACTIVITY BUTTON — elevated higher to avoid overlapping device menu/nav bar */}
       <View
         style={{ paddingBottom: Math.max(insets.bottom + 16, 28) }}
-        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 px-4 pt-3 shadow-xl"
+        className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3 shadow-xl"
       >
         <TouchableOpacity
           onPress={handleSave}
@@ -330,7 +332,7 @@ export default function SaveActivityScreen() {
           style={
             title.trim() && !isSaving
               ? {
-                  shadowColor: "#FC5200",
+                  shadowColor: colors.accent,
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -340,25 +342,25 @@ export default function SaveActivityScreen() {
           }
           className={`h-12 rounded-2xl items-center justify-center flex-row gap-2 ${
             title.trim() && !isSaving
-              ? "bg-[#FC5200]"
-              : "bg-gray-200 dark:bg-slate-800 opacity-60"
+              ? "bg-accent"
+              : "bg-disabled opacity-60"
           }`}
         >
           {isSaving ? (
             <>
-              <ActivityIndicator size="small" color="#FFFFFF" />
-              <Text className="text-white font-bold text-sm">Saving Activity...</Text>
+              <ActivityIndicator size="small" color={colors.onAccent} />
+              <Text className="text-on-accent font-bold text-sm">Saving Activity...</Text>
             </>
           ) : (
             <>
               <Ionicons
                 name="checkmark-circle"
                 size={20}
-                color={title.trim() ? "#FFFFFF" : "#9CA3AF"}
+                color={title.trim() ? colors.onAccent : colors.textDisabled}
               />
               <Text
                 className={`font-bold text-sm ${
-                  title.trim() ? "text-white" : "text-gray-400 dark:text-slate-500"
+                  title.trim() ? "text-on-accent" : "text-ink-disabled"
                 }`}
               >
                 Save Activity

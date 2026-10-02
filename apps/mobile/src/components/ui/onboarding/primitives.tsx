@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { COLORS, getColors } from "@repo/shared"
 import { useOnboardingTheme } from "./theme"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
@@ -525,19 +526,16 @@ export function ReviewSection({
   )
 }
 
-const PREVIEW_PALETTE = {
-  light: { bg: "#FFFFFF", line: "#E5E7EB", strong: "#D1D5DB" },
-  dark: { bg: "#0F172A", line: "#1E293B", strong: "#334155" },
-} as const
-
 /** Hoisted: declared inside the renderer, it would remount on every render. */
 function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
-  const p = PREVIEW_PALETTE[tone]
+  // Deliberately the palette for `tone` rather than the live one — showing the
+  // theme the athlete has not picked yet is the whole point of the thumbnail.
+  const p = getColors(tone)
   return (
-    <View className="flex-1 h-full px-1.5 py-2" style={{ backgroundColor: p.bg }}>
-      <View className="h-1 w-4 rounded-full mb-1" style={{ backgroundColor: p.strong }} />
-      <View className="h-1 w-6 rounded-full mb-1" style={{ backgroundColor: p.line }} />
-      <View className="h-1 w-5 rounded-full" style={{ backgroundColor: "#FC4C02" }} />
+    <View className="flex-1 h-full px-1.5 py-2" style={{ backgroundColor: p.card }}>
+      <View className="h-1 w-4 rounded-full mb-1" style={{ backgroundColor: p.borderStrong }} />
+      <View className="h-1 w-6 rounded-full mb-1" style={{ backgroundColor: p.border }} />
+      <View className="h-1 w-5 rounded-full" style={{ backgroundColor: p.accent }} />
     </View>
   )
 }
@@ -552,13 +550,13 @@ export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }
   return (
     <View
       className="h-16 w-full rounded-xl overflow-hidden border"
-      style={{ borderColor: PREVIEW_PALETTE[dominant].strong }}
+      style={{ borderColor: getColors(dominant).borderStrong }}
     >
       <View className="flex-1 flex-row">
         {scheme === "system" ? (
           <>
             <PreviewHalf tone="light" />
-            <View className="w-px" style={{ backgroundColor: "#9CA3AF" }} />
+            <View className="w-px" style={{ backgroundColor: COLORS.light.textDisabled }} />
             <PreviewHalf tone="dark" />
           </>
         ) : (

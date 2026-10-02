@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import type { LocationStatus } from "@/hooks/useActivityRecorder"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 export type GpsHeaderBannerProps = {
   status: "idle" | "recording" | "paused" | "finished"
@@ -18,56 +19,60 @@ export default function GpsHeaderBanner({
   onToggleExpand,
   onRequestPermissions,
 }: GpsHeaderBannerProps) {
-  let bannerBg = "bg-[#EAF5EA] dark:bg-emerald-950/90"
-  let borderBg = "border-emerald-200 dark:border-emerald-900"
-  let textColor = "text-[#2E7D32] dark:text-emerald-400"
+  const { colors } = useOnboardingTheme()
+
+  // Each branch picks a whole variant, so the plate, its edge, its label and the
+  // glyph stay on the same status hue instead of being themed individually.
+  let bannerBg = "bg-success-soft"
+  let borderBg = "border-success-text"
+  let textColor = "text-success-text"
   let iconName: keyof typeof Ionicons.glyphMap = "cellular"
-  let iconColor = "#2E7D32"
+  let iconColor = colors.success
   let statusText = "GPS Acquired"
 
   if (locationStatus === "disabled") {
-    bannerBg = "bg-red-100 dark:bg-red-950/90"
-    borderBg = "border-red-200 dark:border-red-900"
-    textColor = "text-red-700 dark:text-red-400"
+    bannerBg = "bg-danger-soft"
+    borderBg = "border-danger-text"
+    textColor = "text-danger-text"
     iconName = "warning-outline"
-    iconColor = "#DC2626"
+    iconColor = colors.danger
     statusText = "Location Service Turned Off"
   } else if (locationStatus === "denied") {
-    bannerBg = "bg-red-100 dark:bg-red-950/90"
-    borderBg = "border-red-200 dark:border-red-900"
-    textColor = "text-red-700 dark:text-red-400"
+    bannerBg = "bg-danger-soft"
+    borderBg = "border-danger-text"
+    textColor = "text-danger-text"
     iconName = "alert-circle-outline"
-    iconColor = "#DC2626"
+    iconColor = colors.danger
     statusText = "Location Permission Denied"
   } else if (locationStatus === "acquiring") {
-    bannerBg = "bg-amber-100 dark:bg-amber-950/90"
-    borderBg = "border-amber-200 dark:border-amber-900"
-    textColor = "text-amber-800 dark:text-amber-400"
+    bannerBg = "bg-warning-soft"
+    borderBg = "border-warning-text"
+    textColor = "text-warning-text"
     iconName = "compass-outline"
-    iconColor = "#D97706"
+    iconColor = colors.warning
     statusText = "Acquiring Location..."
   } else {
     if (status === "paused") {
       statusText = "GPS Paused"
-      bannerBg = "bg-amber-100 dark:bg-amber-950/90"
-      borderBg = "border-amber-200 dark:border-amber-900"
-      textColor = "text-amber-800 dark:text-amber-400"
+      bannerBg = "bg-warning-soft"
+      borderBg = "border-warning-text"
+      textColor = "text-warning-text"
       iconName = "pause-circle-outline"
-      iconColor = "#D97706"
+      iconColor = colors.warning
     } else if (status === "recording") {
       statusText = isBackgroundActive ? "GPS Active (High Precision)" : "GPS Active"
-      bannerBg = "bg-[#EAF5EA] dark:bg-emerald-950/90"
-      borderBg = "border-emerald-200 dark:border-emerald-900"
-      textColor = "text-[#2E7D32] dark:text-emerald-400"
+      bannerBg = "bg-success-soft"
+      borderBg = "border-success-text"
+      textColor = "text-success-text"
       iconName = "cellular"
-      iconColor = "#2E7D32"
+      iconColor = colors.success
     } else {
       statusText = "GPS Acquired"
-      bannerBg = "bg-[#EAF5EA] dark:bg-emerald-950/90"
-      borderBg = "border-emerald-200 dark:border-emerald-900"
-      textColor = "text-[#2E7D32] dark:text-emerald-400"
+      bannerBg = "bg-success-soft"
+      borderBg = "border-success-text"
+      textColor = "text-success-text"
       iconName = "cellular"
-      iconColor = "#2E7D32"
+      iconColor = colors.success
     }
   }
 

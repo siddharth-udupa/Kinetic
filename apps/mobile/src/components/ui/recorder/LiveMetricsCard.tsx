@@ -47,41 +47,41 @@ export default function LiveMetricsCard({
 
 
       {/* 3-Column Metrics Grid */}
-      <View className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-b-2xl p-4 shadow-xl flex-row justify-between items-center">
+      <View className="bg-surface border border-line rounded-b-2xl p-4 shadow-xl flex-row justify-between items-center">
         {/* Column 1: Time */}
         <View className="flex-1 items-center">
-          <Text className="text-gray-900 dark:text-white text-2xl font-black tracking-tight">
+          <Text className="text-ink text-2xl font-black tracking-tight">
             {formattedTime}
           </Text>
-          <Text className="text-gray-500 dark:text-slate-400 text-xs font-semibold mt-0.5">
+          <Text className="text-ink-muted text-xs font-semibold mt-0.5">
             Time
           </Text>
         </View>
 
-        <View className="w-[1px] h-8 bg-gray-200 dark:bg-slate-800" />
+        <View className="w-[1px] h-8 bg-line" />
 
         {/* Column 2: Split avg / Pace / Speed */}
         <View className="flex-1 items-center">
-          <Text className="text-gray-900 dark:text-white text-2xl font-black tracking-tight">
+          <Text className="text-ink text-2xl font-black tracking-tight">
             {status === "idle" && pointsCount === 0
               ? "-:--"
               : isPaceMode
               ? formattedPace
               : `${formattedSpeed}`}
           </Text>
-          <Text className="text-gray-500 dark:text-slate-400 text-xs font-semibold mt-0.5">
+          <Text className="text-ink-muted text-xs font-semibold mt-0.5">
             {isPaceMode ? "Split avg. (/km)" : "Speed (km/h)"}
           </Text>
         </View>
 
-        <View className="w-[1px] h-8 bg-gray-200 dark:bg-slate-800" />
+        <View className="w-[1px] h-8 bg-line" />
 
         {/* Column 3: Distance */}
         <View className="flex-1 items-center">
-          <Text className="text-gray-900 dark:text-white text-2xl font-black tracking-tight">
+          <Text className="text-ink text-2xl font-black tracking-tight">
             {status === "idle" && distanceMeters === 0 ? "0" : formattedDistance}
           </Text>
-          <Text className="text-gray-500 dark:text-slate-400 text-xs font-semibold mt-0.5">
+          <Text className="text-ink-muted text-xs font-semibold mt-0.5">
             Distance (km)
           </Text>
         </View>

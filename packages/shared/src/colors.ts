@@ -60,6 +60,16 @@ const LIGHT_COLORS = {
   raisedBorder: "#E5E7EB",
   controlDisabled: "#F3F4F6",
 
+  /*
+   * The activity detail screen, which stacks three surfaces instead of two
+   * because it sits over a map and needs the extra step to read as depth.
+   */
+  activityPage: "#F3F4F6",
+  activityPanel: "#FFFFFF",
+  activityCard: "#FAFAFA",
+  activityBorder: "#E5E7EB",
+  activityHandle: "#D1D5DB",
+
   // Borders
   border: "#E5E7EB",
   borderStrong: "#D1D5DB",
@@ -75,12 +85,17 @@ const LIGHT_COLORS = {
   textDisabled: "#9CA3AF",
   textInverse: "#FFFFFF",
 
+  /** A separate ink scale for the activity screen's dark-on-dark panel text. */
+  activityText: "#111827",
+  activityTextSecondary: "#4B5563",
+  activityTextMuted: "#6B7280",
+
   // Brand accent
   accent: BRAND_COLOR,
   accentHover: "#E84802",
   accentPressed: "#CF3E02",
   /** The brand orange is only 3.4:1 on white, so words need a deeper tint. */
-  accentText: "#C2410C",
+  accentText: "#B23A0B",
   accentSoft: withAlpha(BRAND_COLOR, 0.07),
   onAccent: "#FFFFFF",
 
@@ -93,7 +108,9 @@ const LIGHT_COLORS = {
   success: SUCCESS_LIGHT,
   successHover: "#15803D",
   successPressed: "#166534",
-  successText: "#15803D",
+  // 6.3:1 on `successSoft`, which is where status labels usually land. The old
+  // #15803D — still the `successHover` fill — sat at 4.3:1 and failed AA.
+  successText: "#116430",
   successSoft: withAlpha(SUCCESS_LIGHT, 0.09),
   warning: WARNING_LIGHT,
   warningHover: "#92400E",
@@ -106,6 +123,14 @@ const LIGHT_COLORS = {
   infoText: "#1D4ED8",
   infoSoft: withAlpha(INFO_LIGHT, 0.09),
 
+  /*
+   * The fifth hue in the activity tiles' categorical set. No base `purple`,
+   * because it is only ever a chip tint and its label — there is nothing for a
+   * solid or hover state to be a state *of*.
+   */
+  purpleText: "#6D28D9",
+  purpleSoft: withAlpha("#7C3AED", 0.08),
+
   // Interaction
   /** Mobile uses `active:` throughout; a mouse has no press-and-hold. */
   trackHover: withAlpha("#FFFFFF", 0.75),
@@ -113,6 +138,14 @@ const LIGHT_COLORS = {
   /** Translucent, so the ring stays visible around an accented control. */
   focusRing: withAlpha(BRAND_COLOR, 0.35),
   overlay: "rgba(17, 24, 39, 0.45)",
+
+  /*
+   * Elevation for the activity card. A shadow, not a colour, but it carries its
+   * own alpha so it cannot live as a `withAlpha()` token — and it is the other
+   * half of the palette's job. Dark needs a deeper, tighter drop: there is no
+   * luminance gap for a shadow to exploit, so it does more of the lifting.
+   */
+  cardShadow: "0 10px 35px -18px rgba(15, 23, 42, 0.28)",
 
   // Charts
   chartLine: BRAND_COLOR,
@@ -143,6 +176,14 @@ const DARK_COLORS: ColorTokens = {
   raisedBorder: "#475569",
   controlDisabled: "#1E293B",
 
+  // The activity detail stack. Page is darker than `page` because these panels
+  // float over a map rather than scrolling on it.
+  activityPage: "#0B1220",
+  activityPanel: "#0F1929",
+  activityCard: "#111C2D",
+  activityBorder: "#223149",
+  activityHandle: "#43536B",
+
   // Borders
   border: "#1E293B",
   borderStrong: "#334155",
@@ -156,6 +197,12 @@ const DARK_COLORS: ColorTokens = {
   textMuted: "#748399",
   textDisabled: "#64748B",
   textInverse: "#0F172A",
+
+  // The activity panels read as near-black in light mode too, so they carry
+  // their own light-on-dark ink scale rather than borrowing `text`.
+  activityText: "#D5DDE8",
+  activityTextSecondary: "#B8C3D3",
+  activityTextMuted: "#8A9AB2",
 
   // Brand accent
   accent: BRAND_COLOR,
@@ -188,12 +235,15 @@ const DARK_COLORS: ColorTokens = {
   infoPressed: "#BFDBFE",
   infoText: "#93C5FD",
   infoSoft: withAlpha(INFO_DARK, 0.12),
+  purpleText: "#C4B5FD",
+  purpleSoft: withAlpha("#A78BFA", 0.14),
 
   // Interaction
   trackHover: withAlpha("#334155", 0.55),
   trackPressed: withAlpha("#334155", 0.8),
   focusRing: withAlpha("#FF9A6E", 0.45),
   overlay: "rgba(2, 6, 23, 0.65)",
+  cardShadow: "0 16px 40px -24px rgba(0, 0, 0, 0.8)",
 
   // Charts
   chartLine: BRAND_COLOR,

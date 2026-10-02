@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { ActivityTypes } from "@repo/types"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 
 export type BottomControlPanelProps = {
@@ -29,14 +30,16 @@ export default function BottomControlPanel({
   onFinishRecording,
   onOpenRouteModal,
 }: BottomControlPanelProps) {
+  const { colors } = useOnboardingTheme()
+
   const getActivityIcon = (type: ActivityTypes) => {
     switch (type) {
       case "ride":
-        return <Ionicons name="bicycle" size={32} color="#FC5200" />
+        return <Ionicons name="bicycle" size={32} color={colors.accent} />
       case "walk":
-        return <Ionicons name="walk" size={32} color="#FC5200" />
+        return <Ionicons name="walk" size={32} color={colors.accent} />
       default:
-        return <MaterialCommunityIcons name="run" size={34} color="#FC5200" />
+        return <MaterialCommunityIcons name="run" size={34} color={colors.accent} />
     }
   }
 
@@ -54,10 +57,10 @@ export default function BottomControlPanel({
   return (
     <View
       style={{ paddingBottom: Math.max(bottomInset + 16, 28) }}
-      className="bg-white dark:bg-slate-900 rounded-t-[36px] shadow-2xl pt-3 px-6 justify-between border-t border-gray-100 dark:border-slate-800/80"
+      className="bg-surface rounded-t-[36px] shadow-2xl pt-3 px-6 justify-between border-t border-line-muted"
     >
       {/* Drag Handle Bar */}
-      <View className="w-10 h-1 bg-gray-500/80 dark:bg-slate-500 rounded-full self-center mt-1 mb-4" />
+      <View className="w-10 h-1 bg-ink-muted rounded-full self-center mt-1 mb-4" />
 
       {/* Main Controls Row */}
       <View className="my-1 py-1">
@@ -69,14 +72,14 @@ export default function BottomControlPanel({
               activeOpacity={0.8}
               className="items-center w-24"
             >
-              <View className="w-[72px] h-[72px] rounded-full bg-[#FFEAE3] dark:bg-orange-950/40 justify-center items-center relative">
+              <View className="w-[72px] h-[72px] rounded-full bg-accent-soft justify-center items-center relative">
                 {getActivityIcon(activityType)}
                 {/* Checkmark Badge */}
-                <View className="absolute top-0 right-0 bg-[#FC5200] w-5 h-5 rounded-full justify-center items-center border-2 border-white dark:border-slate-900">
-                  <Ionicons name="checkmark" size={11} color="white" />
+                <View className="absolute top-0 right-0 bg-accent w-5 h-5 rounded-full justify-center items-center border-2 border-surface">
+                  <Ionicons name="checkmark" size={11} color={colors.onAccent} />
                 </View>
               </View>
-              <Text className="text-[13px] font-semibold text-gray-900 dark:text-slate-100 mt-2 text-center capitalize">
+              <Text className="text-[13px] font-semibold text-ink mt-2 text-center capitalize">
                 {getActivityLabel(activityType)}
               </Text>
             </TouchableOpacity>
@@ -85,9 +88,9 @@ export default function BottomControlPanel({
             <TouchableOpacity
               onPress={onStartRecording}
               activeOpacity={0.85}
-              className="w-[84px] h-[84px] rounded-full bg-[#FC5200] justify-center items-center shadow-lg shadow-[#FC5200]/40 active:scale-95"
+              className="w-[84px] h-[84px] rounded-full bg-accent justify-center items-center shadow-lg shadow-accent/40 active:scale-95"
             >
-              <Ionicons name="play" size={44} color="white" style={{ marginLeft: 4 }} />
+              <Ionicons name="play" size={44} color={colors.onAccent} style={{ marginLeft: 4 }} />
             </TouchableOpacity>
 
             {/* Right Button: Add Route */}
@@ -96,10 +99,10 @@ export default function BottomControlPanel({
               activeOpacity={0.8}
               className="items-center w-24"
             >
-              <View className="w-[72px] h-[72px] rounded-full bg-[#F0F1F5] dark:bg-slate-800 justify-center items-center">
-                <Ionicons name="git-network-outline" size={28} color="#374151" />
+              <View className="w-[72px] h-[72px] rounded-full bg-surface-muted justify-center items-center">
+                <Ionicons name="git-network-outline" size={28} color={colors.textSecondary} />
               </View>
-              <Text className="text-[13px] font-semibold text-gray-900 dark:text-slate-100 mt-2 text-center leading-tight">
+              <Text className="text-[13px] font-semibold text-ink mt-2 text-center leading-tight">
                 {selectedRoute ? "Route\nAdded" : "Add\nRoute"}
               </Text>
             </TouchableOpacity>
@@ -112,10 +115,10 @@ export default function BottomControlPanel({
             <TouchableOpacity
               onPress={onPauseRecording}
               activeOpacity={0.85}
-              className="w-full h-16 rounded-2xl bg-amber-500 flex-row items-center justify-center shadow-lg active:scale-98"
+              className="w-full h-16 rounded-2xl bg-warning flex-row items-center justify-center shadow-lg active:scale-98"
             >
-              <Ionicons name="pause" size={28} color="white" />
-              <Text className="text-white font-bold text-lg tracking-wider ml-3">
+              <Ionicons name="pause" size={28} color={colors.onAccent} />
+              <Text className="text-on-accent font-bold text-lg tracking-wider ml-3">
                 PAUSE
               </Text>
             </TouchableOpacity>
@@ -128,10 +131,10 @@ export default function BottomControlPanel({
             <TouchableOpacity
               onPress={onResumeRecording}
               activeOpacity={0.85}
-              className="flex-1 h-16 rounded-2xl bg-emerald-600 flex-row items-center justify-center shadow-lg active:scale-98"
+              className="flex-1 h-16 rounded-2xl bg-success flex-row items-center justify-center shadow-lg active:scale-98"
             >
-              <Ionicons name="play" size={26} color="white" style={{ marginLeft: 2 }} />
-              <Text className="text-white font-bold text-base tracking-wider ml-2">
+              <Ionicons name="play" size={26} color={colors.onAccent} style={{ marginLeft: 2 }} />
+              <Text className="text-on-accent font-bold text-base tracking-wider ml-2">
                 RESUME
               </Text>
             </TouchableOpacity>
@@ -140,10 +143,10 @@ export default function BottomControlPanel({
             <TouchableOpacity
               onPress={onFinishRecording}
               activeOpacity={0.85}
-              className="flex-1 h-16 rounded-2xl bg-red-600 flex-row items-center justify-center shadow-lg active:scale-98"
+              className="flex-1 h-16 rounded-2xl bg-danger flex-row items-center justify-center shadow-lg active:scale-98"
             >
-              <Ionicons name="square" size={22} color="white" />
-              <Text className="text-white font-bold text-base tracking-wider ml-2">
+              <Ionicons name="square" size={22} color={colors.onAccent} />
+              <Text className="text-on-accent font-bold text-base tracking-wider ml-2">
                 FINISH
               </Text>
             </TouchableOpacity>

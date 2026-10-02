@@ -31,7 +31,13 @@ the `--ob-*` custom properties that the shell wrapper carries. Named ones worth
 knowing: `page`, `surface`, `surface-muted`, `raised`, `line`, `line-strong`,
 `ink`, `ink-secondary`, `ink-muted`, `accent`, `accent-text`, `accent-soft`,
 `on-accent`, `danger`/`success`/`warning`/`info` (each with `-text` and `-soft`),
-`overlay`, `focus-ring`, `chart-*`, and `brand`.
+`purple-text`/`purple-soft`, `overlay`, `focus-ring`, `chart-*`, `shadow-card`,
+and `brand`.
+
+The `activity-*` tier (`activity-page`, `activity-panel`, `activity-card`,
+`activity-line`, `activity-handle`, and the `activity-ink*` text ramp) is for the
+activity detail screen only. It stacks three surfaces where the rest of the app
+stacks two, because it sits over a map and needs the extra step to read as depth.
 
 When you need the literal value rather than a class — an SVG attribute, a
 Recharts prop, a native widget — read it off the theme:
@@ -45,7 +51,13 @@ const { colors } = useOnboardingTheme()
 
 Use the same named utilities: `bg-surface`, `text-ink-muted`, `border-line`,
 `bg-accent-soft`. They are wired to the shared tokens in
-`apps/mobile/tailwind.config.ts` and follow the resolved scheme.
+`apps/mobile/tailwind.config.ts` and follow the resolved scheme, so a component
+writes `bg-surface` once rather than a `bg-white dark:bg-slate-900` pair.
+
+Opacity modifiers work on the opaque tokens (`bg-surface/90`,
+`border-accent/30`) but not the translucent ones — `accent-soft`, the `-soft`
+status fills, `overlay`, `focus-ring` and `track-*` already carry their own
+alpha, and mobile emits those as a bare `var()`.
 
 Native components (Ionicons, Skia, Reanimated) need a concrete colour, not a
 class, so read it from the hook:

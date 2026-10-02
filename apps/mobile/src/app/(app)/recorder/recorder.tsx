@@ -29,10 +29,12 @@ import FloatingMapControls from "@/components/ui/recorder/FloatingMapControls";
 import LiveMetricsCard from "@/components/ui/recorder/LiveMetricsCard";
 import RouteSelectionModal from "@/components/ui/recorder/RouteSelectionModal";
 import { useActivityRecorder } from "@/hooks/useActivityRecorder";
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme";
 
 export default function RecorderScreen() {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const { colors } = useOnboardingTheme();
 
 	const [activityType, setActivityType] = useState<ActivityTypes>("run");
 	const [providerId, setProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER);
@@ -88,7 +90,7 @@ export default function RecorderScreen() {
 	const formattedSpeed = mpsToSpeed(currentSpeedMps, "km/h").toFixed(1);
 
 	return (
-		<View className="flex-1 bg-slate-900 relative">
+		<View className="flex-1 bg-ink relative">
 			{/* Fullscreen Map Background */}
 			<View className="absolute inset-0">
 				<MapView
@@ -111,10 +113,10 @@ export default function RecorderScreen() {
 			<TouchableOpacity
 				onPress={handleGoBack}
 				style={{ top: Math.max(insets.top + 8, 16) }}
-				className="absolute left-4 z-30 w-11 h-11 rounded-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 justify-center items-center shadow-lg active:scale-95"
+				className="absolute left-4 z-30 w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
 				accessibilityLabel="Go back"
 			>
-				<Ionicons name="chevron-down" size={24} color="#111827" />
+				<Ionicons name="chevron-down" size={24} color={colors.text} />
 			</TouchableOpacity>
 
 			{/* Bottom Overlay Container */}
@@ -135,8 +137,8 @@ export default function RecorderScreen() {
 
 				{/* Error Notification Banner */}
 				{errorMsg && (
-					<View className="mx-4 mb-2 bg-red-500/90 px-4 py-2.5 rounded-xl border border-red-400">
-						<Text className="text-white text-xs font-bold text-center">
+					<View className="mx-4 mb-2 bg-danger px-4 py-2.5 rounded-xl border border-danger-hover">
+						<Text className="text-on-accent text-xs font-bold text-center">
 							{errorMsg}
 						</Text>
 					</View>
@@ -179,20 +181,20 @@ export default function RecorderScreen() {
 				transparent={true}
 				onRequestClose={() => setIsLayerPickerOpen(false)}
 			>
-				<View className="flex-1 bg-black/50 justify-end">
-					<View className="bg-white dark:bg-slate-900 rounded-t-3xl p-5 max-h-[70%] shadow-2xl">
-						<View className="flex-row items-center justify-between mb-4 border-b border-gray-200 dark:border-slate-800 pb-3">
+				<View className="flex-1 bg-overlay justify-end">
+					<View className="bg-surface rounded-t-3xl p-5 max-h-[70%] shadow-2xl">
+						<View className="flex-row items-center justify-between mb-4 border-b border-line pb-3">
 							<View className="flex-row items-center">
-								<Ionicons name="layers" size={20} color="#FC5200" />
-								<Text className="text-gray-900 dark:text-white font-bold text-lg ml-2">
+								<Ionicons name="layers" size={20} color={colors.accent} />
+								<Text className="text-ink font-bold text-lg ml-2">
 									Choose Map Style
 								</Text>
 							</View>
 							<TouchableOpacity
 								onPress={() => setIsLayerPickerOpen(false)}
-								className="bg-gray-100 dark:bg-slate-800 p-1.5 rounded-full"
+								className="bg-surface-muted p-1.5 rounded-full"
 							>
-								<Ionicons name="close" size={20} color="#6B7280" />
+								<Ionicons name="close" size={20} color={colors.textMuted} />
 							</TouchableOpacity>
 						</View>
 
@@ -209,16 +211,16 @@ export default function RecorderScreen() {
 										}}
 										className={`p-3.5 rounded-xl border flex-row items-center justify-between my-1 ${
 											isSelected
-												? "bg-orange-50 dark:bg-[#FC5200]/15 border-[#FC5200]"
-												: "bg-gray-50 dark:bg-slate-800/60 border-gray-200 dark:border-slate-800"
+												? "bg-accent-soft border-accent"
+												: "bg-surface-muted-hover border-line"
 										}`}
 									>
 										<View className="flex-1 mr-2">
 											<Text
 												className={`font-semibold text-sm ${
 													isSelected
-														? "text-[#FC5200]"
-														: "text-gray-900 dark:text-white"
+														? "text-accent"
+														: "text-ink"
 												}`}
 											>
 												{provider.name}
@@ -228,7 +230,7 @@ export default function RecorderScreen() {
 											<Ionicons
 												name="checkmark-circle"
 												size={22}
-												color="#FC5200"
+												color={colors.accent}
 											/>
 										)}
 									</TouchableOpacity>

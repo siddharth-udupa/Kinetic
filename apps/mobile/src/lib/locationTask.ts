@@ -2,6 +2,7 @@ import { Platform } from "react-native"
 import { appendPointsToActiveSession, isValidLocationPoint } from "./activeSessionStorage"
 import { type LocationTaskOptions } from "expo-location"
 import type { ActivityPoint } from "@repo/types"
+import { COLORS } from "@repo/shared"
 
 export const LOCATION_TASK_NAME = "activity-location-task"
 
@@ -91,7 +92,7 @@ export async function startBackgroundLocationTask(): Promise<boolean> {
         taskOptions.foregroundService = {
           notificationTitle: "Recording Activity",
           notificationBody: "Kinetic is recording your route in the background.",
-          notificationColor: "#FC5200",
+          notificationColor: COLORS.light.accent,
         }
       }
 

@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import ActivityChartWrapper from "@/components/charts/ActivityChartWrapper"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
 export type ActivityAnalysisTabProps = {
@@ -21,6 +22,7 @@ export default function ActivityAnalysisTab({
   elevationUnit = "meters",
   speedUnit = "km/h",
 }: ActivityAnalysisTabProps) {
+  const { colors } = useOnboardingTheme()
   const hasData =
     distanceData &&
     altitudeData &&
@@ -30,12 +32,12 @@ export default function ActivityAnalysisTab({
 
   if (!hasData) {
     return (
-      <View className="bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800/80 rounded-2xl p-6 items-center justify-center my-4">
-        <Ionicons name="stats-chart-outline" size={36} color="#FC5200" />
-        <Text className="text-gray-900 dark:text-white font-bold text-sm mt-2">
+      <View className="bg-page border border-line rounded-2xl p-6 items-center justify-center my-4">
+        <Ionicons name="stats-chart-outline" size={36} color={colors.accent} />
+        <Text className="text-ink font-bold text-sm mt-2">
           No Analysis Data
         </Text>
-        <Text className="text-gray-500 dark:text-slate-400 text-xs mt-1 text-center">
+        <Text className="text-ink-muted text-xs mt-1 text-center">
           Elevation or telemetry stream data is not available for this activity.
         </Text>
       </View>
@@ -43,11 +45,11 @@ export default function ActivityAnalysisTab({
   }
 
   return (
-    <View className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 my-2 shadow-sm">
+    <View className="bg-surface border border-line rounded-2xl p-4 my-2 shadow-sm">
       <View className="flex-row items-center justify-between mb-2">
         <View className="flex-row items-center gap-2">
-          <Ionicons name="stats-chart" size={18} color="#FC5200" />
-          <Text className="text-gray-900 dark:text-white font-bold text-sm">
+          <Ionicons name="stats-chart" size={18} color={colors.accent} />
+          <Text className="text-ink font-bold text-sm">
             Elevation Profile
           </Text>
         </View>

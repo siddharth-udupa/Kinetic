@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 
 const MapClient = dynamic(() => import('./MapClient'), {
   ssr: false,
-  loading: () => <div className="h-full w-full bg-gray-100 animate-pulse rounded" />,
+  loading: () => <div className="h-full w-full bg-surface-muted animate-pulse rounded" />,
 })
 
 type MapProps = {

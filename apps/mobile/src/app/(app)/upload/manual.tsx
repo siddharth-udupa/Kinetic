@@ -17,6 +17,7 @@ import { durationToSeconds } from "@repo/units"
 import type { ManualActivityInput } from "@repo/validation"
 import { authClient } from "@/lib/auth-client"
 import { invalidateActivitiesCache } from "@/hooks/useActivities"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -96,14 +97,7 @@ function formatErrorMessage(resData: any): string {
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
     <View
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
-      }}
-      className="bg-white dark:bg-slate-900 rounded-2xl mx-4 mb-3 p-4 border border-gray-100 dark:border-slate-800"
+      className="bg-surface shadow-sm rounded-2xl mx-4 mb-3 p-4 border border-line-muted"
     >
       {children}
     </View>
@@ -112,9 +106,9 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function FieldLabel({ label, required }: { label: string; required?: boolean }) {
   return (
-    <Text className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+    <Text className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">
       {label}
-      {required && <Text className="text-[#FC5200]"> *</Text>}
+      {required && <Text className="text-accent"> *</Text>}
     </Text>
   )
 }
@@ -128,15 +122,17 @@ function NumericInput({
   onChangeText: (v: string) => void
   placeholder?: string
 }) {
+  const { colors } = useOnboardingTheme()
+
   return (
-    <View className="flex-row items-center bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 h-11 flex-1">
+    <View className="flex-row items-center bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-1">
       <TextInput
         keyboardType="decimal-pad"
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder ?? "0"}
-        placeholderTextColor="#9CA3AF"
-        className="flex-1 text-base text-gray-900 dark:text-white font-medium"
+        placeholderTextColor={colors.textDisabled}
+        className="flex-1 text-base text-ink font-medium"
         style={{ paddingVertical: 0 }}
       />
     </View>
@@ -155,32 +151,21 @@ function SegmentedControl<T extends string>({
   labels?: Partial<Record<T, string>>
 }) {
   return (
-    <View className="flex-row bg-gray-100 dark:bg-slate-800 rounded-xl p-1 mt-1">
+    <View className="flex-row bg-surface-muted rounded-xl p-1 mt-1">
       {options.map((opt) => {
         const isActive = opt === value
         return (
           <TouchableOpacity
             key={opt}
             onPress={() => onChange(opt)}
-            style={
-              isActive
-                ? {
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 2,
-                    elevation: 1,
-                  }
-                : undefined
-            }
             className={`flex-1 py-1.5 rounded-lg items-center ${
-              isActive ? "bg-white dark:bg-slate-700" : ""
+              isActive ? "bg-raised shadow-sm" : ""
             }`}
             activeOpacity={0.7}
           >
             <Text
               className={`text-xs font-semibold capitalize ${
-                isActive ? "text-[#FC5200]" : "text-gray-500 dark:text-slate-400"
+                isActive ? "text-accent" : "text-ink-muted"
               }`}
             >
               {labels?.[opt] ?? opt}
@@ -199,6 +184,8 @@ function SportSelector({
   value: ManualActivityInput["type"]
   onChange: (v: ManualActivityInput["type"]) => void
 }) {
+  const { colors } = useOnboardingTheme()
+
   const SPORT_ICONS: Record<ManualActivityInput["type"], React.ComponentProps<typeof Ionicons>["name"]> = {
     run: "walk",
     ride: "bicycle",
@@ -218,13 +205,13 @@ function SportSelector({
             activeOpacity={0.75}
             className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl border ${
               isActive
-                ? "bg-[#FC5200] border-[#FC5200]"
-                : "bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+                ? "bg-accent border-accent"
+                : "bg-surface-muted-hover border-line-strong"
             }`}
           >
-            <Ionicons name={SPORT_ICONS[sport]} size={14} color={isActive ? "#FFF" : "#9CA3AF"} />
+            <Ionicons name={SPORT_ICONS[sport]} size={14} color={isActive ? colors.onAccent : colors.textDisabled} />
             <Text
-              className={`text-xs font-semibold ${isActive ? "text-white" : "text-gray-600 dark:text-slate-300"}`}
+              className={`text-xs font-semibold ${isActive ? "text-on-accent" : "text-ink-secondary"}`}
             >
               {sport.charAt(0).toUpperCase() + sport.slice(1)}
             </Text>
@@ -252,7 +239,7 @@ function DurationInput({
     <View className="flex-row gap-2 mt-1">
       {fields.map(({ key, label, max }) => (
         <View key={key} className="flex-1 items-center">
-          <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl h-11 w-full justify-center items-center">
+          <View className="bg-surface-muted-hover border border-line-strong rounded-xl h-11 w-full justify-center items-center">
             <TextInput
               keyboardType="number-pad"
               value={String(value[key])}
@@ -261,11 +248,11 @@ function DurationInput({
                 onChange(key, max !== undefined ? Math.min(parsed, max) : parsed)
               }}
               maxLength={2}
-              className="text-base font-bold text-gray-900 dark:text-white text-center w-full"
+              className="text-base font-bold text-ink text-center w-full"
               style={{ paddingVertical: 0 }}
             />
           </View>
-          <Text className="text-xs text-gray-400 dark:text-slate-500 mt-1 font-medium">{label}</Text>
+          <Text className="text-xs text-ink-disabled mt-1 font-medium">{label}</Text>
         </View>
       ))}
     </View>
@@ -281,15 +268,17 @@ function DateTimeInput({
   onChange: (v: string) => void
   placeholder?: string
 }) {
+  const { colors } = useOnboardingTheme()
+
   return (
-    <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 h-11 flex-row items-center mt-1">
-      <Ionicons name="calendar-outline" size={16} color="#9CA3AF" style={{ marginRight: 6 }} />
+    <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-row items-center mt-1">
+      <Ionicons name="calendar-outline" size={16} color={colors.textDisabled} style={{ marginRight: 6 }} />
       <TextInput
         value={value}
         onChangeText={onChange}
         placeholder={placeholder ?? "YYYY-MM-DDTHH:mm"}
-        placeholderTextColor="#9CA3AF"
-        className="flex-1 text-sm text-gray-900 dark:text-white"
+        placeholderTextColor={colors.textDisabled}
+        className="flex-1 text-sm text-ink"
         style={{ paddingVertical: 0 }}
         autoCapitalize="none"
         autoCorrect={false}
@@ -303,6 +292,7 @@ function DateTimeInput({
 export default function ManualUploadScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const { colors } = useOnboardingTheme()
 
   const [formState, setFormState] = useState<FormState>({
     distance: "",
@@ -311,6 +301,7 @@ export default function ManualUploadScreen() {
     elevationLoss: "",
     type: "run",
     startTime: getLocalDateTimeString(),
+
     endTime: "",
     title: "",
     description: "",
@@ -417,26 +408,26 @@ export default function ManualUploadScreen() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <View className="flex-1 bg-gray-100 dark:bg-slate-950">
+    <View className="flex-1 bg-page">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
 
       {/* ── Header ── */}
       <View
         style={{ paddingTop: Math.max(insets.top, 40) }}
-        className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 pb-3"
+        className="bg-surface border-b border-line px-4 pb-3"
       >
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
             onPress={handleGoBack}
-            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-800 items-center justify-center"
+            className="w-9 h-9 rounded-full bg-surface-muted items-center justify-center"
             activeOpacity={0.7}
           >
-            <Ionicons name="chevron-back" size={20} color="#6B7280" />
+            <Ionicons name="chevron-back" size={20} color={colors.textMuted} />
           </TouchableOpacity>
 
           <View className="items-center">
-            <Text className="text-base font-bold text-gray-900 dark:text-white">Manual Entry</Text>
-            <Text className="text-xs text-gray-400 dark:text-slate-500">Log your activity</Text>
+            <Text className="text-base font-bold text-ink">Manual Entry</Text>
+            <Text className="text-xs text-ink-disabled">Log your activity</Text>
           </View>
 
           {/* Spacer to balance the back button */}
@@ -454,7 +445,7 @@ export default function ManualUploadScreen() {
         <View className="pt-4">
 
           {/* ── Section: Distance & Duration ── */}
-          <Text className="px-4 pb-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Activity Stats
           </Text>
 
@@ -476,7 +467,7 @@ export default function ManualUploadScreen() {
               </View>
             </View>
 
-            <View className="h-px bg-gray-100 dark:bg-slate-800 my-4" />
+            <View className="h-px bg-line-muted my-4" />
 
             {/* durationToSeconds from @repo/units is used for validation above */}
             <FieldLabel label="Duration" required />
@@ -484,7 +475,7 @@ export default function ManualUploadScreen() {
           </SectionCard>
 
           {/* ── Section: Elevation ── */}
-          <Text className="px-4 pb-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Elevation
           </Text>
 
@@ -522,7 +513,7 @@ export default function ManualUploadScreen() {
           </SectionCard>
 
           {/* ── Section: Sport Type ── */}
-          <Text className="px-4 pb-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Sport
           </Text>
 
@@ -532,7 +523,7 @@ export default function ManualUploadScreen() {
           </SectionCard>
 
           {/* ── Section: Timing ── */}
-          <Text className="px-4 pb-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Timing
           </Text>
 
@@ -544,7 +535,7 @@ export default function ManualUploadScreen() {
               placeholder="YYYY-MM-DDTHH:mm"
             />
 
-            <View className="h-px bg-gray-100 dark:bg-slate-800 my-4" />
+            <View className="h-px bg-line-muted my-4" />
 
             <FieldLabel label="End Time" />
             <DateTimeInput
@@ -555,34 +546,34 @@ export default function ManualUploadScreen() {
           </SectionCard>
 
           {/* ── Section: Details ── */}
-          <Text className="px-4 pb-1.5 text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
+          <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Details
           </Text>
 
           <SectionCard>
             <FieldLabel label="Title" required />
-            <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 h-11 flex-row items-center">
+            <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-row items-center">
               <TextInput
                 value={formState.title}
                 onChangeText={(v) => updateField("title", v)}
                 placeholder="e.g. Morning Run"
-                placeholderTextColor="#9CA3AF"
-                className="flex-1 text-base text-gray-900 dark:text-white"
+                placeholderTextColor={colors.textDisabled}
+                className="flex-1 text-base text-ink"
                 style={{ paddingVertical: 0 }}
                 maxLength={100}
               />
             </View>
 
-            <View className="h-px bg-gray-100 dark:bg-slate-800 my-4" />
+            <View className="h-px bg-line-muted my-4" />
 
             <FieldLabel label="Description" />
-            <View className="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5">
+            <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 py-2.5">
               <TextInput
                 value={formState.description}
                 onChangeText={(v) => updateField("description", v)}
                 placeholder="How'd it go? Share more about your activity..."
-                placeholderTextColor="#9CA3AF"
-                className="text-sm text-gray-900 dark:text-white"
+                placeholderTextColor={colors.textDisabled}
+                className="text-sm text-ink"
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -591,7 +582,7 @@ export default function ManualUploadScreen() {
               />
             </View>
             {(formState.description || "").length > 400 && (
-              <Text className="text-right text-xs text-gray-400 dark:text-slate-500 mt-1">
+              <Text className="text-right text-xs text-ink-disabled mt-1">
                 {(formState.description || "").length}/500
               </Text>
             )}
@@ -603,10 +594,10 @@ export default function ManualUploadScreen() {
       {/* ── Sticky Submit Button ── */}
       <View
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-        className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 px-4 pt-3"
+        className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3"
       >
         {!isFormValid && (
-          <Text className="text-xs text-gray-400 dark:text-slate-500 text-center mb-2 italic">
+          <Text className="text-xs text-ink-disabled text-center mb-2 italic">
             Title, distance, and duration are required.
           </Text>
         )}
@@ -617,7 +608,7 @@ export default function ManualUploadScreen() {
           style={
             isFormValid && !isSubmitting
               ? {
-                  shadowColor: "#FC5200",
+                  shadowColor: colors.accent,
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -627,25 +618,25 @@ export default function ManualUploadScreen() {
           }
           className={`h-12 rounded-2xl items-center justify-center flex-row gap-2 ${
             isFormValid && !isSubmitting
-              ? "bg-[#FC5200]"
-              : "bg-gray-200 dark:bg-slate-800"
+              ? "bg-accent"
+              : "bg-disabled"
           }`}
         >
           {isSubmitting ? (
             <>
-              <ActivityIndicator size="small" color="#FFFFFF" />
-              <Text className="text-white font-bold text-sm">Saving...</Text>
+              <ActivityIndicator size="small" color={colors.onAccent} />
+              <Text className="text-on-accent font-bold text-sm">Saving...</Text>
             </>
           ) : (
             <>
               <Ionicons
                 name="checkmark-circle"
                 size={18}
-                color={isFormValid ? "#FFFFFF" : "#9CA3AF"}
+                color={isFormValid ? colors.onAccent : colors.textDisabled}
               />
               <Text
                 className={`font-bold text-sm ${
-                  isFormValid ? "text-white" : "text-gray-400 dark:text-slate-500"
+                  isFormValid ? "text-on-accent" : "text-ink-disabled"
                 }`}
               >
                 Save Activity

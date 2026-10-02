@@ -16,7 +16,7 @@ export default function MapScreen({ insets, encodedPolyline }: MapScreenProps) {
   const paddingBottom = insets ? Math.max(insets.bottom, 25) + 55 : 80
 
   return (
-    <View className="flex-1 bg-gray-100 dark:bg-slate-950 relative" style={{ paddingBottom }}>
+    <View className="flex-1 bg-page relative" style={{ paddingBottom }}>
       {/* Pure Map Renderer */}
       <MapView
         encodedPolyline={encodedPolyline}

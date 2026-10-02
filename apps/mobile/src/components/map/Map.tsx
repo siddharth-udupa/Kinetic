@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { decodePolyline } from "@repo/gpx"
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
+import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 
 let MapLibreModule: typeof import("@maplibre/maplibre-react-native") | null = null
 
@@ -33,6 +34,8 @@ export default function MapView({
   livePoints,
   recenterTrigger,
 }: MapProps) {
+  const { colors } = useOnboardingTheme()
+
   const points = useMemo(() => {
     if (livePoints && livePoints.length > 0) {
       return livePoints.map((p) => ({ lat: p.latitude, lng: p.longitude }))
@@ -119,33 +122,33 @@ export default function MapView({
   // Placeholder when native MapLibre module is unavailable (e.g. Expo Go standard client)
   if (!MapLibreModule || !MapLibreModule.Map) {
     return (
-      <View style={containerStyles} className="bg-gray-100 dark:bg-slate-950 justify-center items-center relative overflow-hidden flex-1 w-full h-full">
-        <View className="absolute inset-0 opacity-10 bg-gray-300 dark:bg-slate-800" />
+      <View style={containerStyles} className="bg-page justify-center items-center relative overflow-hidden flex-1 w-full h-full">
+        <View className="absolute inset-0 opacity-10 bg-line" />
         <View className="items-center justify-center p-4">
           <View className="relative mb-2 items-center justify-center">
             <MaterialCommunityIcons
               name="map-marker-path"
               size={48}
-              color="#FC5200"
+              color={colors.accent}
               opacity={0.8}
             />
             {userLocation && (
-              <View className="absolute w-4 h-4 rounded-full bg-[#FC5200] border-2 border-white shadow-sm" />
+              <View className="absolute w-4 h-4 rounded-full bg-accent border-2 border-on-accent shadow-sm" />
             )}
           </View>
-          <Text className="text-gray-600 dark:text-slate-400 text-xs font-semibold mt-1">
+          <Text className="text-ink-secondary text-xs font-semibold mt-1">
             Map Route ({points.length} points)
           </Text>
           {userLocation ? (
-            <Text className="text-[#FC5200] text-[11px] font-bold mt-1 bg-orange-50 dark:bg-slate-900 px-2.5 py-1 rounded-full border border-orange-200 dark:border-slate-800">
+            <Text className="text-accent text-[11px] font-bold mt-1 bg-accent-soft px-2.5 py-1 rounded-full border border-accent/30">
               User Location: {userLocation.latitude.toFixed(5)}, {userLocation.longitude.toFixed(5)}
             </Text>
           ) : (
-            <Text className="text-gray-500 dark:text-slate-500 text-[10px] mt-0.5 text-center">
+            <Text className="text-ink-muted text-[10px] mt-0.5 text-center">
               Acquiring location...
             </Text>
           )}
-          <Text className="text-gray-600 dark:text-slate-400 text-[11px] font-medium mt-2 bg-white/80 dark:bg-slate-900/80 px-2.5 py-1 rounded-md border border-gray-200 dark:border-slate-800">
+          <Text className="text-ink-secondary text-[11px] font-medium mt-2 bg-surface/80 px-2.5 py-1 rounded-md border border-line">
             Active Style: {activeProvider.name}
           </Text>
         </View>
@@ -156,7 +159,7 @@ export default function MapView({
   const { Map: MapLibreView, Camera, GeoJSONSource, Layer } = MapLibreModule
 
   return (
-    <View style={containerStyles} className="bg-gray-100 dark:bg-slate-950 overflow-hidden relative flex-1 w-full h-full">
+    <View style={containerStyles} className="bg-page overflow-hidden relative flex-1 w-full h-full">
       <MapLibreView
         style={mapStyles}
         mapStyle={mapStyle}
@@ -190,7 +193,7 @@ export default function MapView({
               id="routeLine"
               type="line"
               paint={{
-                "line-color": "#FC4C02",
+                "line-color": colors.accent,
                 "line-width": 4,
                 "line-opacity": 0.9,
               }}
@@ -209,7 +212,7 @@ export default function MapView({
               type="circle"
               paint={{
                 "circle-radius": 14,
-                "circle-color": "#FC5200",
+                "circle-color": colors.accent,
                 "circle-opacity": 0.25,
               }}
             />
@@ -218,9 +221,9 @@ export default function MapView({
               type="circle"
               paint={{
                 "circle-radius": 7,
-                "circle-color": "#FC5200",
+                "circle-color": colors.accent,
                 "circle-stroke-width": 2.5,
-                "circle-stroke-color": "#FFFFFF",
+                "circle-stroke-color": colors.onAccent,
               }}
             />
           </GeoJSONSource>

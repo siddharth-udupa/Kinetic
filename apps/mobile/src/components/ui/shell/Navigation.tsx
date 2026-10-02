@@ -11,9 +11,10 @@ type IconName = ComponentProps<typeof Ionicons>["name"]
  * Top and bottom navigation for the signed-in app.
  *
  * The old pair were hand-rolled inside the dashboard screen out of raw Tailwind
- * greys and a hard-coded `#FC5200`, which meant neither could respond to the
- * athlete's chosen theme — a dark-mode tab bar still had `dark:bg-slate-900`
- * fighting a light page, and the status bar stayed `dark-content` over it.
+ * greys and a hard-coded brand orange, which meant neither could respond to the
+ * athlete's chosen theme — a dark-mode tab bar still carried a fixed dark
+ * surface fighting a light page, and the status bar stayed `dark-content` over
+ * it.
  *
  * Both bars now read the onboarding theme, so they are the same objects in both
  * schemes and match the web shell bar for bar.
