@@ -1,4 +1,3 @@
-import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
 import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
@@ -20,8 +19,8 @@ export default function ActivitySocialBar({
     <View className="flex-row items-center px-5 mb-7">
       <TouchableOpacity
         onPress={onKudosPress}
-        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mr-1.5 active:bg-line-muted"
-        activeOpacity={0.8}
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mr-1.5"
+        activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel="Give kudos"
       >
@@ -31,8 +30,8 @@ export default function ActivitySocialBar({
 
       <TouchableOpacity
         onPress={onCommentPress}
-        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mx-0.75 active:bg-line-muted"
-        activeOpacity={0.8}
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 mx-0.75"
+        activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel="View comments"
       >
@@ -42,8 +41,8 @@ export default function ActivitySocialBar({
 
       <TouchableOpacity
         onPress={onSharePress}
-        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 ml-1.5 active:bg-line-muted"
-        activeOpacity={0.8}
+        className="flex-1 flex-row items-center justify-center bg-activity-card border border-activity-line rounded-2xl py-3 ml-1.5"
+        activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel="Share activity"
       >

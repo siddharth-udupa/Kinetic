@@ -92,7 +92,8 @@ export default function ActivityOverviewTab({
     <View className="mb-3">
       <View className="flex-row items-center justify-between mb-3">
         <View>
-          <Text className="text-[10px] font-black uppercase tracking-[2px] text-accent">
+          {/* `accent-text`, not `accent`: raw orange is 3.4:1 on this panel. */}
+          <Text className="text-[10px] font-black uppercase tracking-[2px] text-accent-text">
             The workout
           </Text>
           <Text className="text-activity-ink-muted text-xs mt-1">Your session at a glance</Text>

@@ -53,7 +53,7 @@ export default function ActivityFeed({ initialActivities, userPreferences, userI
 
 
   return (
-    <div>
+    <div className="bg-page">
       {activities.map((a) => (
         <Suspense key={a.activityId} fallback={<div className="my-6 p-4 md:p-5 mx-auto w-full max-w-xl bg-surface-muted/70 border border-line rounded-xl h-96 animate-pulse" />}>
           <ActivityCard activities={a} userPreferences={userPreferences} userName={userName} />
@@ -63,8 +63,13 @@ export default function ActivityFeed({ initialActivities, userPreferences, userI
       {/* The invisible div observer */}
       <div ref={sentinelRef} className="h-1" />
 
-      {loading && <p>Loading more activities</p>}
-      {!hasMore && <p>You&apos;ve seen all activities</p>}
+      {/* Explicit ink — these would otherwise inherit the browser's default black. */}
+      {loading && (
+        <p className="py-4 text-center text-sm font-medium text-ink-muted">Loading more activities</p>
+      )}
+      {!hasMore && (
+        <p className="py-4 text-center text-sm font-medium text-ink-muted">You&apos;ve seen all activities</p>
+      )}
     </div>
   )
 }

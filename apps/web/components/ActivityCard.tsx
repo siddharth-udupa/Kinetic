@@ -168,7 +168,7 @@ export default function ActivityCard({
 					<button
 						type="button"
 						onClick={clickHandler}
-						className="relative shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+						className="relative shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 						aria-label={`View activities by ${userName || "user"}`}
 					>
 						<Image
@@ -185,7 +185,7 @@ export default function ActivityCard({
 						<button
 							type="button"
 							onClick={clickHandler}
-							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-ink transition-colors hover:text-brand dark:hover:text-accent-text focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:text-base"
+							className="block max-w-full truncate text-left text-[15px] font-bold tracking-tight text-ink transition-colors hover:text-accent-text focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:text-base"
 						>
 							{userName || "User"}
 						</button>
@@ -199,7 +199,7 @@ export default function ActivityCard({
 
 					<div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft ring-1 ring-inset ring-accent/20 sm:size-12">
 						<SportIcon
-							className="size-5 text-brand sm:size-5.5"
+							className="size-5 text-accent sm:size-5.5"
 							strokeWidth={2.25}
 							aria-hidden="true"
 						/>
@@ -207,15 +207,15 @@ export default function ActivityCard({
 				</header>
 
 				<div className="mt-5 sm:mt-6">
-					<p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-brand">
+					<p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-accent-text">
 						{sport.label}
 					</p>
 					<button
 						type="button"
 						onClick={clickHandler}
-						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
 					>
-						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-ink transition-colors group-hover/title:text-brand dark:group-hover/title:text-accent-text sm:text-[26px]">
+						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-ink transition-colors group-hover/title:text-accent-text sm:text-[26px]">
 							{activities.title || "Untitled activity"}
 						</h2>
 					</button>
@@ -288,7 +288,7 @@ export default function ActivityCard({
 				<div className="ml-auto flex items-center gap-2">
 					<button
 						type="button"
-						className="flex h-10 items-center gap-2 rounded-xl border border-line-strong bg-surface-muted-hover px-3.5 text-sm font-semibold text-ink transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-brand dark:hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"
+						className="flex h-10 items-center gap-2 rounded-xl border border-line-strong bg-surface-muted-hover px-3.5 text-sm font-semibold text-ink transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-[0.98]"
 						aria-label="Give kudos"
 					>
 						<ThumbsUp className="size-4.5" aria-hidden="true" />
@@ -296,7 +296,7 @@ export default function ActivityCard({
 					</button>
 					<button
 						type="button"
-						className="flex size-10 items-center justify-center rounded-xl border border-line-strong bg-surface-muted-hover text-ink-secondary transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-brand dark:hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"
+						className="flex size-10 items-center justify-center rounded-xl border border-line-strong bg-surface-muted-hover text-ink-secondary transition-all hover:border-accent/30 hover:bg-accent-soft hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-[0.98]"
 						aria-label="View comments"
 					>
 						<MessageSquare className="size-4.5" aria-hidden="true" />

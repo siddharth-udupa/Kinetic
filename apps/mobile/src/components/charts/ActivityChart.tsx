@@ -44,7 +44,8 @@ function chartPalette(colors: ColorTokens) {
     frame: colors.chartAxis,
     label: colors.chartLabel,
     crosshair: colors.chartCrosshair,
-    surface: colors.card,
+    // Skia draws on `activityPanel` — this chart only lives in the activity sheet.
+    surface: colors.activityPanel,
     hint: CHART_HINT,
   }
 }
@@ -155,14 +156,14 @@ export default function ActivityChart({
   return (
     <View className="my-4 w-full">
       {/* Readout card — values update on the UI thread, zero React re-renders */}
-      <View className="flex-row items-stretch rounded-xl border border-line bg-surface-muted-hover px-3 py-2">
+      <View className="flex-row items-stretch rounded-xl border border-activity-line bg-activity-card px-3 py-2">
         <Stat label="DIST" animatedProps={distProps} flex />
         <Divider />
         <Stat label="ELEV" animatedProps={elevProps} flex />
         <Divider />
         <Stat label="GRADE" animatedProps={gradeProps} accent />
       </View>
-      <Text className="px-1 pb-1 pt-1.5 text-[11px] italic text-ink-disabled">
+      <Text className="px-1 pb-1 pt-1.5 text-[11px] italic text-activity-ink-muted">
         {CHART.hint}
       </Text>
 
@@ -248,7 +249,7 @@ function Stat({
 }) {
   return (
     <View className={flex ? "flex-1 items-center" : "items-center px-1"}>
-      <Text className="text-[10px] font-semibold tracking-widest text-ink-disabled">
+      <Text className="text-[10px] font-semibold tracking-widest text-activity-ink-muted">
         {label}
       </Text>
       <AnimatedTextInput
@@ -258,8 +259,8 @@ function Stat({
         selectTextOnFocus={false}
         defaultValue="-"
         className={`mt-0.5 p-0 text-[13px] font-bold tabular-nums ${accent
-          ? "text-accent"
-          : "text-ink"
+          ? "text-accent-text"
+          : "text-activity-ink"
           }`}
       />
     </View>
@@ -267,7 +268,7 @@ function Stat({
 }
 
 function Divider() {
-  return <View className="mx-2 w-px self-stretch bg-line" />
+  return <View className="mx-2 w-px self-stretch bg-activity-line" />
 }
 
 // ── ToolTip ───────────────────────────────────────────────────────────────────

@@ -202,8 +202,10 @@ export default function ActivityDetailScreen() {
   }
 
   if (isLoading) {
+    /* The activity tier, not the app tier — this screen replaces the whole route and
+       lands on the sheet's surface. */
     return (
-      <View className="flex-1 bg-page items-center justify-center">
+      <View className="flex-1 bg-activity-page items-center justify-center">
         <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
@@ -301,21 +303,25 @@ export default function ActivityDetailScreen() {
           </View>
         </GestureDetector>
 
-        {/* Keep scrolling inside the sheet without forwarding it to a parent scroll view. */}
+        {/* Keep scrolling inside the sheet without forwarding it to a parent scroll view.
+
+            Background is the class, not an inline `colors.activityPage`: the sticky tab
+            bar below needs an opaque fill, and two sources for one token is how half a
+            screen ends up on the wrong scheme. */}
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           bounces={false}
           overScrollMode="never"
           stickyHeaderHiddenOnScroll={false}
           stickyHeaderIndices={[1]}
-          style={{ flex: 1, backgroundColor: colors.activityPage }}
+          className="flex-1 bg-activity-page"
           contentContainerStyle={{
             paddingBottom: Math.max(insets.bottom + 80, 100),
           }}
         >
           <ActivitySocialBar />
 
-          <View style={{ zIndex: 10, backgroundColor: colors.activityPage }}>
+          <View className="z-10 bg-activity-page">
             <ActivityTabNavigation activeTab={activeTab} onSelectTab={setActiveTab} />
           </View>
 

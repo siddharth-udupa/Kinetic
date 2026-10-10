@@ -6,7 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
-import { COLORS } from '@repo/shared'
+import { useOnboardingTheme } from '@/components/onboarding/theme'
 
 type MapClientProps = {
   encodedPolyline?: string
@@ -22,6 +22,8 @@ export default function MapClient({
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
+  // MapLibre paints from a literal, not a class, so read the route colour off the palette.
+  const { colors } = useOnboardingTheme()
 
   const points = useMemo(() => {
     return encodedPolyline ? decodePolyline(encodedPolyline) : []
@@ -77,7 +79,7 @@ export default function MapClient({
           'line-join': 'round',
         },
         paint: {
-          'line-color': COLORS.light.accent,
+          'line-color': colors.accent,
           'line-width': 4,
           'line-opacity': 0.9,
         },
@@ -121,6 +123,15 @@ export default function MapClient({
       mapRef.current = null
     }
   }, [isStatic])
+
+  /* Repaints the route on a theme switch. Deliberately not a dep of the map-building
+     effect above: that would tear down and re-create the map, losing the camera. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map?.getLayer('routeLine')) return
+
+    map.setPaintProperty('routeLine', 'line-color', colors.accent)
+  }, [colors.accent])
 
   const handleSelectProvider = (newProviderId: TileProviderId) => {
     setCurrentProviderId(newProviderId)

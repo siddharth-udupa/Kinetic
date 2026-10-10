@@ -108,9 +108,9 @@ export default function ActivityTabViews({
         <Text className="text-activity-ink-muted text-sm mt-1 leading-5">
           2 segment efforts were recorded on this route.
         </Text>
-        <View className="flex-row items-center bg-line-muted rounded-xl px-3 py-3 mt-4">
+        <View className="flex-row items-center bg-activity-card border border-activity-line rounded-xl px-3 py-3 mt-4">
           <Ionicons name="sparkles-outline" size={16} color={colors.warning} />
-          <Text className="text-activity-ink text-xs font-semibold ml-2">Segment matching is ready</Text>
+          <Text className="text-activity-ink-secondary text-xs font-semibold ml-2">Segment matching is ready</Text>
         </View>
       </View>
     )
@@ -126,9 +126,9 @@ export default function ActivityTabViews({
         <Text className="text-activity-ink-muted text-sm mt-1 leading-5">
           Your best 5k pace effort was achieved during this session.
         </Text>
-        <View className="flex-row items-center bg-line-muted rounded-xl px-3 py-3 mt-4">
+        <View className="flex-row items-center bg-activity-card border border-activity-line rounded-xl px-3 py-3 mt-4">
           <Ionicons name="checkmark-circle-outline" size={16} color={colors.success} />
-          <Text className="text-activity-ink text-xs font-semibold ml-2">Effort analysis complete</Text>
+          <Text className="text-activity-ink-secondary text-xs font-semibold ml-2">Effort analysis complete</Text>
         </View>
       </View>
     )

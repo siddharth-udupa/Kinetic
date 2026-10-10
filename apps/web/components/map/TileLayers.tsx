@@ -48,13 +48,13 @@ export function TileLayers({ isChangeable, currentProviderId, onSelectProvider }
                     }}
                     className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                       isSelected
-                        ? "bg-accent-soft text-brand font-bold"
+                        ? "bg-accent-soft text-accent-text font-bold"
                         : "text-ink hover:bg-surface-muted-hover"
                     }`}
                   >
                     <span>{provider.name}</span>
                     {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-brand" />
+                      <span className="w-2 h-2 rounded-full bg-accent" />
                     )}
                   </button>
                 )

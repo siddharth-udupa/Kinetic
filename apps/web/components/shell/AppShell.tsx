@@ -1,5 +1,6 @@
 "use client"
 
+import type { ThemeScheme } from "@repo/shared"
 import type { ReactNode } from "react"
 import {
   OnboardingThemeProvider,
@@ -19,9 +20,19 @@ import {
  * scopes that preview to the flow: without it, tapping "Dark" on slide five would
  * repaint the nav bar behind the user has not agreed to yet.
  */
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  scheme = "system",
+}: {
+  children: ReactNode
+  /**
+   * The scheme the server already committed to, read from the cookie the pre-paint
+   * script writes — so a server component emits the real palette, not a light guess.
+   */
+  scheme?: ThemeScheme
+}) {
   return (
-    <OnboardingThemeProvider>
+    <OnboardingThemeProvider initialScheme={scheme}>
       <ThemedShell>{children}</ThemedShell>
     </OnboardingThemeProvider>
   )

@@ -5,6 +5,9 @@ import ActivityChartWrapper from "@/components/charts/ActivityChartWrapper"
 import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
+/* The activity tier throughout: this renders inside the sheet, which stacks
+   activityPage → activityPanel → activityCard over a map. */
+
 export type ActivityAnalysisTabProps = {
   distanceData?: number[]
   altitudeData?: number[]
@@ -32,12 +35,12 @@ export default function ActivityAnalysisTab({
 
   if (!hasData) {
     return (
-      <View className="bg-page border border-line rounded-2xl p-6 items-center justify-center my-4">
+      <View className="bg-activity-card border border-activity-line rounded-2xl p-6 items-center justify-center my-4">
         <Ionicons name="stats-chart-outline" size={36} color={colors.accent} />
-        <Text className="text-ink font-bold text-sm mt-2">
+        <Text className="text-activity-ink font-bold text-sm mt-2">
           No Analysis Data
         </Text>
-        <Text className="text-ink-muted text-xs mt-1 text-center">
+        <Text className="text-activity-ink-muted text-xs mt-1 text-center">
           Elevation or telemetry stream data is not available for this activity.
         </Text>
       </View>
@@ -45,11 +48,11 @@ export default function ActivityAnalysisTab({
   }
 
   return (
-    <View className="bg-surface border border-line rounded-2xl p-4 my-2 shadow-sm">
+    <View className="bg-activity-panel border border-activity-line rounded-2xl p-4 my-2">
       <View className="flex-row items-center justify-between mb-2">
         <View className="flex-row items-center gap-2">
           <Ionicons name="stats-chart" size={18} color={colors.accent} />
-          <Text className="text-ink font-bold text-sm">
+          <Text className="text-activity-ink font-bold text-sm">
             Elevation Profile
           </Text>
         </View>

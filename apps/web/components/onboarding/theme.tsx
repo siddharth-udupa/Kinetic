@@ -29,9 +29,8 @@ export type { ThemeScheme }
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 
-/* `useSyncExternalStore` rather than a `useEffect`: the server snapshot is a
-   constant, so the first client render matches the server HTML and the flow
-   repaints to dark immediately after hydration instead of flashing light. */
+/* `useSyncExternalStore` reads the snapshot during render, so the first client paint
+   agrees with the server HTML instead of correcting a frame later. */
 function subscribeToSystemScheme(onChange: () => void) {
   const query = window.matchMedia(DARK_QUERY)
   query.addEventListener("change", onChange)
@@ -42,6 +41,15 @@ function getSystemScheme() {
   return window.matchMedia(DARK_QUERY).matches
 }
 
+/**
+ * What the server rendered with, as a boolean `isDark`.
+ *
+ * Always false: the server cannot know the athlete's scheme on a first visit, so light
+ * is the only answer it can give. `useSyncExternalStore` keeps the first client render
+ * on this value and only then reads the real preference, which is what keeps hydration
+ * free of mismatches. Once the cookie in `theme-init` exists the server renders the
+ * right scheme itself, and this is bypassed entirely.
+ */
 function getServerScheme() {
   return false
 }
