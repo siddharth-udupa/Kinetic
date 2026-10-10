@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { View, Text, TouchableOpacity, Modal, ScrollView, StyleProp, ViewStyle } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { tileProviders, DEFAULT_TILE_PROVIDER, type TileProviderId } from "@repo/maps"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type TileProviderPickerProps = {
   currentProviderId: TileProviderId
@@ -16,7 +16,7 @@ export default function TileProviderPicker({
   triggerStyle,
 }: TileProviderPickerProps) {
   const [isPickerOpen, setIsPickerOpen] = useState(false)
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const activeProvider = tileProviders[currentProviderId] || tileProviders[DEFAULT_TILE_PROVIDER]
 
   return (

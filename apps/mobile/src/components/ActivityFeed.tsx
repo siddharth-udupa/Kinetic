@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import type { ActivityCardType } from "@repo/types"
 import { DEFAULT_PREFERENCES, usePreferences } from "@/lib/preferencesStore"
 import type { User } from "@/lib/auth-client"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 interface ActivityFeedProps {
   user: User
@@ -26,7 +26,7 @@ export default function ActivityFeed({
   error = null,
 }: ActivityFeedProps) {
   const { preferences } = usePreferences()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   if (isLoading && activities.length === 0) {
     return (
@@ -77,7 +77,7 @@ export default function ActivityFeed({
 
 // Header Banner Widget Component
 function ListHeaderComponent() {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View>

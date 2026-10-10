@@ -1,11 +1,11 @@
 import { Redirect, Stack } from "expo-router"
 import { ActivityIndicator, View } from "react-native"
 import { useSession } from "@/lib/auth-client"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export default function AppLayout() {
   const { data: session, isPending } = useSession()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   // Gating here rather than per-screen means protected screens never mount
   // unauthenticated, so their data effects don't fire doomed requests.

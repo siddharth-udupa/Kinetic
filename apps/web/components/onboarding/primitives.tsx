@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 import { COLORS, getColors } from "@repo/shared"
 import { ICONS, type IconName } from "./icons"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import type { OnboardingPrefs } from "./prefs"
 
 export type { IconName }
@@ -94,7 +94,7 @@ export function SlideHeading({
   title: string
   subtitle?: string
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <div className="mb-7">
@@ -130,7 +130,7 @@ export function SlideHeading({
 }
 
 export function IconBadge({ icon, size = 48 }: { icon: IconName; size?: number }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = ICONS[icon]
 
   return (
@@ -187,7 +187,7 @@ export function PrimaryButton({
   loading?: boolean
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const blocked = disabled && !loading
   const contentColor = blocked ? colors.textMuted : colors.onAccent
   const Icon = icon ? ICONS[icon] : null
@@ -223,7 +223,7 @@ export function GhostButton({
   onPress: () => void
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = icon ? ICONS[icon] : null
 
   return (
@@ -250,7 +250,7 @@ export function TextAction({
   onPress: () => void
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = ICONS[icon]
 
   return (
@@ -276,7 +276,7 @@ export function TextAction({
  * them was actually chosen.
  */
 export function RadioDot({ selected }: { selected: boolean }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <span
@@ -308,7 +308,7 @@ export function ChoiceCard({
   selected: boolean
   onPress: () => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = ICONS[icon]
 
   return (
@@ -377,7 +377,7 @@ export function Segmented<T extends string>({
   value: T
   onChange: (value: T) => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <div
@@ -434,7 +434,7 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
   value: PrefValue<K>
   onChange: (value: PrefValue<K>) => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = ICONS[icon]
 
   return (
@@ -461,7 +461,7 @@ export function Banner({
   icon: IconName
   children: ReactNode
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const isDanger = tone === "danger"
   const Icon = ICONS[icon]
 
@@ -488,7 +488,7 @@ export function Banner({
 }
 
 export function Chip({ label }: { label: string }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <span
@@ -511,7 +511,7 @@ export function ReviewRow({
   onPress: () => void
   isLast?: boolean
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <>
@@ -541,7 +541,7 @@ export function ReviewRow({
 }
 
 export function ReviewSection({ title, children }: { title: string; children: ReactNode }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <section className="mb-4">

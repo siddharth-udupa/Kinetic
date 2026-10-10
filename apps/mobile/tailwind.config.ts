@@ -1,11 +1,11 @@
-const { BRAND_COLOR, COLORS } = require("@repo/shared") as typeof import("@repo/shared")
+const { COLOR_UTILITIES, COLORS, toChannels, toKebab } = require("@repo/shared") as typeof import("@repo/shared")
 
 /*
  * Shared colours → NativeWind utilities.
  *
- * The tokens live in `packages/shared/src/colors.ts`. This file is the only
- * bridge between them and the mobile app: edit a value there and every class
- * built on it follows, on both platforms.
+ * The tokens live in `packages/shared/src/colors.ts`; the class names they are
+ * exposed as live in `packages/shared/src/color-utilities.ts`. This file is the
+ * only bridge between them and the mobile app.
  *
  * `require` rather than `import` because `nativewind/preset` ships no type
  * declarations, and a value `import` would make this an ES module and break the
@@ -31,160 +31,54 @@ const { BRAND_COLOR, COLORS } = require("@repo/shared") as typeof import("@repo/
  * NativeWind swaps that root class, so the appearance slide preview still works
  * as it did before.
  *
- * Add the token to `packages/shared/src/colors.ts` first, then name it in
- * `COLORS` below.
+ * The utility list is not written out here — `COLOR_UTILITIES` in `@repo/shared`
+ * is the only copy of it, and the web app's `globals.css` is checked against that
+ * same map by `pnpm check:colors`.
  */
-
-/** `#RRGGBB` → `"R G B"`, which is the form `rgb(var(--x) / <alpha>)` needs. */
-function channels(hex: string): string {
-  const digits = hex.replace("#", "")
-  const full =
-    digits.length === 3
-      ? digits
-          .split("")
-          .map((char) => char + char)
-          .join("")
-      : digits
-  const [r, g, b] = [0, 2, 4].map((i) => Number.parseInt(full.slice(i, i + 2), 16))
-  return `${r} ${g} ${b}`
-}
 
 /** `cardMuted` → `--color-card-muted`. */
 function varName(token: string): string {
-  return `--color-${token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)}`
+  return `--color-${toKebab(token)}`
 }
 
 const HEX_ONLY = /^#[0-9a-f]{6}$/i
 const isOpaque = (value: string) => HEX_ONLY.test(value)
 
-const tokens = Object.keys(COLORS.light) as (keyof typeof COLORS.light)[]
+type ColorToken = keyof typeof COLORS.light
+
+const tokens = Object.keys(COLORS.light) as ColorToken[]
 
 /**
  * Tokens opaque in both themes: referenced as channels so `/opacity` works.
  *
  * The check is on both themes on purpose. A token that is a hex in light but an
  * `rgba()` in dark cannot be referenced the same way in both, so it falls
- * through to the functional branch below and simply loses opacity modifiers.
+ * through to the other branch and simply loses opacity modifiers.
+ *
+ * A Set rather than an array because `themeColor` is reached with a plain string
+ * from the utility map, which is not narrow enough to index `COLORS` with.
  */
-const opaqueTokens = tokens.filter(
-  (token) => isOpaque(COLORS.light[token]) && isOpaque(COLORS.dark[token]),
-)
-
-/** Tokens carrying their own alpha in both themes: emitted verbatim. */
-const functionalTokens = tokens.filter(
-  (token) => !opaqueTokens.includes(token),
+const opaqueTokens = new Set<string>(
+  tokens.filter((token) => isOpaque(COLORS.light[token]) && isOpaque(COLORS.dark[token])),
 )
 
 /** The custom properties for one scheme, split by how each kind is referenced. */
 function variablesFor(scheme: "light" | "dark") {
-  return Object.fromEntries([
-    ...opaqueTokens.map((token) => [varName(token), channels(COLORS[scheme][token])]),
-    ...functionalTokens.map((token) => [varName(token), COLORS[scheme][token]]),
-  ])
+  const palette = COLORS[scheme]
+  return Object.fromEntries(
+    tokens.map((token) => [
+      varName(token),
+      opaqueTokens.has(token) ? toChannels(palette[token]) : palette[token],
+    ]),
+  )
 }
 
 /** Every shared token, in the form Tailwind expects to build utilities from. */
-function themeColor(token: keyof typeof COLORS.light) {
-  return opaqueTokens.includes(token)
+function themeColor(token: string) {
+  return opaqueTokens.has(token)
     ? `rgb(var(${varName(token)}) / <alpha-value>)`
     : `var(${varName(token)})`
 }
-
-/**
- * Every token the app uses is exposed as a themed class name.
- *
- * A themed name is one class that resolves correctly in both schemes, so a
- * component writes `bg-surface` once instead of a `light:`/`dark:` pair and the
- * palette stays the only place a colour is defined.
- *
- * Anything not listed here is still available as a literal from the shared
- * palette: `useOnboardingTheme().colors.accent` returns the resolved value for
- * the active scheme, which is the right tool for native components (icons,
- * Skia, Reanimated) that need a concrete colour rather than a class.
- *
- * `brand` stays flat and unthemed, matching what `globals.css` does on the web.
- */
-const COLORS_THEMED = {
-  // ── Surfaces ──────────────────────────────────────────────────────────
-  page: "page",
-  surface: "card",
-  "surface-muted": "cardMuted",
-  "surface-muted-hover": "cardMutedHover",
-  "surface-hover": "cardHover",
-  "surface-pressed": "cardPressed",
-  raised: "raised",
-  "raised-hover": "raisedHover",
-  "raised-pressed": "raisedPressed",
-  disabled: "controlDisabled",
-
-  // ── Activity detail ───────────────────────────────────────────────────
-  "activity-page": "activityPage",
-  "activity-panel": "activityPanel",
-  "activity-card": "activityCard",
-  "activity-line": "activityBorder",
-  "activity-handle": "activityHandle",
-
-  // ── Borders ───────────────────────────────────────────────────────────
-  line: "border",
-  "line-strong": "borderStrong",
-  "line-muted": "borderMuted",
-
-  // ── Text ──────────────────────────────────────────────────────────────
-  ink: "text",
-  "ink-secondary": "textSecondary",
-  "ink-muted": "textMuted",
-  "ink-disabled": "textDisabled",
-  "ink-inverse": "textInverse",
-  "activity-ink": "activityText",
-  "activity-ink-secondary": "activityTextSecondary",
-  "activity-ink-muted": "activityTextMuted",
-
-  // ── Brand accent ──────────────────────────────────────────────────────
-  accent: "accent",
-  "accent-hover": "accentHover",
-  "accent-pressed": "accentPressed",
-  "accent-text": "accentText",
-  "accent-soft": "accentSoft",
-  "on-accent": "onAccent",
-
-  // ── Status ────────────────────────────────────────────────────────────
-  danger: "danger",
-  "danger-hover": "dangerHover",
-  "danger-pressed": "dangerPressed",
-  "danger-text": "dangerText",
-  "danger-soft": "dangerSoft",
-  success: "success",
-  "success-hover": "successHover",
-  "success-pressed": "successPressed",
-  "success-text": "successText",
-  "success-soft": "successSoft",
-  warning: "warning",
-  "warning-hover": "warningHover",
-  "warning-pressed": "warningPressed",
-  "warning-text": "warningText",
-  "warning-soft": "warningSoft",
-  info: "info",
-  "info-hover": "infoHover",
-  "info-pressed": "infoPressed",
-  "info-text": "infoText",
-  "info-soft": "infoSoft",
-  "purple-text": "purpleText",
-  "purple-soft": "purpleSoft",
-
-  // ── Interaction ───────────────────────────────────────────────────────
-  overlay: "overlay",
-  "focus-ring": "focusRing",
-  "track-hover": "trackHover",
-  "track-pressed": "trackPressed",
-
-  // ── Charts ────────────────────────────────────────────────────────────
-  "chart-line": "chartLine",
-  "chart-fill": "chartFill",
-  "chart-grid": "chartGrid",
-  "chart-axis": "chartAxis",
-  "chart-label": "chartLabel",
-  "chart-crosshair": "chartCrosshair",
-} as const satisfies Record<string, keyof typeof COLORS.light>
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -199,17 +93,22 @@ module.exports = {
   theme: {
     extend: {
       // `cardShadow` holds a whole `box-shadow` value, so it becomes a shadow
-      // utility rather than a colour. The custom property it points at already
+      // utility rather than a colour — which is why it is the one token absent
+      // from `COLOR_UTILITIES`. The custom property it points at already
       // carries the light and dark variants, so `shadow-card` needs no `dark:`.
       boxShadow: { card: "var(--color-card-shadow)" },
       colors: {
-        brand: BRAND_COLOR,
-
-        // Exposes each themed token as a single class that follows the
-        // resolved scheme: `bg-surface` reads the light value normally
-        // and the dark value under `.dark`.
+        /*
+         * Every themed token as a single class that follows the resolved scheme:
+         * `bg-surface` reads the light value normally and the dark value under
+         * `.dark`.
+         *
+         * Where a class will not do — Ionicons, Skia, Reanimated — reach for the
+         * palette directly instead: `useTheme().colors.accent` returns the
+         * resolved value for the active scheme.
+         */
         ...Object.fromEntries(
-          Object.entries(COLORS_THEMED).map(([name, token]) => [name, themeColor(token)]),
+          Object.entries(COLOR_UTILITIES).map(([token, name]) => [name, themeColor(token)]),
         ),
       },
     },

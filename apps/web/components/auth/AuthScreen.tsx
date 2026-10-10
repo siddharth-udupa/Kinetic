@@ -6,11 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { signIn, signUp } from "@/lib/auth-client"
 import { ICONS, type IconName } from "@/components/onboarding/icons"
 import { Banner, IconBadge, PrimaryButton, Segmented } from "@/components/onboarding/primitives"
-import {
-  OnboardingThemeProvider,
-  onboardingVars,
-  useOnboardingTheme,
-} from "@/components/onboarding/theme"
+import { ThemeProvider, themeVars, useTheme } from "@/components/theme"
 
 type Mode = "signin" | "signup"
 
@@ -99,7 +95,7 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
  * label sitting *inside* the control make each one read as a single object.
  */
 function Field({ id, label, icon, trailing, className, ...inputProps }: FieldProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Icon = ICONS[icon]
 
   return (
@@ -132,16 +128,16 @@ function Field({ id, label, icon, trailing, className, ...inputProps }: FieldPro
 
 export default function AuthScreen() {
   return (
-    <OnboardingThemeProvider>
+    <ThemeProvider>
       <AuthSurface />
-    </OnboardingThemeProvider>
+    </ThemeProvider>
   )
 }
 
 function AuthSurface() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { colors, isDark } = useOnboardingTheme()
+  const { colors, isDark } = useTheme()
 
   const [mode, setMode] = useState<Mode>("signin")
   const [name, setName] = useState("")
@@ -229,7 +225,7 @@ function AuthSurface() {
     <div
       className="flex flex-col"
       style={{
-        ...onboardingVars(colors, isDark),
+        ...themeVars(colors, isDark),
         backgroundColor: colors.page,
         /*
          * Claim the viewport below the shell header rather than growing with

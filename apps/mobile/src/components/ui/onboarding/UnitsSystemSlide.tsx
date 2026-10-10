@@ -6,7 +6,7 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import { SYSTEMS, type UnitSystem } from "./prefs"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
@@ -24,7 +24,7 @@ type Props = {
  * five at once, which is the answer almost everyone would have given anyway.
  */
 export default function UnitsSystemSlide({ prefs, onChange, onNext }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const system: UnitSystem = prefs.distanceUnit === "imperial" ? "imperial" : "metric"
 
   return (

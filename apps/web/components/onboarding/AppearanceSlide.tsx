@@ -9,7 +9,7 @@ import {
   SlideShell,
   ThemePreview,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import { THEME_LABELS, TIME_LABELS } from "./prefs"
 import type { OnboardingPrefs } from "./prefs"
 
@@ -34,7 +34,7 @@ const THEMES: { value: OnboardingPrefs["theme"]; icon: IconName }[] = [
  * "preview mode" to get out of sync.
  */
 export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const Clock = ICONS["time-outline"]
 
   // Captured once so the sample clock does not re-render on every tick.

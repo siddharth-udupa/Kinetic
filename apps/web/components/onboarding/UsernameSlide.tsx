@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { ICONS } from "./icons"
 import { Banner, PrimaryButton, SlideHeading, SlideShell } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 
 type Props = {
   username: string
@@ -31,7 +31,7 @@ function getValidationMessage(value: string): string | null {
 }
 
 export default function UsernameSlide({ username, onChange, onSave, onNext, isSaving }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const [apiError, setApiError] = useState<string | null>(null)
   const CheckCircle = ICONS["checkmark-circle"]
   const Lock = ICONS["lock-closed-outline"]

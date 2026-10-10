@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback, ActivityIndicator } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ActivityHeaderOverlayProps = {
   topInset: number
@@ -20,7 +20,7 @@ export default function ActivityHeaderOverlay({
   onDeleteActivity,
   isDeleting = false,
 }: ActivityHeaderOverlayProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleMorePress = () => {

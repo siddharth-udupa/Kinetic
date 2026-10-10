@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, TouchableOpacity, Modal, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type RouteSelectionModalProps = {
   visible: boolean
@@ -16,7 +16,7 @@ export default function RouteSelectionModal({
   onSelectRoute,
   onClose,
 }: RouteSelectionModalProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Modal

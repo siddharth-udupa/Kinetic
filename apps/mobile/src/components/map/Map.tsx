@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { decodePolyline } from "@repo/gpx"
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 let MapLibreModule: typeof import("@maplibre/maplibre-react-native") | null = null
 
@@ -34,7 +34,7 @@ export default function MapView({
   livePoints,
   recenterTrigger,
 }: MapProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const points = useMemo(() => {
     if (livePoints && livePoints.length > 0) {

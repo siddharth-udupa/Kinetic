@@ -2,12 +2,12 @@ import { Redirect } from "expo-router"
 import { View, ActivityIndicator } from "react-native"
 import { useSession } from "@/lib/auth-client"
 import { usePreferences } from "@/lib/preferencesStore"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export default function Index() {
   const { data: session, isPending } = useSession()
   const { status, preferences } = usePreferences()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   if (isPending) {
     return (

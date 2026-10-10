@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { FileUp, PenSquare } from "lucide-react"
-import { useOnboardingTheme } from "@/components/onboarding/theme"
+import { useTheme } from "@/components/theme"
 import { FOCUS } from "@/components/shell/nav-primitives"
 
 const LINKS = [
@@ -22,7 +22,7 @@ const LINKS = [
  */
 export default function UploadNav() {
   const pathname = usePathname()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <nav

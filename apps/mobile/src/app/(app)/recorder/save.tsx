@@ -21,7 +21,7 @@ import {
 import MapView from "@/components/map/Map"
 import ActionModal from "@/components/ui/ActionModal"
 import { useActivityRecorder } from "@/hooks/useActivityRecorder"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import {
   getActiveSession,
   computeElapsedSeconds,
@@ -62,7 +62,7 @@ export default function SaveActivityScreen() {
   const [session, setSession] = useState<ActiveSession | null>(null)
   const [loadingSession, setLoadingSession] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const { colors, isDark } = useOnboardingTheme()
+  const { colors, isDark } = useTheme()
 
   const [sportType, setSportType] = useState<ActivityTypes>("run")
   const [title, setTitle] = useState("")

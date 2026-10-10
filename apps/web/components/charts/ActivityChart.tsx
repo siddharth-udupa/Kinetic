@@ -2,7 +2,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { metersToDistance, metersToElevation, speedToMps, type DistanceUnit, type ElevationUnit, type SpeedUnit } from "@repo/units"
-import { useOnboardingTheme } from "@/components/onboarding/theme"
+import { useTheme } from "@/components/theme"
 
 type ActivityChartsClientProps = {
   distanceData: number[]
@@ -86,7 +86,7 @@ function ChartTooltip(
 export default function ActivityChart({ distanceData, altitudeData, speedData, distanceUnit, elevationUnit, speedUnit }: ActivityChartsClientProps) {
   // Recharts draws into SVG attributes rather than class names, so the axes and
   // grid need resolved values instead of the `chart-*` utilities.
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const data = buildChartData(
     distanceData,

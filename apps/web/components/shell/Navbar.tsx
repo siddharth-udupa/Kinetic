@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import { useSession, signOut } from "@/lib/auth-client"
 import { APP_NAME } from "@repo/shared"
-import { useOnboardingTheme } from "@/components/onboarding/theme"
+import { useTheme } from "@/components/theme"
 import {
   Avatar,
   BrandMark,
@@ -45,7 +45,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -476,7 +476,7 @@ function MobileSheet({
   onClose: () => void
   onSignOut: () => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <div

@@ -10,9 +10,14 @@
  * TypeScript and reach the DOM as `--ob-*` custom properties on the shell
  * wrapper (`components/shell/AppShell.tsx`).
  *
- * Prefer these (`bg-surface`, `text-ink`, `border-line`, `bg-brand`) over raw
- * `var(--ob-*)` or arbitrary hex classes like `bg-[#FC5200]`. Anything you add
- * here needs a matching key in the shared tokens first.
+ * Prefer these (`bg-surface`, `text-ink`, `border-line`) over raw `var(--ob-*)`
+ * or arbitrary hex classes like `bg-[#FC5200]`.
+ *
+ * This block is the one place the palette is written out by hand, because CSS
+ * cannot import TypeScript. `apps/mobile/tailwind.config.ts` generates its own
+ * list from `COLOR_UTILITIES` in `@repo/shared`; `pnpm check:colors` fails if the
+ * two disagree, so a line added here without a matching token in the map cannot
+ * reach a build.
  */
 @theme inline {
   /* Surfaces */
@@ -22,6 +27,7 @@
   --color-surface-pressed: var(--ob-card-pressed);
   --color-surface-muted: var(--ob-card-muted);
   --color-surface-muted-hover: var(--ob-card-muted-hover);
+  --color-surface-muted-pressed: var(--ob-card-muted-pressed);
   --color-raised: var(--ob-raised);
   --color-raised-hover: var(--ob-raised-hover);
   --color-raised-pressed: var(--ob-raised-pressed);
@@ -49,13 +55,6 @@
   --color-activity-ink: var(--ob-activity-text);
   --color-activity-ink-secondary: var(--ob-activity-text-secondary);
   --color-activity-ink-muted: var(--ob-activity-text-muted);
-
-  /*
-   * The brand orange for the surfaces that predate the shared tokens. Kept as a
-   * single token so it cannot drift from the `accent` the design system uses —
-   * `BRAND_COLOR` in `@repo/shared` feeds both this and the palette.
-   */
-  --color-brand: #fc4c02;
 
   /* Accent */
   --color-accent: var(--ob-accent);

@@ -7,7 +7,7 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import {
   ELEVATION_LABELS,
   PACE_LABELS,
@@ -52,7 +52,7 @@ export default function ReviewSlide({
   isSaving,
   error,
 }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <SlideShell

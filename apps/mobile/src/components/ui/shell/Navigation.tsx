@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import type { ComponentProps, ReactNode } from "react"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useOnboardingTheme } from "../onboarding/theme"
+import { useTheme } from "../theme"
 import { APP_NAME } from "@repo/shared"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
@@ -27,7 +27,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"]
  * for their icon badges.
  */
 export function BrandMark({ compact = false }: { compact?: boolean }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="flex-row items-center gap-2.5">
@@ -59,7 +59,7 @@ export function HeaderIconButton({
   onPress?: () => void
   badge?: boolean
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -103,7 +103,7 @@ type TopBarProps = {
  */
 export function TopBar({ onPressNotifications, trailing }: TopBarProps) {
   const insets = useSafeAreaInsets()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -176,7 +176,7 @@ type TabBarProps = {
  */
 export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
   const insets = useSafeAreaInsets()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -239,7 +239,7 @@ export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
  * interrupted by a floating circle.
  */
 function RecordButton({ label, onPress }: { label: string; onPress: () => void }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable

@@ -166,12 +166,12 @@ export default function GPXUploadPage() {
             GPX File <span className="text-danger-text">*</span>
           </label>
           
-          <div className="border-2 border-dashed border-line-strong hover:border-brand rounded-xl p-8 bg-surface-muted-hover hover:bg-accent-soft transition-colors flex flex-col items-center justify-center text-center">
-            <UploadCloud className="w-10 h-10 text-brand mb-3" />
+          <div className="border-2 border-dashed border-line-strong hover:border-accent rounded-xl p-8 bg-surface-muted-hover hover:bg-accent-soft transition-colors flex flex-col items-center justify-center text-center">
+            <UploadCloud className="w-10 h-10 text-accent mb-3" />
             
             {file ? (
               <div className="flex items-center gap-3 bg-surface px-4 py-2 rounded-lg border border-line shadow-xs">
-                <FileUp className="w-5 h-5 text-brand" />
+                <FileUp className="w-5 h-5 text-accent" />
                 <div className="text-left">
                   <p className="text-sm font-semibold text-ink">{file.name}</p>
                   <p className="text-xs text-ink-muted">{formatFileSize(file.size)}</p>
@@ -195,7 +195,7 @@ export default function GPXUploadPage() {
                 </p>
                 <label
                   htmlFor="gpx-upload"
-                  className="px-4 py-2 bg-surface border border-line-strong hover:border-brand text-ink text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-brand transition-colors"
+                  className="px-4 py-2 bg-surface border border-line-strong hover:border-accent text-ink text-xs font-semibold rounded-md shadow-xs cursor-pointer hover:text-accent transition-colors"
                 >
                   Browse Files
                 </label>
@@ -222,7 +222,7 @@ export default function GPXUploadPage() {
             placeholder="Morning Ride"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled"
+            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-accent text-ink placeholder:text-ink-disabled"
           />
         </div>
 
@@ -235,7 +235,7 @@ export default function GPXUploadPage() {
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-accent text-ink placeholder:text-ink-disabled resize-y"
           />
         </div>
 
@@ -246,7 +246,7 @@ export default function GPXUploadPage() {
             disabled={!file || isUploading}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               file && !isUploading
-                ? "bg-brand text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                ? "bg-accent text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
                 : "bg-disabled text-ink-disabled border-line-strong cursor-not-allowed select-none opacity-80"
             }`}
           >

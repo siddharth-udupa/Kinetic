@@ -9,7 +9,7 @@ import {
   ThemePreview,
   type IconName,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import { THEME_LABELS, TIME_LABELS } from "./prefs"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
@@ -34,7 +34,7 @@ const THEMES: { value: OnboardingPrefs["theme"]; icon: IconName }[] = [
  * mode" to get out of sync.
  */
 export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   // Captured once so the sample clock does not re-render on every tick.
   const sampleTime = useMemo(() => new Date(), [])

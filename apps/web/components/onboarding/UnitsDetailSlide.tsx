@@ -9,7 +9,7 @@ import {
   SlideShell,
   TextAction,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import {
   ELEVATION,
   PACE,
@@ -36,7 +36,7 @@ type Props = {
  * another full-width block, which is what made the original screen unreadable.
  */
 export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const system: UnitSystem = prefs.distanceUnit === "imperial" ? "imperial" : "metric"
   const Sparkles = ICONS["sparkles-outline"]
   const isDefault =

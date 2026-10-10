@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ActivityOverviewTabProps = {
   distance: string | number
@@ -30,7 +30,7 @@ type StatCardProps = {
 }
 
 function StatCard({ icon, label, value, unit, accent = "orange" }: StatCardProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   // Built from the resolved palette so the tile hues follow the athlete's scheme.
   const accents = {
@@ -83,7 +83,7 @@ export default function ActivityOverviewTab({
   startTime,
   endTime,
 }: ActivityOverviewTabProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const distanceLabel = distanceUnit === "imperial" ? "mi" : "km"
   const elevationLabel = elevationUnit === "feet" ? "ft" : "m"
   const speedLabel = speedUnit === "m/s" ? "m/s" : speedUnit

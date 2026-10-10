@@ -29,12 +29,12 @@ import FloatingMapControls from "@/components/ui/recorder/FloatingMapControls";
 import LiveMetricsCard from "@/components/ui/recorder/LiveMetricsCard";
 import RouteSelectionModal from "@/components/ui/recorder/RouteSelectionModal";
 import { useActivityRecorder } from "@/hooks/useActivityRecorder";
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme";
+import { useTheme } from "@/components/ui/theme";
 
 export default function RecorderScreen() {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
-	const { colors } = useOnboardingTheme();
+	const { colors } = useTheme();
 
 	const [activityType, setActivityType] = useState<ActivityTypes>("run");
 	const [providerId, setProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER);

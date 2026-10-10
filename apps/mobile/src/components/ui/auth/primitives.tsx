@@ -1,7 +1,7 @@
 import { useState, type ComponentProps, type ReactNode } from "react"
 import { Pressable, Text, TextInput, View, type TextInputProps } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "../onboarding/theme"
+import { useTheme } from "../theme"
 
 /**
  * The `name` prop's real union. `Ionicons` is a `createIconSet` component, so
@@ -25,7 +25,7 @@ type AuthFieldProps = TextInputProps & {
  * label sitting inside the control make each one read as a single object.
  */
 export function AuthField({ label, icon, trailing, style, ...inputProps }: AuthFieldProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const [isFocused, setIsFocused] = useState(false)
 
   return (
@@ -70,7 +70,7 @@ export function FieldAction({
   onPress: () => void
   selected?: boolean
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -89,7 +89,7 @@ export function FieldAction({
 
 /** Hairline + caption, used between the social button and the email form. */
 export function OrDivider({ children }: { children: string }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="flex-row items-center gap-3 my-6">
@@ -114,7 +114,7 @@ export function SocialButton({
   busy?: boolean
   disabled?: boolean
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const blocked = disabled || busy
 
   return (
@@ -137,7 +137,7 @@ export function SocialButton({
 
 /** Trust line under the action — the one reassurance this screen owes. */
 export function TrustNote({ children }: { children: string }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="flex-row items-start justify-center gap-1.5 mt-3">

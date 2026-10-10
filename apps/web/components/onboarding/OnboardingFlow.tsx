@@ -1,13 +1,9 @@
 "use client"
 
+import { type ThemeScheme } from "@repo/shared"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import {
-  OnboardingThemeProvider,
-  onboardingVars,
-  useOnboardingTheme,
-  type ThemeScheme,
-} from "./theme"
+import { ThemeProvider, themeVars, useTheme } from "../theme"
 import type { OnboardingPrefs } from "./prefs"
 import ProgressHeader from "./ProgressHeader"
 import WelcomeSlide from "./WelcomeSlide"
@@ -42,15 +38,15 @@ type Props = {
 
 export default function OnboardingFlow({ userName, initialPrefs }: Props) {
   return (
-    <OnboardingThemeProvider initialScheme={initialPrefs.theme}>
+    <ThemeProvider initialScheme={initialPrefs.theme}>
       <OnboardingSurface userName={userName} initialPrefs={initialPrefs} />
-    </OnboardingThemeProvider>
+    </ThemeProvider>
   )
 }
 
 function OnboardingSurface({ userName, initialPrefs }: Props) {
   const router = useRouter()
-  const { colors, isDark, setScheme } = useOnboardingTheme()
+  const { colors, isDark, setScheme } = useTheme()
 
   const [currentSlide, setCurrentSlide] = useState<number>(SLIDE.welcome)
   const [username, setUsername] = useState("")
@@ -193,7 +189,7 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     <div
       className="flex flex-col"
       style={{
-        ...onboardingVars(colors, isDark),
+        ...themeVars(colors, isDark),
         backgroundColor: colors.page,
         /*
          * Claim the viewport below the shell header rather than growing with

@@ -19,7 +19,7 @@ import type {
   SpeedUnit,
 } from "@repo/units"
 import type { ColorTokens } from "@repo/shared"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import { buildChartData } from "./chartMath"
 
 export { buildChartData } from "./chartMath"
@@ -68,7 +68,7 @@ export default function ActivityChart({
   speedUnit,
 }: ActivityChartsClientProps) {
   // ── Hooks first, unconditionally — early returns come after. ──
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const CHART = useMemo(() => chartPalette(colors), [colors])
 
   const data = useMemo(

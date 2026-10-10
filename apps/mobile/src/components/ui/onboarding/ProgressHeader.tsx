@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 
 type Props = {
   /** 1-based. */
@@ -28,7 +28,7 @@ type Props = {
  * from reading as an empty track.
  */
 export default function ProgressHeader({ step, total, onSkip }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const progress = useSharedValue(step / total)
 
   useEffect(() => {

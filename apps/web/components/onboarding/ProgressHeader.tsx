@@ -1,7 +1,7 @@
 "use client"
 
 import { ICONS } from "./icons"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 
 type Props = {
   /** 1-based. */
@@ -23,7 +23,7 @@ type Props = {
  * from reading as an empty track.
  */
 export default function ProgressHeader({ step, total, onSkip }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const ChevronForward = ICONS["chevron-forward"]
 
   return (

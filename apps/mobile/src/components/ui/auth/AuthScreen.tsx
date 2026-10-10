@@ -19,7 +19,7 @@ import {
   PrimaryButton,
   Segmented,
 } from "@/components/ui/onboarding/primitives"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import {
   AuthField,
   FieldAction,
@@ -64,7 +64,7 @@ const COPY: Record<Mode, { eyebrow: string; title: string; subtitle: string; goo
 export default function AuthScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const [mode, setMode] = useState<Mode>("signin")
   const [name, setName] = useState("")

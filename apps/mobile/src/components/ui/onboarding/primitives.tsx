@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { COLORS, getColors } from "@repo/shared"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
 export type IconName = keyof typeof Ionicons.glyphMap
@@ -73,7 +73,7 @@ export function SlideHeading({
   title: string
   subtitle?: string
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="mb-7">
@@ -118,7 +118,7 @@ export function IconBadge({
   icon: IconName
   size?: number
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -156,7 +156,7 @@ export function PrimaryButton({
   loading?: boolean
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const blocked = disabled && !loading
   const contentColor = blocked ? colors.textMuted : colors.onAccent
 
@@ -193,7 +193,7 @@ export function GhostButton({
   onPress: () => void
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -221,7 +221,7 @@ export function TextAction({
   onPress: () => void
   icon?: IconName
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -247,7 +247,7 @@ export function TextAction({
  * them was actually chosen.
  */
 export function RadioDot({ selected }: { selected: boolean }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -279,7 +279,7 @@ export function ChoiceCard({
   selected: boolean
   onPress: () => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <Pressable
@@ -346,7 +346,7 @@ export function Segmented<T extends string>({
   value: T
   onChange: (value: T) => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -396,7 +396,7 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
   value: PrefValue<K>
   onChange: (value: PrefValue<K>) => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="mb-4">
@@ -422,7 +422,7 @@ export function Banner({
   icon: IconName
   children: ReactNode
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const isDanger = tone === "danger"
 
   return (
@@ -447,7 +447,7 @@ export function Banner({
 }
 
 export function Chip({ label }: { label: string }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View
@@ -472,7 +472,7 @@ export function ReviewRow({
   onPress: () => void
   isLast?: boolean
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <>
@@ -506,7 +506,7 @@ export function ReviewSection({
   title: string
   children: ReactNode
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="mb-4">

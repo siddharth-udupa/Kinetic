@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type FloatingMapControlsProps = {
   is3dMode: boolean
@@ -18,7 +18,7 @@ export default function FloatingMapControls({
   onRecenterLocation,
   onOpenInfo,
 }: FloatingMapControlsProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="px-4 mb-3 flex-row justify-between items-end">

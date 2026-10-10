@@ -1,13 +1,13 @@
 import { View, Text, TouchableOpacity, StatusBar } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ActivityNotFoundProps = {
   onBack: () => void
 }
 
 export default function ActivityNotFound({ onBack }: ActivityNotFoundProps) {
-  const { isDark, colors } = useOnboardingTheme()
+  const { isDark, colors } = useTheme()
 
   return (
     <View className="flex-1 bg-activity-page items-center justify-center px-6">

@@ -6,7 +6,7 @@ import {
   SlideShell,
   type IconName,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 
 type Props = {
   name: string
@@ -32,7 +32,7 @@ const HIGHLIGHTS: { icon: IconName; title: string; body: string }[] = [
 ]
 
 export default function WelcomeSlide({ name, onNext }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <SlideShell

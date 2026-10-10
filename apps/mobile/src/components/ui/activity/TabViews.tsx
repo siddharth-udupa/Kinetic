@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, ActivityIndicator } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import type { TabType } from "./TabNavigation"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
@@ -12,7 +12,7 @@ const ActivityAnalysisTab = React.lazy(() => import("./AnalysisTab"))
  * handed down rather than calling the hook from `render()`.
  */
 function ChartErrorPanel() {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="bg-danger-soft border border-danger/40 rounded-2xl p-6 items-center justify-center my-2">
@@ -71,7 +71,7 @@ export default function ActivityTabViews({
   streams,
   preferences,
 }: ActivityTabViewsProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   if (activeTab === "analysis") {
     const stream = streams && streams.length > 0 ? streams[0] : undefined

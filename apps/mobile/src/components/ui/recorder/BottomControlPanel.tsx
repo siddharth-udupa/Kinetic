@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { ActivityTypes } from "@repo/types"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 
 export type BottomControlPanelProps = {
@@ -30,7 +30,7 @@ export default function BottomControlPanel({
   onFinishRecording,
   onOpenRouteModal,
 }: BottomControlPanelProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const getActivityIcon = (type: ActivityTypes) => {
     switch (type) {

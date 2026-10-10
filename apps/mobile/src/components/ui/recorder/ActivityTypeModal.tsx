@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity, Modal } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { ActivityTypes } from "@repo/types"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ActivityTypeModalProps = {
   visible: boolean
@@ -17,7 +17,7 @@ export default function ActivityTypeModal({
   onSelectActivity,
   onClose,
 }: ActivityTypeModalProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const options: Array<{ type: ActivityTypes; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
     { type: "run", label: "Run", icon: "footsteps" },

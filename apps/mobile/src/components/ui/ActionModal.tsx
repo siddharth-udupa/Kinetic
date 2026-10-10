@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ModalButtonVariant =
   | "primary"
@@ -99,7 +99,7 @@ export function ActionModal({
   iconVariant = "default",
   className = "",
 }: ActionModalProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   // Resolve primary button configuration
   const resolvedPrimary: ModalButtonConfig | null = primaryButton

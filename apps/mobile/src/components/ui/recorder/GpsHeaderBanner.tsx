@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import type { LocationStatus } from "@/hooks/useActivityRecorder"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type GpsHeaderBannerProps = {
   status: "idle" | "recording" | "paused" | "finished"
@@ -19,7 +19,7 @@ export default function GpsHeaderBanner({
   onToggleExpand,
   onRequestPermissions,
 }: GpsHeaderBannerProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   // Each branch picks a whole variant, so the plate, its edge, its label and the
   // glyph stay on the same status hue instead of being themed individually.

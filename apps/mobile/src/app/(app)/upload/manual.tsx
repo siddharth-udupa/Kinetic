@@ -17,7 +17,7 @@ import { durationToSeconds } from "@repo/units"
 import type { ManualActivityInput } from "@repo/validation"
 import { authClient } from "@/lib/auth-client"
 import { invalidateActivitiesCache } from "@/hooks/useActivities"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -122,7 +122,7 @@ function NumericInput({
   onChangeText: (v: string) => void
   placeholder?: string
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="flex-row items-center bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-1">
@@ -184,7 +184,7 @@ function SportSelector({
   value: ManualActivityInput["type"]
   onChange: (v: ManualActivityInput["type"]) => void
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const SPORT_ICONS: Record<ManualActivityInput["type"], React.ComponentProps<typeof Ionicons>["name"]> = {
     run: "walk",
@@ -268,7 +268,7 @@ function DateTimeInput({
   onChange: (v: string) => void
   placeholder?: string
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-row items-center mt-1">
@@ -292,7 +292,7 @@ function DateTimeInput({
 export default function ManualUploadScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const [formState, setFormState] = useState<FormState>({
     distance: "",

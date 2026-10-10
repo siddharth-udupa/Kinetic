@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 import ActivityFeed from "@/components/ActivityFeed"
 import { useActivities } from "@/hooks/useActivities"
 import { clearPreferences } from "@/lib/preferencesStore"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import { TabBar, TopBar, type TabKey } from "@/components/ui/shell/Navigation"
 
 // Lazy-load MapScreen component
@@ -17,7 +17,7 @@ export default function DashboardScreen() {
   const { data: session } = useSession()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { isDark, colors } = useOnboardingTheme()
+  const { isDark, colors } = useTheme()
   const [activeTab, setActiveTab] = useState<TabKey>("home")
 
   const { activities, isLoading, refreshing, error, refetch } = useActivities(session?.user.id)
@@ -90,7 +90,7 @@ export default function DashboardScreen() {
  * before it happens.
  */
 function AccountTab({ user }: { user: { name?: string | null; email?: string | null; image?: string | null } }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   async function handleSignOut() {
@@ -164,7 +164,7 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
 
 /** A tab with no screen yet — same object as the real tabs, minus the content. */
 function PlaceholderTab({ tab }: { tab: TabKey }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const label = tab.charAt(0).toUpperCase() + tab.slice(1)
 
   return (

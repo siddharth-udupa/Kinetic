@@ -1,25 +1,12 @@
-/**
- * The one place a colour is defined for the whole product. Both apps import from
- * here; see `AGENTS.md` for how to add a token.
- *
- * `packages/maps/src/styles/southIndia.ts` is deliberately excluded — those
- * colours encode geography, not brand.
- */
-
-/** An explicit choice, or whatever the OS says. */
 export type ThemeScheme = "system" | "light" | "dark"
 
-/** A `ThemeScheme` after "system" has been resolved. */
 export type ColorScheme = Exclude<ThemeScheme, "system">
 
-/**
- * The brand orange, and the only literal here that is not a semantic token.
- * Everything translucent derives from it, so a rebrand changes just this line.
- */
 export const BRAND_COLOR = "#FC4C02"
 
-/** Applies an alpha to a hex colour, so a translucent token follows its base. */
-function withAlpha(hex: string, alpha: number): string {
+
+/** `#RGB` or `#RRGGBB` → its three channels. */
+function parseHex(hex: string): [number, number, number] {
   const digits = hex.replace("#", "")
   const full =
     digits.length === 3
@@ -28,10 +15,22 @@ function withAlpha(hex: string, alpha: number): string {
           .map((char) => char + char)
           .join("")
       : digits
-  const r = Number.parseInt(full.slice(0, 2), 16)
-  const g = Number.parseInt(full.slice(2, 4), 16)
-  const b = Number.parseInt(full.slice(4, 6), 16)
+  const channel = (start: number) => Number.parseInt(full.slice(start, start + 2), 16)
+  return [channel(0), channel(2), channel(4)]
+}
+
+/** Applies an alpha to a hex colour, so a translucent token follows its base. */
+function withAlpha(hex: string, alpha: number): string {
+  const [r, g, b] = parseHex(hex)
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+/**
+ * `#RRGGBB` → `"R G B"`, the form Tailwind's `rgb(var(--x) / <alpha-value>)`
+ * needs so an opacity modifier like `bg-surface/50` has a slot to fill.
+ */
+export function toChannels(hex: string): string {
+  return parseHex(hex).join(" ")
 }
 
 const DANGER_LIGHT = "#DC2626"
@@ -263,15 +262,21 @@ export function getColors(scheme: ColorScheme): ColorTokens {
   return COLORS[scheme]
 }
 
+/** `cardMuted` → `card-muted`. Both apps name their CSS vars off this. */
+export function toKebab(token: string): string {
+  return token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)
+}
+
 /**
  * `cardMuted` → `--ob-card-muted`.
  *
- * The prefix is historical and frozen: renaming it would mean touching ~34 call
- * sites for no behaviour change. New code should use the named utilities in
- * `apps/web/app/globals.css` rather than raw `var()`.
+ * The prefix is historical and frozen: new code should use the named utilities in
+ * `apps/web/app/globals.css` rather than raw `var()`. Renaming it is cheap — it is
+ * one class constant in `components/onboarding/primitives.tsx` plus the block in
+ * `globals.css`.
  */
 export function toCssVarName(token: string): string {
-  return `--ob-${token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)}`
+  return `--ob-${toKebab(token)}`
 }
 
 /**

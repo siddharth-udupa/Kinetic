@@ -6,6 +6,7 @@ is no build step (see `ARCHITECTURE.md`).
 | Module | What it holds |
 | --- | --- |
 | `src/colors.ts` | The palette. Every colour in the product, per theme. |
+| `src/color-utilities.ts` | The class name each token is exposed as. |
 | `src/brand.ts` | Product name, tagline, mark. |
 
 ## Colours
@@ -25,11 +26,20 @@ const colors = getColors(isDark ? "dark" : "light")
 <div style={{ backgroundColor: colors.card }} />
 ```
 
+A token has three names: the key here (`card`), the CSS variable (`--ob-card` on
+web, `--color-card` on mobile), and the class you write (`bg-surface`).
+`color-utilities.ts` owns the second one, so the two apps cannot disagree about
+it.
+
 On the web, `colorsToCssVars(colors, isDark)` flattens a palette into the
 `--ob-*` custom properties the shell wrapper carries, which is what lets a plain
 Tailwind class like `bg-surface` resolve to the active theme. On mobile,
-NativeWind needs literal values, so `apps/mobile/tailwind.config.ts` reads the
-same objects at build time.
+NativeWind resolves class names at build time, so `apps/mobile/tailwind.config.ts`
+compiles the same objects into `--color-*` custom properties instead.
+
+`apps/web/app/globals.css` is the one list that cannot be generated — CSS cannot
+import TypeScript — so `pnpm check:colors` compares it against `COLOR_UTILITIES`
+and fails on any disagreement.
 
 ### Rules
 

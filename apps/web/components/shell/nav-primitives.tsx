@@ -3,7 +3,7 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { ChevronRight } from "lucide-react"
-import { useOnboardingTheme } from "@/components/onboarding/theme"
+import { useTheme } from "@/components/theme"
 
 /**
  * Keyboard focus ring, identical to the one the onboarding flow uses.
@@ -31,7 +31,7 @@ export function BrandMark({
   icon: ReactNode
   size?: number
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <span className="flex items-center gap-2.5">
@@ -68,7 +68,7 @@ export function Avatar({
   name?: string | null
   size?: number
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   if (src) {
     // A plain <img>: the URL comes from the auth provider and is unknown at
@@ -123,7 +123,7 @@ export function NavPanel({
   children: ReactNode
   className?: string
 }) {
-  const { colors, isDark } = useOnboardingTheme()
+  const { colors, isDark } = useTheme()
 
   return (
     <div
@@ -168,7 +168,7 @@ export function NavRow({
   chevron?: boolean
   tone?: "default" | "danger"
 }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const isDanger = tone === "danger"
   const color = isDanger ? colors.danger : colors.textSecondary
 
@@ -216,13 +216,13 @@ export function NavRow({
 
 /** Hairline between groups inside a panel. */
 export function NavDivider() {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   return <div className="h-px" style={{ backgroundColor: colors.border }} role="presentation" />
 }
 
 /** Section label inside a panel — the same eyebrow tier the slides use. */
 export function NavSectionLabel({ children }: { children: ReactNode }) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <p

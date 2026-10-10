@@ -12,20 +12,14 @@ import {
 } from "react"
 
 /**
- * The palette itself lives in `@repo/shared` — this module only owns the React
- * plumbing for reading it.
+ * The app-wide theme: which scheme is active, and the palette it resolves to.
  *
- * Keeping the values out of here is the whole point: the mobile app resolves the
- * same tokens through `src/components/ui/onboarding/theme.ts`, so a colour
+ * The values themselves live in `@repo/shared` — this module owns only the React
+ * plumbing for reading them. That split is the whole point: the mobile app
+ * resolves the same tokens through `src/components/ui/theme.ts`, so a colour
  * changed in `packages/shared/src/colors.ts` moves on both platforms at once.
  * Do not add a colour here.
  */
-
-/** @deprecated Re-exported from `@repo/shared`. Import it from there instead. */
-export type OnboardingColors = ColorTokens
-
-/** @deprecated Re-exported from `@repo/shared`. Import it from there instead. */
-export type { ThemeScheme }
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 
@@ -54,7 +48,7 @@ function getServerScheme() {
   return false
 }
 
-type OnboardingThemeContextValue = {
+type ThemeContextValue = {
   isDark: boolean
   colors: ColorTokens
   /** The live override driving the preview, not the value being edited. */
@@ -62,18 +56,18 @@ type OnboardingThemeContextValue = {
   setScheme: (scheme: ThemeScheme) => void
 }
 
-const OnboardingThemeContext = createContext<OnboardingThemeContextValue | null>(null)
+const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 /**
- * Resolved colour scheme for the flow.
+ * Resolved colour scheme for the app.
  *
- * Every colour is handed down as a CSS custom property on the flow root, so the
- * appearance slide can repaint the running screen the instant a theme is
- * tapped — the same promise NativeWind makes on mobile through `setColorScheme`.
- * Reading the scheme rather than hardcoding `dark:` classes is what lets the
- * preview survive a reload of the whole surface in one paint.
+ * Every colour is handed down as a CSS custom property on a wrapper, so the
+ * onboarding appearance slide can repaint the running screen the instant a theme
+ * is tapped — the same promise NativeWind makes on mobile through
+ * `setColorScheme`. Reading the scheme rather than hardcoding `dark:` classes is
+ * what lets the preview survive a reload of the whole surface in one paint.
  */
-export function OnboardingThemeProvider({
+export function ThemeProvider({
   children,
   initialScheme = "system",
 }: {
@@ -92,18 +86,18 @@ export function OnboardingThemeProvider({
   const isDark = scheme === "dark" || (scheme === "system" && systemIsDark)
   const colors = getColors(isDark ? "dark" : "light")
 
-  const value = useMemo<OnboardingThemeContextValue>(
+  const value = useMemo<ThemeContextValue>(
     () => ({ isDark, colors, scheme, setScheme }),
     [isDark, colors, scheme],
   )
 
-  return <OnboardingThemeContext.Provider value={value}>{children}</OnboardingThemeContext.Provider>
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
-export function useOnboardingTheme() {
-  const context = useContext(OnboardingThemeContext)
+export function useTheme() {
+  const context = useContext(ThemeContext)
   if (!context) {
-    throw new Error("useOnboardingTheme must be used inside <OnboardingThemeProvider>")
+    throw new Error("useTheme must be used inside <ThemeProvider>")
   }
   return context
 }
@@ -115,6 +109,6 @@ export function useOnboardingTheme() {
  * keep working; the naming convention itself is shared, since both apps have to
  * agree on it.
  */
-export function onboardingVars(colors: ColorTokens, isDark: boolean): CSSProperties {
+export function themeVars(colors: ColorTokens, isDark: boolean): CSSProperties {
   return colorsToCssVars(colors, isDark) as CSSProperties
 }

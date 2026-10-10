@@ -6,7 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
-import { useOnboardingTheme } from '@/components/onboarding/theme'
+import { useTheme } from '@/components/theme'
 
 type MapClientProps = {
   encodedPolyline?: string
@@ -23,7 +23,7 @@ export default function MapClient({
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   // MapLibre paints from a literal, not a class, so read the route colour off the palette.
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   const points = useMemo(() => {
     return encodedPolyline ? decodePolyline(encodedPolyline) : []

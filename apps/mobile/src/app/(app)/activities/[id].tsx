@@ -15,7 +15,7 @@ import { metersToDistance, metersToElevation, formatDurationShort, formatPace } 
 import type { ActivityDetailsType } from "@repo/types"
 import { authClient, useSession } from "@/lib/auth-client"
 import { removeActivityFromCache } from "@/hooks/useActivities"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import {
   ActivityNotFound,
   ActivityHeaderOverlay,
@@ -44,7 +44,7 @@ export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { isDark, colors } = useOnboardingTheme()
+  const { isDark, colors } = useTheme()
 
   const [data, setdata] = useState<ActivityDetailsType | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)

@@ -32,7 +32,7 @@ const getSportIcon = (type: string, size = 22) => {
 
 	if (normalized.includes("run") || normalized.includes("walk")) {
 		return (
-			<MaterialCommunityIcons name="run" size={size} className="text-brand" />
+			<MaterialCommunityIcons name="run" size={size} className="text-accent" />
 		);
 	}
 	if (
@@ -41,7 +41,7 @@ const getSportIcon = (type: string, size = 22) => {
 		normalized.includes("bike")
 	) {
 		return (
-			<MaterialCommunityIcons name="bike" size={size} className="text-brand" />
+			<MaterialCommunityIcons name="bike" size={size} className="text-accent" />
 		);
 	}
 	if (normalized.includes("hike")) {
@@ -49,20 +49,20 @@ const getSportIcon = (type: string, size = 22) => {
 			<MaterialCommunityIcons
 				name="hiking"
 				size={size}
-				className="text-brand"
+				className="text-accent"
 			/>
 		);
 	}
 	if (normalized.includes("swim")) {
 		return (
-			<MaterialCommunityIcons name="swim" size={size} className="text-brand" />
+			<MaterialCommunityIcons name="swim" size={size} className="text-accent" />
 		);
 	}
 	return (
 		<MaterialCommunityIcons
 			name="lightning-bolt"
 			size={size}
-			className="text-brand"
+			className="text-accent"
 		/>
 	);
 };
@@ -210,7 +210,7 @@ export default function ActivityCard({
 					</View>
 				</View>
 
-				<View className="size-11 ml-3 rounded-2xl items-center justify-center bg-accent-soft dark:bg-brand/20">
+				<View className="size-11 ml-3 rounded-2xl items-center justify-center bg-accent-soft dark:bg-accent/20">
 					{getSportIcon(activity.type)}
 				</View>
 			</TouchableOpacity>
@@ -222,7 +222,7 @@ export default function ActivityCard({
 				accessibilityLabel={`Open ${activity.title || "activity"}`}
 				className="mt-5 md:mt-6"
 			>
-				<Text className="text-[11px] leading-[15px] font-extrabold tracking-[1.1px] uppercase text-brand mb-1.5">
+				<Text className="text-[11px] leading-[15px] font-extrabold tracking-[1.1px] uppercase text-accent mb-1.5">
 					{getSportLabel(activity.type)}
 				</Text>
 				<Text className="text-[23px] md:text-[26px] font-extrabold leading-[30px] tracking-[-0.5px] text-ink">

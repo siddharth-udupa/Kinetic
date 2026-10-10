@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 import { ActivityTypes } from "@repo/types"
 
 export type ActivityAthleteHeaderProps = {
@@ -40,7 +40,7 @@ export default function ActivityAthleteHeader({
   endTime,
   onAddDescription,
 }: ActivityAthleteHeaderProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const formattedDate = new Date(createdAt).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",

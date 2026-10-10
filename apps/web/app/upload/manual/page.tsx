@@ -369,7 +369,7 @@ export default function Manual() {
             placeholder="e.g. Morning Run"
             value={data.title}
             onChange={e => updateField("title", e.target.value)}
-            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled"
+            className="w-full max-w-md h-9 px-3 text-sm border border-line-strong rounded bg-surface outline-none focus:border-accent text-ink placeholder:text-ink-disabled"
           />
         </div>
 
@@ -382,7 +382,7 @@ export default function Manual() {
             value={data.description}
             onChange={e => updateField("description", e.target.value)}
             rows={5}
-            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-brand text-ink placeholder:text-ink-disabled resize-y"
+            className="w-full max-w-md px-3 py-2 text-sm border border-line-strong rounded bg-surface outline-none focus:border-accent text-ink placeholder:text-ink-disabled resize-y"
           />
         </div>
 
@@ -393,7 +393,7 @@ export default function Manual() {
             disabled={!isFormValid || isSubmitting}
             className={`px-8 py-2.5 text-sm font-semibold rounded-md transition-all duration-150 flex items-center gap-2 ${
               isFormValid && !isSubmitting
-                ? "bg-brand text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
+                ? "bg-accent text-on-accent hover:brightness-90 active:scale-[0.97] cursor-pointer shadow-xs"
                 : "bg-disabled text-ink-disabled border-line-strong cursor-not-allowed select-none opacity-80"
             }`}
           >

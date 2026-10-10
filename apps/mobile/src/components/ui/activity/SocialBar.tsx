@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
-import { useOnboardingTheme } from "@/components/ui/onboarding/theme"
+import { useTheme } from "@/components/ui/theme"
 
 export type ActivitySocialBarProps = {
   onKudosPress?: () => void
@@ -13,7 +13,7 @@ export default function ActivitySocialBar({
   onCommentPress,
   onSharePress,
 }: ActivitySocialBarProps) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
 
   return (
     <View className="flex-row items-center px-5 mb-7">

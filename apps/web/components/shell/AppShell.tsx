@@ -2,11 +2,7 @@
 
 import type { ThemeScheme } from "@repo/shared"
 import type { ReactNode } from "react"
-import {
-  OnboardingThemeProvider,
-  onboardingVars,
-  useOnboardingTheme,
-} from "@/components/onboarding/theme"
+import { ThemeProvider, themeVars, useTheme } from "@/components/theme"
 
 /**
  * The app-wide theme surface.
@@ -32,9 +28,9 @@ export function AppShell({
   scheme?: ThemeScheme
 }) {
   return (
-    <OnboardingThemeProvider initialScheme={scheme}>
+    <ThemeProvider initialScheme={scheme}>
       <ThemedShell>{children}</ThemedShell>
-    </OnboardingThemeProvider>
+    </ThemeProvider>
   )
 }
 
@@ -48,12 +44,12 @@ export function AppShell({
  * what keeps the nav's markup free of inline colour styling.
  */
 function ThemedShell({ children }: { children: ReactNode }) {
-  const { colors, isDark } = useOnboardingTheme()
+  const { colors, isDark } = useTheme()
 
   return (
     <div
       className="flex min-h-full flex-1 flex-col"
-      style={{ ...onboardingVars(colors, isDark), backgroundColor: colors.page }}
+      style={{ ...themeVars(colors, isDark), backgroundColor: colors.page }}
     >
       {children}
     </div>

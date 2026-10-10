@@ -7,7 +7,7 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
-import { useOnboardingTheme } from "./theme"
+import { useTheme } from "../theme"
 
 type Props = {
   username: string
@@ -41,7 +41,7 @@ export default function UsernameSlide({
   onNext,
   isSaving,
 }: Props) {
-  const { colors } = useOnboardingTheme()
+  const { colors } = useTheme()
   const [apiError, setApiError] = useState<string | null>(null)
 
   const normalized = username.toLowerCase().replace(/\s/g, "")
