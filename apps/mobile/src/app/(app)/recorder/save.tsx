@@ -57,7 +57,7 @@ export default function SaveActivityScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
 
-  const { saveRecordedActivity, discardRecordingSession } = useActivityRecorder()
+  const { saveRecordedActivity, discardRecordingSession } = useActivityRecorder("run")
 
   const [session, setSession] = useState<ActiveSession | null>(null)
   const [loadingSession, setLoadingSession] = useState(true)

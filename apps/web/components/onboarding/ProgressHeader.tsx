@@ -42,7 +42,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
               type="button"
               onClick={onSkip}
               aria-label="Skip setup"
-              className="flex h-9 cursor-pointer items-center gap-1 rounded-full pr-3 pl-4 text-sm font-semibold transition active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent)"
+              className="flex h-9 cursor-pointer items-center gap-1 rounded-full pr-3 pl-4 text-sm font-semibold transition active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               style={{ backgroundColor: colors.cardMuted }}
             >
               <span style={{ color: colors.textSecondary }}>Skip</span>

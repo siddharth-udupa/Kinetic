@@ -104,11 +104,11 @@ function Field({ id, label, icon, trailing, className, ...inputProps }: FieldPro
         {label}
       </label>
 
-      <div className="group relative flex items-center rounded-xl border border-(--ob-border) bg-(--ob-card) transition-colors focus-within:border-(--ob-accent)">
+      <div className="group relative flex items-center rounded-xl border border-line bg-surface transition-colors focus-within:border-accent">
         <Icon
           size={18}
           strokeWidth={2}
-          className="pointer-events-none ml-4 shrink-0 transition-colors group-focus-within:text-(--ob-accent)"
+          className="pointer-events-none ml-4 shrink-0 transition-colors group-focus-within:text-accent"
           style={{ color: colors.textMuted }}
           aria-hidden
         />
@@ -116,7 +116,7 @@ function Field({ id, label, icon, trailing, className, ...inputProps }: FieldPro
         <input
           id={id}
           aria-label={label}
-          className={`h-14 min-w-0 flex-1 bg-transparent px-3 text-[16px] font-medium text-(--ob-text) caret-(--ob-accent) outline-none placeholder:font-normal placeholder:text-(--ob-text-muted) ${className ?? ""}`}
+          className={`h-14 min-w-0 flex-1 bg-transparent px-3 text-[16px] font-medium text-ink caret-accent outline-none placeholder:font-normal placeholder:text-ink-muted ${className ?? ""}`}
           {...inputProps}
         />
 
@@ -288,7 +288,7 @@ function AuthSurface() {
             disabled={pending !== null}
             aria-busy={pending === "google" || undefined}
             aria-label={copy.google}
-            className="mt-3 flex h-14 w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border text-[15px] font-semibold transition active:opacity-70 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent)"
+            className="mt-3 flex h-14 w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border text-[15px] font-semibold transition active:opacity-70 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             style={{ borderColor: colors.border, backgroundColor: colors.card }}
           >
             <GoogleMark />
@@ -345,7 +345,7 @@ function AuthSurface() {
                   onClick={() => setShowPassword((value) => !value)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition hover:bg-(--ob-card-muted) focus-visible:outline-2 focus-visible:outline-(--ob-accent)"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-accent"
                   style={{ color: colors.textMuted }}
                 >
                   {showPassword ? (

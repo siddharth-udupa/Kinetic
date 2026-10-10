@@ -164,7 +164,7 @@ export default function Navbar() {
         Search activities and athletes
       </label>
       <div
-        className="flex h-11 items-center gap-2.5 rounded-xl border px-3.5 transition-colors focus-within:border-(--ob-accent)"
+        className="flex h-11 items-center gap-2.5 rounded-xl border px-3.5 transition-colors focus-within:border-accent"
         style={{ backgroundColor: colors.card, borderColor: colors.border }}
       >
         <Search size={17} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
@@ -175,7 +175,7 @@ export default function Navbar() {
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search activities, athletes"
-          className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-(--ob-text-muted)"
+          className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-ink-muted"
           style={{ color: colors.text }}
         />
       </div>
@@ -227,8 +227,8 @@ export default function Navbar() {
                     aria-haspopup="true"
                     className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-xl px-3.5 text-[14px] font-semibold transition ${FOCUS} ${
                       current || openPanel === group.id
-                        ? "bg-(--ob-accent-soft)"
-                        : "hover:bg-(--ob-card-muted)"
+                        ? "bg-accent-soft"
+                        : "hover:bg-surface-muted"
                     }`}
                     style={{ color: current ? colors.accentText : colors.textSecondary }}
                   >
@@ -264,7 +264,7 @@ export default function Navbar() {
                   key={link.label}
                   href={link.href}
                   className={`flex h-10 items-center rounded-xl px-3.5 text-[14px] font-semibold transition ${FOCUS} ${
-                    current ? "bg-(--ob-accent-soft)" : "hover:bg-(--ob-card-muted)"
+                    current ? "bg-accent-soft" : "hover:bg-surface-muted"
                   }`}
                   style={{ color: current ? colors.accentText : colors.textSecondary }}
                   aria-current={current ? "page" : undefined}
@@ -285,7 +285,7 @@ export default function Navbar() {
               type="button"
               aria-label="Search"
               onClick={() => togglePanel("search")}
-              className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition ${FOCUS} hover:bg-(--ob-card-muted) xl:hidden`}
+              className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition ${FOCUS} hover:bg-surface-muted xl:hidden`}
               style={{ color: colors.textSecondary }}
             >
               <Search size={19} strokeWidth={2} aria-hidden />
@@ -294,7 +294,7 @@ export default function Navbar() {
             <button
               type="button"
               aria-label="Notifications"
-              className={`relative hidden size-10 cursor-pointer items-center justify-center rounded-xl transition sm:flex ${FOCUS} hover:bg-(--ob-card-muted)`}
+              className={`relative hidden size-10 cursor-pointer items-center justify-center rounded-xl transition sm:flex ${FOCUS} hover:bg-surface-muted`}
               style={{ color: colors.textSecondary }}
             >
               <Bell size={19} strokeWidth={2} aria-hidden />
@@ -346,7 +346,7 @@ export default function Navbar() {
                     aria-expanded={openPanel === "account"}
                     aria-haspopup="true"
                     aria-label="Account menu"
-                    className={`flex cursor-pointer items-center gap-1.5 rounded-full p-1 transition ${FOCUS} hover:bg-(--ob-card-muted)`}
+                    className={`flex cursor-pointer items-center gap-1.5 rounded-full p-1 transition ${FOCUS} hover:bg-surface-muted`}
                   >
                     <Avatar src={user.image} name={user.name} />
                     <ChevronDown
@@ -413,7 +413,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen((current) => !current)}
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition lg:hidden ${FOCUS} hover:bg-(--ob-card-muted)`}
+              className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition lg:hidden ${FOCUS} hover:bg-surface-muted`}
               style={{ color: colors.textSecondary }}
             >
               {mobileOpen ? (

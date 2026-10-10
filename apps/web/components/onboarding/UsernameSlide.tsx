@@ -132,7 +132,7 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
       >
         <label
           htmlFor="onboarding-username"
-          className="flex h-14 items-center rounded-xl border px-4 transition focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-(--ob-accent)"
+          className="flex h-14 items-center rounded-xl border px-4 transition focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
           style={{
             borderColor: message ? colors.danger : isValid ? colors.accent : colors.border,
             backgroundColor: colors.card,
@@ -144,7 +144,7 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
           <input
             id="onboarding-username"
             name="username"
-            className="min-w-0 flex-1 bg-transparent text-[16px] font-medium outline-none placeholder-(--ob-text-muted)"
+            className="min-w-0 flex-1 bg-transparent text-[16px] font-medium outline-none placeholder-ink-muted"
             placeholder="your_username"
             value={normalized}
             onChange={(event) => handleChange(event.target.value)}

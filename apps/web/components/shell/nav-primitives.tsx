@@ -172,7 +172,7 @@ export function NavRow({
   const isDanger = tone === "danger"
   const color = isDanger ? colors.danger : colors.textSecondary
 
-  const className = `flex w-full items-center gap-3 px-4 py-3 text-start transition active:opacity-70 hover:bg-(--ob-card-muted) ${FOCUS}`
+  const className = `flex w-full items-center gap-3 px-4 py-3 text-start transition active:opacity-70 hover:bg-surface-muted ${FOCUS}`
 
   const content = (
     <>

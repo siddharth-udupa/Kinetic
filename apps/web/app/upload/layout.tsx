@@ -27,7 +27,7 @@ export default function UploadLayout({
         {/* Reads the shell's `--ob-*` custom properties directly: this layout is
             a server component, so it cannot call the theme hook, but the
             variables are set on the shell wrapper above and inherit down. */}
-        <main className="flex-1 w-full min-w-0 rounded-2xl border border-(--ob-border) bg-(--ob-card) p-6 md:p-8">
+        <main className="flex-1 w-full min-w-0 rounded-2xl border border-line bg-surface p-6 md:p-8">
           {children}
         </main>
       </div>

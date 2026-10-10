@@ -82,10 +82,10 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
               aria-checked={selected}
               aria-label={THEME_LABELS[option.value]}
               onClick={() => onChange("theme", option.value)}
-              className={`min-w-0 flex-1 cursor-pointer rounded-2xl border-2 p-2.5 transition active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent) ${
+              className={`min-w-0 flex-1 cursor-pointer rounded-2xl border-2 p-2.5 transition active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                 selected
-                  ? "bg-(--ob-accent-soft)"
-                  : "bg-(--ob-card) hover:bg-(--ob-card-hover)"
+                  ? "bg-accent-soft"
+                  : "bg-surface hover:bg-surface-hover"
               }`}
               style={{ borderColor: selected ? colors.accent : colors.border }}
             >
