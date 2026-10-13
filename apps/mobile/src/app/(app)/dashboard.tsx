@@ -106,7 +106,7 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
       <View className="px-4 pt-6 pb-10">
         <View
           className="flex-row items-center gap-4 rounded-2xl border p-5"
-          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+          style={{ backgroundColor: colors.surface, borderColor: colors.line }}
         >
           <View
             className="size-14 items-center justify-center rounded-full"
@@ -116,10 +116,10 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
           </View>
 
           <View className="flex-1">
-            <Text className="text-[17px] font-bold" style={{ color: colors.text }}>
+            <Text className="text-[17px] font-bold" style={{ color: colors.ink }}>
               {user.name || "Athlete"}
             </Text>
-            <Text className="mt-1 text-[13px]" style={{ color: colors.textMuted }}>
+            <Text className="mt-1 text-[13px]" style={{ color: colors.inkMuted }}>
               {user.email}
             </Text>
           </View>
@@ -127,14 +127,14 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
 
         <Text
           className="mt-7 mb-2.5 text-[11px] font-semibold uppercase"
-          style={{ color: colors.textMuted, letterSpacing: 1.4 }}
+          style={{ color: colors.inkMuted, letterSpacing: 1.4 }}
         >
           Session
         </Text>
 
         <View
           className="overflow-hidden rounded-2xl border"
-          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+          style={{ backgroundColor: colors.surface, borderColor: colors.line }}
         >
           {/*
             Preferences have no screen yet — onboarding is the only place the
@@ -176,10 +176,10 @@ function PlaceholderTab({ tab }: { tab: TabKey }) {
         <Ionicons name="construct-outline" size={28} color={colors.accent} />
       </View>
 
-      <Text className="text-[17px] font-bold" style={{ color: colors.text }}>
+      <Text className="text-[17px] font-bold" style={{ color: colors.ink }}>
         {label}
       </Text>
-      <Text className="mt-1.5 text-[14px] text-center" style={{ color: colors.textMuted }}>
+      <Text className="mt-1.5 text-[14px] text-center" style={{ color: colors.inkMuted }}>
         This view is still being built.
       </Text>
     </View>

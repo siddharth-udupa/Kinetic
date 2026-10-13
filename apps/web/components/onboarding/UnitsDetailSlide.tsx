@@ -72,11 +72,11 @@ export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
       {/* What the previous decision produced. */}
       <div
         className="mb-6 rounded-2xl border px-4 py-3.5"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         <div className="mb-2.5 flex items-center gap-2">
           <Sparkles size={14} strokeWidth={2} className="shrink-0" style={{ color: colors.accent }} aria-hidden />
-          <span className="text-[13px] font-semibold" style={{ color: colors.text }}>
+          <span className="text-[13px] font-semibold" style={{ color: colors.ink }}>
             Based on {SYSTEM_LABELS[system]}
           </span>
         </div>

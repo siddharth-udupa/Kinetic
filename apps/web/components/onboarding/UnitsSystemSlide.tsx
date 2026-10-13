@@ -51,10 +51,10 @@ export default function UnitsSystemSlide({ prefs, onChange, onNext }: Props) {
 
       <div
         className="mt-5 flex items-center gap-2 rounded-xl px-4 py-3"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
-        <Info size={16} strokeWidth={2} className="shrink-0" style={{ color: colors.textMuted }} aria-hidden />
-        <p className="flex-1 text-[13px] leading-5" style={{ color: colors.textSecondary }}>
+        <Info size={16} strokeWidth={2} className="shrink-0" style={{ color: colors.inkMuted }} aria-hidden />
+        <p className="flex-1 text-[13px] leading-5" style={{ color: colors.inkSecondary }}>
           Want a mix? The next screen lets you override any single unit.
         </p>
       </div>

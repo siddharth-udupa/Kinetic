@@ -60,10 +60,10 @@ export default function UnitsSystemSlide({ prefs, onChange, onNext }: Props) {
 
       <View
         className="flex-row items-center gap-2 mt-5 rounded-xl px-4 py-3"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
-        <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
-        <Text className="flex-1 text-[13px] leading-5" style={{ color: colors.textSecondary }}>
+        <Ionicons name="information-circle-outline" size={16} color={colors.inkMuted} />
+        <Text className="flex-1 text-[13px] leading-5" style={{ color: colors.inkSecondary }}>
           Want a mix? The next screen lets you override any single unit.
         </Text>
       </View>

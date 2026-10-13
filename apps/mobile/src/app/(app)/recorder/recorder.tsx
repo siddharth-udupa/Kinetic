@@ -116,7 +116,7 @@ export default function RecorderScreen() {
 				className="absolute left-4 z-30 w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
 				accessibilityLabel="Go back"
 			>
-				<Ionicons name="chevron-down" size={24} color={colors.text} />
+				<Ionicons name="chevron-down" size={24} color={colors.ink} />
 			</TouchableOpacity>
 
 			{/* Bottom Overlay Container */}
@@ -194,7 +194,7 @@ export default function RecorderScreen() {
 								onPress={() => setIsLayerPickerOpen(false)}
 								className="bg-surface-muted p-1.5 rounded-full"
 							>
-								<Ionicons name="close" size={20} color={colors.textMuted} />
+								<Ionicons name="close" size={20} color={colors.inkMuted} />
 							</TouchableOpacity>
 						</View>
 

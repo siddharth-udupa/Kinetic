@@ -70,11 +70,11 @@ export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
       {/* What the previous decision produced. */}
       <View
         className="rounded-2xl border px-4 py-3.5 mb-6"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         <View className="flex-row items-center gap-2 mb-2.5">
           <Ionicons name="sparkles-outline" size={14} color={colors.accent} />
-          <Text className="text-[13px] font-semibold" style={{ color: colors.text }}>
+          <Text className="text-[13px] font-semibold" style={{ color: colors.ink }}>
             Based on {SYSTEM_LABELS[system]}
           </Text>
         </View>

@@ -31,7 +31,7 @@ export default function TileProviderPicker({
         <Text className="text-ink text-xs font-semibold ml-1.5" numberOfLines={1}>
           {activeProvider.name.split(" ")[0]}
         </Text>
-        <Ionicons name="chevron-down" size={12} color={colors.textMuted} style={{ marginLeft: 4 }} />
+        <Ionicons name="chevron-down" size={12} color={colors.inkMuted} style={{ marginLeft: 4 }} />
       </TouchableOpacity>
 
       {/* Tile Provider Picker Sheet Modal */}
@@ -52,7 +52,7 @@ export default function TileProviderPicker({
                 onPress={() => setIsPickerOpen(false)}
                 className="bg-surface-muted p-1.5 rounded-full"
               >
-                <Ionicons name="close" size={20} color={colors.textMuted} />
+                <Ionicons name="close" size={20} color={colors.inkMuted} />
               </TouchableOpacity>
             </View>
 

@@ -131,7 +131,7 @@ function NumericInput({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder ?? "0"}
-        placeholderTextColor={colors.textDisabled}
+        placeholderTextColor={colors.inkDisabled}
         className="flex-1 text-base text-ink font-medium"
         style={{ paddingVertical: 0 }}
       />
@@ -209,7 +209,7 @@ function SportSelector({
                 : "bg-surface-muted-hover border-line-strong"
             }`}
           >
-            <Ionicons name={SPORT_ICONS[sport]} size={14} color={isActive ? colors.onAccent : colors.textDisabled} />
+            <Ionicons name={SPORT_ICONS[sport]} size={14} color={isActive ? colors.onAccent : colors.inkDisabled} />
             <Text
               className={`text-xs font-semibold ${isActive ? "text-on-accent" : "text-ink-secondary"}`}
             >
@@ -272,12 +272,12 @@ function DateTimeInput({
 
   return (
     <View className="bg-surface-muted-hover border border-line-strong rounded-xl px-3 h-11 flex-row items-center mt-1">
-      <Ionicons name="calendar-outline" size={16} color={colors.textDisabled} style={{ marginRight: 6 }} />
+      <Ionicons name="calendar-outline" size={16} color={colors.inkDisabled} style={{ marginRight: 6 }} />
       <TextInput
         value={value}
         onChangeText={onChange}
         placeholder={placeholder ?? "YYYY-MM-DDTHH:mm"}
-        placeholderTextColor={colors.textDisabled}
+        placeholderTextColor={colors.inkDisabled}
         className="flex-1 text-sm text-ink"
         style={{ paddingVertical: 0 }}
         autoCapitalize="none"
@@ -422,7 +422,7 @@ export default function ManualUploadScreen() {
             className="w-9 h-9 rounded-full bg-surface-muted items-center justify-center"
             activeOpacity={0.7}
           >
-            <Ionicons name="chevron-back" size={20} color={colors.textMuted} />
+            <Ionicons name="chevron-back" size={20} color={colors.inkMuted} />
           </TouchableOpacity>
 
           <View className="items-center">
@@ -557,7 +557,7 @@ export default function ManualUploadScreen() {
                 value={formState.title}
                 onChangeText={(v) => updateField("title", v)}
                 placeholder="e.g. Morning Run"
-                placeholderTextColor={colors.textDisabled}
+                placeholderTextColor={colors.inkDisabled}
                 className="flex-1 text-base text-ink"
                 style={{ paddingVertical: 0 }}
                 maxLength={100}
@@ -572,7 +572,7 @@ export default function ManualUploadScreen() {
                 value={formState.description}
                 onChangeText={(v) => updateField("description", v)}
                 placeholder="How'd it go? Share more about your activity..."
-                placeholderTextColor={colors.textDisabled}
+                placeholderTextColor={colors.inkDisabled}
                 className="text-sm text-ink"
                 multiline
                 numberOfLines={4}
@@ -632,7 +632,7 @@ export default function ManualUploadScreen() {
               <Ionicons
                 name="checkmark-circle"
                 size={18}
-                color={isFormValid ? colors.onAccent : colors.textDisabled}
+                color={isFormValid ? colors.onAccent : colors.inkDisabled}
               />
               <Text
                 className={`font-bold text-sm ${

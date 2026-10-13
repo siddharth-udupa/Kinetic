@@ -28,11 +28,11 @@ export default function UploadNav() {
     <nav
       aria-label="Upload activity"
       className="overflow-hidden rounded-2xl border"
-      style={{ backgroundColor: colors.card, borderColor: colors.border }}
+      style={{ backgroundColor: colors.surface, borderColor: colors.line }}
     >
       <p
         className="border-b px-4 py-3 text-[11px] font-semibold tracking-widest uppercase"
-        style={{ borderColor: colors.border, color: colors.textMuted }}
+        style={{ borderColor: colors.line, color: colors.inkMuted }}
       >
         Upload activity
       </p>
@@ -43,7 +43,7 @@ export default function UploadNav() {
           const isActive = pathname === item.href
 
           return (
-            <li key={item.href} className="border-b last:border-b-0" style={{ borderColor: colors.border }}>
+            <li key={item.href} className="border-b last:border-b-0" style={{ borderColor: colors.line }}>
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
@@ -52,7 +52,7 @@ export default function UploadNav() {
                 }`}
                 style={{
                   backgroundColor: isActive ? colors.accentSoft : "transparent",
-                  color: isActive ? colors.accentText : colors.textSecondary,
+                  color: isActive ? colors.accentText : colors.inkSecondary,
                   boxShadow: isActive ? `inset 3px 0 0 0 ${colors.accent}` : "none",
                 }}
               >

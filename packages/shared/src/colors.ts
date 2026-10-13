@@ -45,19 +45,19 @@ const INFO_DARK = "#60A5FA"
 const LIGHT_COLORS = {
   // Surfaces
   page: "#F9FAFB",
-  card: "#FFFFFF",
-  cardHover: "#FAFAFA",
-  cardPressed: "#F3F4F6",
-  cardMuted: "#F3F4F6",
-  cardMutedHover: "#ECEEF1",
-  cardMutedPressed: "#E5E7EB",
+  surface: "#FFFFFF",
+  surfaceHover: "#FAFAFA",
+  surfacePressed: "#F3F4F6",
+  surfaceMuted: "#F3F4F6",
+  surfaceMutedHover: "#ECEEF1",
+  surfaceMutedPressed: "#E5E7EB",
   /** Lighter than its track, so a chosen segment reads as lifted off it. */
   raised: "#FFFFFF",
   raisedHover: "#F9FAFB",
   raisedPressed: "#F3F4F6",
   /** The border of a `raised` surface, as opposed to a content divider. */
   raisedBorder: "#E5E7EB",
-  controlDisabled: "#F3F4F6",
+  disabled: "#F3F4F6",
 
   /*
    * The activity detail screen, which stacks three surfaces instead of two
@@ -66,28 +66,28 @@ const LIGHT_COLORS = {
   activityPage: "#F3F4F6",
   activityPanel: "#FFFFFF",
   activityCard: "#FAFAFA",
-  activityBorder: "#E5E7EB",
+  activityLine: "#E5E7EB",
   activityHandle: "#D1D5DB",
 
   // Borders
-  border: "#E5E7EB",
-  borderStrong: "#D1D5DB",
-  borderMuted: "#EDEFF2",
+  line: "#E5E7EB",
+  lineStrong: "#D1D5DB",
+  lineMuted: "#EDEFF2",
 
   // Text
-  text: "#111827",
+  ink: "#111827",
   // 7.0:1 and 4.8:1 on white. The previous pair (gray-500 / gray-400) put the
   // muted tier at 2.5:1, below the 4.5:1 minimum — helper text, step counters
   // and placeholders all washed out.
-  textSecondary: "#4B5563",
-  textMuted: "#6B7280",
-  textDisabled: "#9CA3AF",
-  textInverse: "#FFFFFF",
+  inkSecondary: "#4B5563",
+  inkMuted: "#6B7280",
+  inkDisabled: "#9CA3AF",
+  inkInverse: "#FFFFFF",
 
   /** A separate ink scale for the activity screen's dark-on-dark panel text. */
-  activityText: "#111827",
-  activityTextSecondary: "#4B5563",
-  activityTextMuted: "#6B7280",
+  activityInk: "#111827",
+  activityInkSecondary: "#4B5563",
+  activityInkMuted: "#6B7280",
 
   // Brand accent
   accent: BRAND_COLOR,
@@ -162,46 +162,46 @@ export type ColorTokens = Readonly<Record<ColorTokenName, string>>
 const DARK_COLORS: ColorTokens = {
   // Surfaces
   page: "#020617",
-  card: "#0F172A",
-  cardHover: "#16213C",
-  cardPressed: "#1E293B",
-  cardMuted: "#1E293B",
-  cardMutedHover: "#273549",
-  cardMutedPressed: "#334155",
+  surface: "#0F172A",
+  surfaceHover: "#16213C",
+  surfacePressed: "#1E293B",
+  surfaceMuted: "#1E293B",
+  surfaceMutedHover: "#273549",
+  surfaceMutedPressed: "#334155",
   /** Must go lighter than its track, or the pill reads as pressed in. */
   raised: "#334155",
   raisedHover: "#3B4A61",
   raisedPressed: "#475569",
   raisedBorder: "#475569",
-  controlDisabled: "#1E293B",
+  disabled: "#1E293B",
 
   // The activity detail stack. Page is darker than `page` because these panels
   // float over a map rather than scrolling on it.
   activityPage: "#0B1220",
   activityPanel: "#0F1929",
   activityCard: "#111C2D",
-  activityBorder: "#223149",
+  activityLine: "#223149",
   activityHandle: "#43536B",
 
   // Borders
-  border: "#1E293B",
-  borderStrong: "#334155",
-  borderMuted: "#17263B",
+  line: "#1E293B",
+  lineStrong: "#334155",
+  lineMuted: "#17263B",
 
   // Text
-  text: "#F8FAFC",
-  textSecondary: "#94A3B8",
+  ink: "#F8FAFC",
+  inkSecondary: "#94A3B8",
   // 5.2:1 on the page and 4.6:1 on a card. The previous slate-500 sat at 4.2:1
   // and 3.8:1, failing outright on a card.
-  textMuted: "#748399",
-  textDisabled: "#64748B",
-  textInverse: "#0F172A",
+  inkMuted: "#748399",
+  inkDisabled: "#64748B",
+  inkInverse: "#0F172A",
 
   // The activity panels read as near-black in light mode too, so they carry
-  // their own light-on-dark ink scale rather than borrowing `text`.
-  activityText: "#D5DDE8",
-  activityTextSecondary: "#B8C3D3",
-  activityTextMuted: "#8A9AB2",
+  // their own light-on-dark ink scale rather than borrowing `ink`.
+  activityInk: "#D5DDE8",
+  activityInkSecondary: "#B8C3D3",
+  activityInkMuted: "#8A9AB2",
 
   // Brand accent
   accent: BRAND_COLOR,
@@ -262,13 +262,13 @@ export function getColors(scheme: ColorScheme): ColorTokens {
   return COLORS[scheme]
 }
 
-/** `cardMuted` → `card-muted`. Both apps name their CSS vars off this. */
+/** `surfaceMuted` → `surface-muted`. Both apps name their CSS vars off this. */
 export function toKebab(token: string): string {
   return token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)
 }
 
 /**
- * `cardMuted` → `--ob-card-muted`.
+ * `surfaceMuted` → `--ob-surface-muted`.
  *
  * The prefix is historical and frozen: new code should use the named utilities in
  * `apps/web/app/globals.css` rather than raw `var()`. Renaming it is cheap — it is

@@ -47,7 +47,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
       <View className="flex-row items-center justify-between h-11">
         <Text
           className="text-xs font-semibold uppercase tracking-widest"
-          style={{ color: colors.textMuted }}
+          style={{ color: colors.inkMuted }}
         >
           Step {step} of {total}
         </Text>
@@ -59,12 +59,12 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
             accessibilityLabel="Skip setup"
             hitSlop={8}
             className="h-9 pl-4 pr-3 flex-row items-center gap-1 rounded-full active:opacity-70"
-            style={{ backgroundColor: colors.cardMuted }}
+            style={{ backgroundColor: colors.surfaceMuted }}
           >
-            <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
+            <Text className="text-sm font-semibold" style={{ color: colors.inkSecondary }}>
               Skip
             </Text>
-            <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+            <Ionicons name="chevron-forward" size={14} color={colors.inkMuted} />
           </Pressable>
         ) : (
           <View className="h-9" />
@@ -73,7 +73,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
 
       <View
         className="h-1.5 rounded-full overflow-hidden"
-        style={{ backgroundColor: colors.border }}
+        style={{ backgroundColor: colors.line }}
       >
         <Animated.View
           style={[

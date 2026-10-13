@@ -192,13 +192,13 @@ export default function AuthScreen() {
             </Text>
             <Text
               className="text-[28px] leading-9 font-bold mt-2.5 text-center"
-              style={{ color: colors.text }}
+              style={{ color: colors.ink }}
             >
               {copy.title}
             </Text>
             <Text
               className="text-[15px] leading-6 mt-3 text-center"
-              style={{ color: colors.textSecondary }}
+              style={{ color: colors.inkSecondary }}
             >
               {copy.subtitle}
             </Text>
@@ -223,7 +223,7 @@ export default function AuthScreen() {
               disabled={pending !== null}
             >
               <Ionicons name="logo-google" size={20} />
-              <Text className="text-[15px] font-semibold" style={{ color: colors.text }}>
+              <Text className="text-[15px] font-semibold" style={{ color: colors.ink }}>
                 {copy.google}
               </Text>
             </SocialButton>
@@ -284,7 +284,7 @@ export default function AuthScreen() {
 
             {/* Helper line — the reason the button is still disabled. */}
             <View className="flex-row items-center justify-between px-1">
-              <Text className="text-[13px]" style={{ color: colors.textMuted }}>
+              <Text className="text-[13px]" style={{ color: colors.inkMuted }}>
                 {isSignup ? `Minimum ${MIN_PASSWORD_LENGTH} characters` : ""}
               </Text>
               {password.length > 0 && password.length < MIN_PASSWORD_LENGTH ? (

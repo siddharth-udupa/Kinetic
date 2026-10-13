@@ -109,7 +109,7 @@ function Field({ id, label, icon, trailing, className, ...inputProps }: FieldPro
           size={18}
           strokeWidth={2}
           className="pointer-events-none ml-4 shrink-0 transition-colors group-focus-within:text-accent"
-          style={{ color: colors.textMuted }}
+          style={{ color: colors.inkMuted }}
           aria-hidden
         />
 
@@ -258,13 +258,13 @@ function AuthSurface() {
             </p>
             <h1
               className="mt-2.5 text-[28px] leading-9 font-bold text-balance text-center"
-              style={{ color: colors.text }}
+              style={{ color: colors.ink }}
             >
               {copy.title}
             </h1>
             <p
               className="mt-3 max-w-sm text-[15px] leading-6 text-pretty text-center"
-              style={{ color: colors.textSecondary }}
+              style={{ color: colors.inkSecondary }}
             >
               {copy.subtitle}
             </p>
@@ -289,18 +289,18 @@ function AuthSurface() {
             aria-busy={pending === "google" || undefined}
             aria-label={copy.google}
             className="mt-3 flex h-14 w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border text-[15px] font-semibold transition active:opacity-70 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            style={{ borderColor: colors.border, backgroundColor: colors.card }}
+            style={{ borderColor: colors.line, backgroundColor: colors.surface }}
           >
             <GoogleMark />
-            <span style={{ color: colors.text }}>{copy.google}</span>
+            <span style={{ color: colors.ink }}>{copy.google}</span>
           </button>
 
           <div className="my-6 flex w-full items-center gap-3">
-            <div className="h-px flex-1" style={{ backgroundColor: colors.border }} />
-            <span className="text-[13px]" style={{ color: colors.textMuted }}>
+            <div className="h-px flex-1" style={{ backgroundColor: colors.line }} />
+            <span className="text-[13px]" style={{ color: colors.inkMuted }}>
               {copy.divider}
             </span>
-            <div className="h-px flex-1" style={{ backgroundColor: colors.border }} />
+            <div className="h-px flex-1" style={{ backgroundColor: colors.line }} />
           </div>
 
           <div className="flex w-full flex-col gap-3.5">
@@ -346,7 +346,7 @@ function AuthSurface() {
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                   className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-accent"
-                  style={{ color: colors.textMuted }}
+                  style={{ color: colors.inkMuted }}
                 >
                   {showPassword ? (
                     <EyeOffIcon size={19} strokeWidth={2} aria-hidden />
@@ -360,7 +360,7 @@ function AuthSurface() {
             {/* Helper line — the reason the button is still disabled. */}
             <div className="flex items-center justify-between px-1">
               {isSignup ? (
-                <span className="text-[13px]" style={{ color: colors.textMuted }}>
+                <span className="text-[13px]" style={{ color: colors.inkMuted }}>
                   Minimum {MIN_PASSWORD_LENGTH} characters
                 </span>
               ) : (
@@ -396,8 +396,8 @@ function AuthSurface() {
           />
 
           <div className="mt-3 flex items-start justify-center gap-1.5 pb-2">
-            <LockIcon size={13} strokeWidth={2} className="mt-px shrink-0" style={{ color: colors.textMuted }} aria-hidden />
-            <p className="text-[12px] leading-4 text-center" style={{ color: colors.textMuted }}>
+            <LockIcon size={13} strokeWidth={2} className="mt-px shrink-0" style={{ color: colors.inkMuted }} aria-hidden />
+            <p className="text-[12px] leading-4 text-center" style={{ color: colors.inkMuted }}>
               {copy.trust}
             </p>
           </div>

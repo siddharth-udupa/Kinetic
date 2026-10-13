@@ -96,11 +96,11 @@ export default function UsernameSlide({
       */}
       <View
         className="rounded-2xl px-4 py-3.5 mb-6"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
         <Text
           className="text-[11px] font-semibold uppercase tracking-widest mb-2.5"
-          style={{ color: colors.textMuted }}
+          style={{ color: colors.inkMuted }}
         >
           How you'll appear
         </Text>
@@ -108,11 +108,11 @@ export default function UsernameSlide({
         <View className="flex-row items-center gap-3">
           <View
             className="h-10 w-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: isValid ? colors.accent : colors.border }}
+            style={{ backgroundColor: isValid ? colors.accent : colors.line }}
           >
             <Text
               className="text-[16px] font-bold"
-              style={{ color: isValid ? colors.onAccent : colors.textMuted }}
+              style={{ color: isValid ? colors.onAccent : colors.inkMuted }}
             >
               {(normalized[0] ?? "?").toUpperCase()}
             </Text>
@@ -122,11 +122,11 @@ export default function UsernameSlide({
             <Text
               className="text-[16px] font-semibold"
               numberOfLines={1}
-              style={{ color: hasText ? colors.text : colors.textSecondary }}
+              style={{ color: hasText ? colors.ink : colors.inkSecondary }}
             >
               {hasText ? `@${normalized}` : "@your_username"}
             </Text>
-            <Text className="text-[12px] mt-0.5" style={{ color: colors.textSecondary }}>
+            <Text className="text-[12px] mt-0.5" style={{ color: colors.inkSecondary }}>
               {isValid ? "Ready to save" : "Your public profile name"}
             </Text>
           </View>
@@ -141,17 +141,17 @@ export default function UsernameSlide({
             ? colors.danger
             : isValid
               ? colors.accent
-              : colors.border,
-          backgroundColor: colors.card,
+              : colors.line,
+          backgroundColor: colors.surface,
         }}
       >
-        <Text className="text-[16px] font-medium mr-1" style={{ color: colors.textMuted }}>
+        <Text className="text-[16px] font-medium mr-1" style={{ color: colors.inkMuted }}>
           @
         </Text>
         <TextInput
           className="flex-1 text-[16px] font-medium"
           placeholder="your_username"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.inkMuted}
           value={normalized}
           onChangeText={handleChange}
           onSubmitEditing={handleContinue}
@@ -160,7 +160,7 @@ export default function UsernameSlide({
           autoComplete="username"
           maxLength={MAX_LENGTH}
           returnKeyType="next"
-          style={{ color: colors.text }}
+          style={{ color: colors.ink }}
         />
         {isValid ? (
           <Ionicons name="checkmark-circle" size={20} color={colors.accent} />
@@ -174,11 +174,11 @@ export default function UsernameSlide({
             {message}
           </Text>
         ) : (
-          <Text className="text-[13px] flex-1" style={{ color: colors.textMuted }}>
+          <Text className="text-[13px] flex-1" style={{ color: colors.inkMuted }}>
             {MIN_LENGTH}–{MAX_LENGTH} characters
           </Text>
         )}
-        <Text className="text-[13px]" style={{ color: colors.textMuted }}>
+        <Text className="text-[13px]" style={{ color: colors.inkMuted }}>
           {normalized.length}/{MAX_LENGTH}
         </Text>
       </View>
@@ -193,8 +193,8 @@ export default function UsernameSlide({
 
       {/* Reassurance in place of the skip control, which is hidden here. */}
       <View className="flex-row items-center gap-2 mt-7">
-        <Ionicons name="lock-closed-outline" size={13} color={colors.textMuted} />
-        <Text className="text-[12px] flex-1" style={{ color: colors.textMuted }}>
+        <Ionicons name="lock-closed-outline" size={13} color={colors.inkMuted} />
+        <Text className="text-[12px] flex-1" style={{ color: colors.inkMuted }}>
           A username is required, so this step can't be skipped.
         </Text>
       </View>

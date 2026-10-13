@@ -165,9 +165,9 @@ export default function Navbar() {
       </label>
       <div
         className="flex h-11 items-center gap-2.5 rounded-xl border px-3.5 transition-colors focus-within:border-accent"
-        style={{ backgroundColor: colors.card, borderColor: colors.border }}
+        style={{ backgroundColor: colors.surface, borderColor: colors.line }}
       >
-        <Search size={17} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
+        <Search size={17} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden />
         <input
           ref={focusRef}
           id={`nav-search-${idSuffix}`}
@@ -176,7 +176,7 @@ export default function Navbar() {
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search activities, athletes"
           className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-ink-muted"
-          style={{ color: colors.text }}
+          style={{ color: colors.ink }}
         />
       </div>
     </form>
@@ -187,12 +187,12 @@ export default function Navbar() {
       ref={headerRef}
       className="sticky top-0 z-50 border-b backdrop-blur-md"
       style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        borderColor: colors.line,
         // The blur is doing the separating, so the surface only needs to be
         // near-opaque — fully transparent would let a scrolled card show
         // through the wordmark.
-        background: `color-mix(in srgb, ${colors.card} 88%, transparent)`,
+        background: `color-mix(in srgb, ${colors.surface} 88%, transparent)`,
       }}
     >
       {/* The container is `xl` rather than `max-w-7xl`: at 1280px and up the
@@ -230,7 +230,7 @@ export default function Navbar() {
                         ? "bg-accent-soft"
                         : "hover:bg-surface-muted"
                     }`}
-                    style={{ color: current ? colors.accentText : colors.textSecondary }}
+                    style={{ color: current ? colors.accentText : colors.inkSecondary }}
                   >
                     <Icon size={17} strokeWidth={2} aria-hidden />
                     {group.label}
@@ -241,7 +241,7 @@ export default function Navbar() {
                       className={`transition-transform duration-200 ${
                         openPanel === group.id ? "rotate-180" : ""
                       }`}
-                      style={{ color: colors.textMuted }}
+                      style={{ color: colors.inkMuted }}
                     />
                   </button>
 
@@ -266,7 +266,7 @@ export default function Navbar() {
                   className={`flex h-10 items-center rounded-xl px-3.5 text-[14px] font-semibold transition ${FOCUS} ${
                     current ? "bg-accent-soft" : "hover:bg-surface-muted"
                   }`}
-                  style={{ color: current ? colors.accentText : colors.textSecondary }}
+                  style={{ color: current ? colors.accentText : colors.inkSecondary }}
                   aria-current={current ? "page" : undefined}
                 >
                   {link.label}
@@ -286,7 +286,7 @@ export default function Navbar() {
               aria-label="Search"
               onClick={() => togglePanel("search")}
               className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition ${FOCUS} hover:bg-surface-muted xl:hidden`}
-              style={{ color: colors.textSecondary }}
+              style={{ color: colors.inkSecondary }}
             >
               <Search size={19} strokeWidth={2} aria-hidden />
             </button>
@@ -295,12 +295,12 @@ export default function Navbar() {
               type="button"
               aria-label="Notifications"
               className={`relative hidden size-10 cursor-pointer items-center justify-center rounded-xl transition sm:flex ${FOCUS} hover:bg-surface-muted`}
-              style={{ color: colors.textSecondary }}
+              style={{ color: colors.inkSecondary }}
             >
               <Bell size={19} strokeWidth={2} aria-hidden />
               <span
                 className="absolute top-2.5 right-2.5 size-2 rounded-full"
-                style={{ backgroundColor: colors.accent, outline: `2px solid ${colors.card}` }}
+                style={{ backgroundColor: colors.accent, outline: `2px solid ${colors.surface}` }}
               />
             </button>
 
@@ -353,7 +353,7 @@ export default function Navbar() {
                       size={14}
                       strokeWidth={2.4}
                       aria-hidden
-                      style={{ color: colors.textMuted }}
+                      style={{ color: colors.inkMuted }}
                     />
                   </button>
 
@@ -362,11 +362,11 @@ export default function Navbar() {
                       <div className="px-4 py-4">
                         <p
                           className="truncate text-[14px] font-bold"
-                          style={{ color: colors.text }}
+                          style={{ color: colors.ink }}
                         >
                           {user.name || "Athlete"}
                         </p>
-                        <p className="mt-0.5 truncate text-[12px]" style={{ color: colors.textMuted }}>
+                        <p className="mt-0.5 truncate text-[12px]" style={{ color: colors.inkMuted }}>
                           {user.email}
                         </p>
                       </div>
@@ -414,7 +414,7 @@ export default function Navbar() {
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition lg:hidden ${FOCUS} hover:bg-surface-muted`}
-              style={{ color: colors.textSecondary }}
+              style={{ color: colors.inkSecondary }}
             >
               {mobileOpen ? (
                 <X size={21} strokeWidth={2} aria-hidden />
@@ -428,7 +428,7 @@ export default function Navbar() {
 
       {/* ── Search panel, below `xl` ── */}
       {openPanel === "search" ? (
-        <div className="border-t px-4 py-3 sm:px-6 lg:px-8 xl:hidden" style={{ borderColor: colors.border }}>
+        <div className="border-t px-4 py-3 sm:px-6 lg:px-8 xl:hidden" style={{ borderColor: colors.line }}>
           <div className="mx-auto w-full max-w-400">{searchField("panel", searchRef)}</div>
         </div>
       ) : null}
@@ -481,7 +481,7 @@ function MobileSheet({
   return (
     <div
       className="fixed inset-0 z-50 lg:hidden"
-      style={{ backgroundColor: colors.card }}
+      style={{ backgroundColor: colors.surface }}
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
@@ -506,7 +506,7 @@ function MobileSheet({
           onClick={onClose}
           aria-label="Close menu"
           className={`flex size-10 cursor-pointer items-center justify-center rounded-xl transition ${FOCUS}`}
-          style={{ color: colors.textSecondary }}
+          style={{ color: colors.inkSecondary }}
         >
           <X size={21} strokeWidth={2} aria-hidden />
         </button>
@@ -551,10 +551,10 @@ function MobileSheet({
                 <div className="flex items-center gap-3 px-4 py-4">
                   <Avatar src={user.image} name={user.name} size={40} />
                   <div className="min-w-0">
-                    <p className="truncate text-[14px] font-bold" style={{ color: colors.text }}>
+                    <p className="truncate text-[14px] font-bold" style={{ color: colors.ink }}>
                       {user.name || "Athlete"}
                     </p>
-                    <p className="mt-0.5 truncate text-[12px]" style={{ color: colors.textMuted }}>
+                    <p className="mt-0.5 truncate text-[12px]" style={{ color: colors.inkMuted }}>
                       {user.email}
                     </p>
                   </div>

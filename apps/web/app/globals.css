@@ -22,39 +22,39 @@
 @theme inline {
   /* Surfaces */
   --color-page: var(--ob-page);
-  --color-surface: var(--ob-card);
-  --color-surface-hover: var(--ob-card-hover);
-  --color-surface-pressed: var(--ob-card-pressed);
-  --color-surface-muted: var(--ob-card-muted);
-  --color-surface-muted-hover: var(--ob-card-muted-hover);
-  --color-surface-muted-pressed: var(--ob-card-muted-pressed);
+  --color-surface: var(--ob-surface);
+  --color-surface-hover: var(--ob-surface-hover);
+  --color-surface-pressed: var(--ob-surface-pressed);
+  --color-surface-muted: var(--ob-surface-muted);
+  --color-surface-muted-hover: var(--ob-surface-muted-hover);
+  --color-surface-muted-pressed: var(--ob-surface-muted-pressed);
   --color-raised: var(--ob-raised);
   --color-raised-hover: var(--ob-raised-hover);
   --color-raised-pressed: var(--ob-raised-pressed);
   --color-raised-border: var(--ob-raised-border);
-  --color-disabled: var(--ob-control-disabled);
+  --color-disabled: var(--ob-disabled);
 
   /* Activity detail */
   --color-activity-page: var(--ob-activity-page);
   --color-activity-panel: var(--ob-activity-panel);
   --color-activity-card: var(--ob-activity-card);
-  --color-activity-line: var(--ob-activity-border);
+  --color-activity-line: var(--ob-activity-line);
   --color-activity-handle: var(--ob-activity-handle);
 
   /* Borders */
-  --color-line: var(--ob-border);
-  --color-line-strong: var(--ob-border-strong);
-  --color-line-muted: var(--ob-border-muted);
+  --color-line: var(--ob-line);
+  --color-line-strong: var(--ob-line-strong);
+  --color-line-muted: var(--ob-line-muted);
 
   /* Text */
-  --color-ink: var(--ob-text);
-  --color-ink-secondary: var(--ob-text-secondary);
-  --color-ink-muted: var(--ob-text-muted);
-  --color-ink-disabled: var(--ob-text-disabled);
-  --color-ink-inverse: var(--ob-text-inverse);
-  --color-activity-ink: var(--ob-activity-text);
-  --color-activity-ink-secondary: var(--ob-activity-text-secondary);
-  --color-activity-ink-muted: var(--ob-activity-text-muted);
+  --color-ink: var(--ob-ink);
+  --color-ink-secondary: var(--ob-ink-secondary);
+  --color-ink-muted: var(--ob-ink-muted);
+  --color-ink-disabled: var(--ob-ink-disabled);
+  --color-ink-inverse: var(--ob-ink-inverse);
+  --color-activity-ink: var(--ob-activity-ink);
+  --color-activity-ink-secondary: var(--ob-activity-ink-secondary);
+  --color-activity-ink-muted: var(--ob-activity-ink-muted);
 
   /* Accent */
   --color-accent: var(--ob-accent);

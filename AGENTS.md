@@ -18,20 +18,20 @@ any UI:
   entirely, which is exactly the drift the shared file exists to prevent.
 - Use the named token utilities instead.
 
-### One token, three names
+### One name, three spellings
 
-A colour is named three times, and only one of them is short. Learn the mapping
-once:
+A token, the class you write, and the CSS variable behind it are the same word:
 
-| Token (`colors.card`) | Class (`bg-surface`) | Web variable | Mobile variable |
+| Token (`colors.surface`) | Class (`bg-surface`) | Web variable | Mobile variable |
 | --- | --- | --- | --- |
-| `card` | `surface` | `--ob-card` | `--color-card` |
-| `border` | `line` | `--ob-border` | `--color-border` |
-| `text` | `ink` | `--ob-text` | `--color-text` |
+| `surface` | `surface` | `--ob-surface` | `--color-surface` |
+| `line` | `line` | `--ob-line` | `--color-line` |
+| `inkMuted` | `ink-muted` | `--ob-ink-muted` | `--color-ink-muted` |
 
-The full list is `COLOR_UTILITIES` in `packages/shared/src/color-utilities.ts` —
-read it rather than guessing. Most entries are the token in kebab-case
-(`accentSoft` → `accent-soft`); the ones above are the exceptions worth knowing.
+The token is camelCase and everything else is its kebab-case form, so
+`colors.accentSoft` and `bg-accent-soft` are one name. The full list is
+`COLOR_UTILITIES` in `packages/shared/src/color-utilities.ts` — read it rather
+than guessing.
 
 The web and mobile variable columns hold the same value in two namespaces, on two
 different platforms. The two apps deliver them differently on purpose: web
@@ -110,11 +110,11 @@ between the two themes. Read the neighbours of a token before picking a value.
 
 ## Naming
 
-Tokens are `role` first, then state: `cardPressed`, `accentHover`, `lineStrong`.
-Name a token after its role, not its hue — `cardPressed` survives a rebrand,
-`pressedGrey` does not. Translucent tokens derive from their opaque base with
-`withAlpha(...)` rather than a hand-typed `rgba()`, so changing `BRAND_COLOR`
-carries them along.
+Tokens are `role` first, then state: `surfacePressed`, `accentHover`,
+`lineStrong`. Name a token after its role, not its hue — `surfacePressed`
+survives a rebrand, `pressedGrey` does not. Translucent tokens derive from their
+opaque base with `withAlpha(...)` rather than a hand-typed `rgba()`, so changing
+`BRAND_COLOR` carries them along.
 
 ## Brand constants
 

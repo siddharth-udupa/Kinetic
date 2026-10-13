@@ -23,13 +23,13 @@ falls back to light in dark mode.
 import { getColors } from "@repo/shared"
 
 const colors = getColors(isDark ? "dark" : "light")
-<div style={{ backgroundColor: colors.card }} />
+<div style={{ backgroundColor: colors.surface }} />
 ```
 
-A token has three names: the key here (`card`), the CSS variable (`--ob-card` on
-web, `--color-card` on mobile), and the class you write (`bg-surface`).
-`color-utilities.ts` owns the second one, so the two apps cannot disagree about
-it.
+A token has three names: the key here (`surface`), the CSS variable
+(`--ob-surface` on web, `--color-surface` on mobile), and the class you write
+(`bg-surface`). `color-utilities.ts` owns the second one, so the two apps cannot
+disagree about it.
 
 On the web, `colorsToCssVars(colors, isDark)` flattens a palette into the
 `--ob-*` custom properties the shell wrapper carries, which is what lets a plain
@@ -43,7 +43,7 @@ and fails on any disagreement.
 
 ### Rules
 
-- Name tokens `role` first, then state: `cardPressed`, not `pressedGrey`. A
+- Name tokens `role` first, then state: `surfacePressed`, not `pressedGrey`. A
   token named after its role survives a rebrand; one named after its hue does
   not.
 - Adding a token means adding it to **both** themes, with a comment on any value

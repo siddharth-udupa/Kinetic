@@ -28,7 +28,7 @@ export default function FloatingMapControls({
         className="w-10 h-10 rounded-full bg-surface/90 border border-line justify-center items-center shadow-md active:scale-95"
         accessibilityLabel="Map info"
       >
-        <Ionicons name="information-outline" size={20} color={colors.textSecondary} />
+        <Ionicons name="information-outline" size={20} color={colors.inkSecondary} />
       </TouchableOpacity>
 
       {/* Right: Stack of 3 Floating Action Buttons */}
@@ -39,7 +39,7 @@ export default function FloatingMapControls({
           className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
           accessibilityLabel="Choose map style"
         >
-          <Ionicons name="layers-outline" size={20} color={colors.text} />
+          <Ionicons name="layers-outline" size={20} color={colors.ink} />
         </TouchableOpacity>
 
         {/* 3D Mode Toggle Button */}
@@ -67,7 +67,7 @@ export default function FloatingMapControls({
           className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
           accessibilityLabel="Recenter location"
         >
-          <Ionicons name="locate-outline" size={20} color={colors.text} />
+          <Ionicons name="locate-outline" size={20} color={colors.ink} />
         </TouchableOpacity>
       </View>
     </View>

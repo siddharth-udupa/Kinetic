@@ -47,7 +47,7 @@ export default function ActivityHeaderOverlay({
           onPress={onBack}
           className="w-10 h-10 rounded-full bg-surface/90 border border-line-strong items-center justify-center shadow-md active:opacity-80"
         >
-          <Ionicons name="arrow-back" size={20} color={colors.text} />
+          <Ionicons name="arrow-back" size={20} color={colors.ink} />
         </TouchableOpacity>
 
         <View className="flex-row items-center space-x-2">
@@ -55,13 +55,13 @@ export default function ActivityHeaderOverlay({
             onPress={onShare}
             className="w-10 h-10 rounded-full bg-surface/90 border border-line-strong items-center justify-center shadow-md active:opacity-80"
           >
-            <Feather name="share-2" size={18} color={colors.text} />
+            <Feather name="share-2" size={18} color={colors.ink} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleMorePress}
             className="w-10 h-10 rounded-full bg-surface/90 border border-line-strong items-center justify-center shadow-md active:opacity-80"
           >
-            <Ionicons name="ellipsis-horizontal" size={20} color={colors.text} />
+            <Ionicons name="ellipsis-horizontal" size={20} color={colors.ink} />
           </TouchableOpacity>
         </View>
       </View>

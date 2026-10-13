@@ -60,7 +60,7 @@ export default function ActivityFeed({
           </View>
         ) : (
           <View className="p-8 items-center justify-center">
-            <Ionicons name="fitness-outline" size={48} color={colors.textDisabled} />
+            <Ionicons name="fitness-outline" size={48} color={colors.inkDisabled} />
             <Text className="text-ink-muted text-sm mt-2 text-center font-medium">
               No activities found yet.
             </Text>

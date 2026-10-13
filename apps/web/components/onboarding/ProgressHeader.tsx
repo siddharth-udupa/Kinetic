@@ -32,7 +32,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
         <div className="flex h-11 items-center justify-between">
           <p
             className="text-xs font-semibold tracking-widest uppercase"
-            style={{ color: colors.textMuted }}
+            style={{ color: colors.inkMuted }}
           >
             Step {step} of {total}
           </p>
@@ -43,10 +43,10 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
               onClick={onSkip}
               aria-label="Skip setup"
               className="flex h-9 cursor-pointer items-center gap-1 rounded-full pr-3 pl-4 text-sm font-semibold transition active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              style={{ backgroundColor: colors.cardMuted }}
+              style={{ backgroundColor: colors.surfaceMuted }}
             >
-              <span style={{ color: colors.textSecondary }}>Skip</span>
-              <ChevronForward size={14} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
+              <span style={{ color: colors.inkSecondary }}>Skip</span>
+              <ChevronForward size={14} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden />
             </button>
           ) : (
             <div className="h-9" aria-hidden />
@@ -55,7 +55,7 @@ export default function ProgressHeader({ step, total, onSkip }: Props) {
 
         <div
           className="h-1.5 overflow-hidden rounded-full"
-          style={{ backgroundColor: colors.border }}
+          style={{ backgroundColor: colors.line }}
           role="progressbar"
           aria-valuemin={1}
           aria-valuemax={total}

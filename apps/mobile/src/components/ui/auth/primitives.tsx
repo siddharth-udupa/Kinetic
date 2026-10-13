@@ -32,24 +32,24 @@ export function AuthField({ label, icon, trailing, style, ...inputProps }: AuthF
     <View
       className="flex-row items-center rounded-xl border px-4 h-14"
       style={{
-        borderColor: isFocused ? colors.accent : colors.border,
-        backgroundColor: colors.card,
+        borderColor: isFocused ? colors.accent : colors.line,
+        backgroundColor: colors.surface,
       }}
     >
       <Ionicons
         name={icon}
         size={18}
-        color={isFocused ? colors.accent : colors.textMuted}
+        color={isFocused ? colors.accent : colors.inkMuted}
         style={{ marginRight: 12 }}
       />
 
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={colors.inkMuted}
         className="flex-1 text-[16px] font-medium"
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={[{ color: colors.text }, style]}
+        style={[{ color: colors.ink }, style]}
         {...inputProps}
       />
 
@@ -80,9 +80,9 @@ export function FieldAction({
       accessibilityState={{ selected }}
       hitSlop={8}
       className="h-10 w-10 items-center justify-center rounded-lg active:opacity-60"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
-      <Ionicons name={icon} size={19} color={colors.textMuted} />
+      <Ionicons name={icon} size={19} color={colors.inkMuted} />
     </Pressable>
   )
 }
@@ -93,11 +93,11 @@ export function OrDivider({ children }: { children: string }) {
 
   return (
     <View className="flex-row items-center gap-3 my-6">
-      <View className="flex-1 h-px" style={{ backgroundColor: colors.border }} />
-      <Text className="text-[13px]" style={{ color: colors.textMuted }}>
+      <View className="flex-1 h-px" style={{ backgroundColor: colors.line }} />
+      <Text className="text-[13px]" style={{ color: colors.inkMuted }}>
         {children}
       </Text>
-      <View className="flex-1 h-px" style={{ backgroundColor: colors.border }} />
+      <View className="flex-1 h-px" style={{ backgroundColor: colors.line }} />
     </View>
   )
 }
@@ -125,8 +125,8 @@ export function SocialButton({
       accessibilityState={{ disabled: blocked, busy }}
       className="h-14 w-full flex-row items-center justify-center gap-2.5 rounded-2xl border active:opacity-70"
       style={{
-        borderColor: colors.border,
-        backgroundColor: colors.card,
+        borderColor: colors.line,
+        backgroundColor: colors.surface,
         opacity: blocked ? 0.6 : 1,
       }}
     >
@@ -144,10 +144,10 @@ export function TrustNote({ children }: { children: string }) {
       <Ionicons
         name="lock-closed-outline"
         size={13}
-        color={colors.textMuted}
+        color={colors.inkMuted}
         style={{ marginTop: 2 }}
       />
-      <Text className="text-[12px] leading-4 text-center" style={{ color: colors.textMuted }}>
+      <Text className="text-[12px] leading-4 text-center" style={{ color: colors.inkMuted }}>
         {children}
       </Text>
     </View>

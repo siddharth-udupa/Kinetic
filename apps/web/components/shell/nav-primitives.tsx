@@ -44,7 +44,7 @@ export function BrandMark({
       </span>
       <span
         className="text-[17px] leading-none font-bold tracking-tight"
-        style={{ color: colors.text }}
+        style={{ color: colors.ink }}
       >
         {name}
       </span>
@@ -80,7 +80,7 @@ export function Avatar({
         src={src}
         alt=""
         className="shrink-0 rounded-full object-cover"
-        style={{ width: size, height: size, border: `1px solid ${colors.border}` }}
+        style={{ width: size, height: size, border: `1px solid ${colors.line}` }}
       />
     )
   }
@@ -100,7 +100,7 @@ export function Avatar({
         height: size,
         backgroundColor: colors.accentSoft,
         color: colors.accent,
-        border: `1px solid ${colors.border}`,
+        border: `1px solid ${colors.line}`,
       }}
       aria-hidden
     >
@@ -129,8 +129,8 @@ export function NavPanel({
     <div
       className={`overflow-hidden rounded-2xl border ${className}`}
       style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        borderColor: colors.line,
         // Light needs the shadow to lift the panel off the page. Dark has no
         // luminance gap for a shadow to exploit, so it leans on the border and
         // a deeper, softer drop.
@@ -170,7 +170,7 @@ export function NavRow({
 }) {
   const { colors } = useTheme()
   const isDanger = tone === "danger"
-  const color = isDanger ? colors.danger : colors.textSecondary
+  const color = isDanger ? colors.danger : colors.inkSecondary
 
   const className = `flex w-full items-center gap-3 px-4 py-3 text-start transition active:opacity-70 hover:bg-surface-muted ${FOCUS}`
 
@@ -187,14 +187,14 @@ export function NavRow({
           {label}
         </span>
         {detail ? (
-          <span className="mt-0.5 block text-[12px]" style={{ color: colors.textMuted }}>
+          <span className="mt-0.5 block text-[12px]" style={{ color: colors.inkMuted }}>
             {detail}
           </span>
         ) : null}
       </span>
 
       {chevron ? (
-        <ChevronRight size={16} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
+        <ChevronRight size={16} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden />
       ) : null}
     </>
   )
@@ -217,7 +217,7 @@ export function NavRow({
 /** Hairline between groups inside a panel. */
 export function NavDivider() {
   const { colors } = useTheme()
-  return <div className="h-px" style={{ backgroundColor: colors.border }} role="presentation" />
+  return <div className="h-px" style={{ backgroundColor: colors.line }} role="presentation" />
 }
 
 /** Section label inside a panel — the same eyebrow tier the slides use. */
@@ -227,7 +227,7 @@ export function NavSectionLabel({ children }: { children: ReactNode }) {
   return (
     <p
       className="px-4 pt-4 pb-2 text-[11px] font-semibold tracking-widest uppercase"
-      style={{ color: colors.textMuted }}
+      style={{ color: colors.inkMuted }}
     >
       {children}
     </p>

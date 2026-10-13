@@ -43,12 +43,12 @@ export default function WelcomeSlide({ name, onNext }: Props) {
         <IconBadge icon="flash-outline" size={56} />
       </View>
 
-      <Text className="text-[32px] leading-10 font-bold" style={{ color: colors.text }}>
+      <Text className="text-[32px] leading-10 font-bold" style={{ color: colors.ink }}>
         Welcome{name ? `, ${name}` : ""}
       </Text>
       <Text
         className="text-[15px] leading-6 mt-3"
-        style={{ color: colors.textSecondary }}
+        style={{ color: colors.inkSecondary }}
       >
         Three quick questions and you're set up. Everything here can be changed
         later, so there are no wrong answers.
@@ -59,17 +59,17 @@ export default function WelcomeSlide({ name, onNext }: Props) {
           <View key={item.title} className="flex-row items-start mb-5">
             <View
               className="h-8 w-8 rounded-lg items-center justify-center mt-0.5"
-              style={{ backgroundColor: colors.cardMuted }}
+              style={{ backgroundColor: colors.surfaceMuted }}
             >
-              <Ionicons name={item.icon} size={15} color={colors.textSecondary} />
+              <Ionicons name={item.icon} size={15} color={colors.inkSecondary} />
             </View>
             <View className="flex-1 pl-3.5">
-              <Text className="text-[15px] font-semibold" style={{ color: colors.text }}>
+              <Text className="text-[15px] font-semibold" style={{ color: colors.ink }}>
                 {item.title}
               </Text>
               <Text
                 className="text-[14px] leading-5 mt-0.5"
-                style={{ color: colors.textSecondary }}
+                style={{ color: colors.inkSecondary }}
               >
                 {item.body}
               </Text>
@@ -80,10 +80,10 @@ export default function WelcomeSlide({ name, onNext }: Props) {
 
       <View
         className="self-start flex-row items-center gap-2 rounded-full px-3.5 py-2 mt-1"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
-        <Ionicons name="time-outline" size={14} color={colors.textMuted} />
-        <Text className="text-[13px] font-medium" style={{ color: colors.textSecondary }}>
+        <Ionicons name="time-outline" size={14} color={colors.inkMuted} />
+        <Text className="text-[13px] font-medium" style={{ color: colors.inkSecondary }}>
           About 30 seconds
         </Text>
       </View>

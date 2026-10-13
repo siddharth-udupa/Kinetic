@@ -100,7 +100,7 @@ export default function BottomControlPanel({
               className="items-center w-24"
             >
               <View className="w-[72px] h-[72px] rounded-full bg-surface-muted justify-center items-center">
-                <Ionicons name="git-network-outline" size={28} color={colors.textSecondary} />
+                <Ionicons name="git-network-outline" size={28} color={colors.inkSecondary} />
               </View>
               <Text className="text-[13px] font-semibold text-ink mt-2 text-center leading-tight">
                 {selectedRoute ? "Route\nAdded" : "Add\nRoute"}

@@ -64,7 +64,7 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
       {/* Theme */}
       <h3
         className="mb-3 text-xs font-semibold tracking-widest uppercase"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         Theme
       </h3>
@@ -87,7 +87,7 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
                   ? "bg-accent-soft"
                   : "bg-surface hover:bg-surface-hover"
               }`}
-              style={{ borderColor: selected ? colors.accent : colors.border }}
+              style={{ borderColor: selected ? colors.accent : colors.line }}
             >
               <ThemePreview scheme={option.value} />
 
@@ -96,12 +96,12 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
                   size={14}
                   strokeWidth={2}
                   className="shrink-0"
-                  style={{ color: selected ? colors.accent : colors.textMuted }}
+                  style={{ color: selected ? colors.accent : colors.inkMuted }}
                   aria-hidden
                 />
                 <span
                   className="truncate text-[13px] font-semibold"
-                  style={{ color: selected ? colors.accentText : colors.textSecondary }}
+                  style={{ color: selected ? colors.accentText : colors.inkSecondary }}
                 >
                   {THEME_LABELS[option.value]}
                 </span>
@@ -114,14 +114,14 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
       {/* Time format, with a live sample of the difference. */}
       <h3
         className="mb-3 text-xs font-semibold tracking-widest uppercase"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         Time format
       </h3>
 
       <div
         className="rounded-2xl border px-4 py-4"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         <Segmented
           value={prefs.timeFormat}
@@ -134,11 +134,11 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
 
         <div
           className="mt-3 flex items-center justify-between rounded-xl px-3.5 py-3"
-          style={{ backgroundColor: colors.cardMuted }}
+          style={{ backgroundColor: colors.surfaceMuted }}
         >
           <span className="flex items-center gap-2">
-            <Clock size={15} strokeWidth={2} className="shrink-0" style={{ color: colors.textMuted }} aria-hidden />
-            <span className="text-[13px]" style={{ color: colors.textSecondary }}>
+            <Clock size={15} strokeWidth={2} className="shrink-0" style={{ color: colors.inkMuted }} aria-hidden />
+            <span className="text-[13px]" style={{ color: colors.inkSecondary }}>
               {TIME_LABELS[prefs.timeFormat]} clock
             </span>
           </span>
@@ -146,7 +146,7 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
               whichever minute the visitor arrived on. */}
           <span
             className="text-[15px] font-semibold tabular-nums"
-            style={{ color: colors.text }}
+            style={{ color: colors.ink }}
             suppressHydrationWarning
           >
             {formatSample(prefs.timeFormat)}

@@ -147,7 +147,7 @@ export default function SaveActivityScreen() {
 
   return (
     <View className="flex-1 bg-page">
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.card} />
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.surface} />
 
       {/* White Clean Navigation Bar without buttons */}
       <View
@@ -175,7 +175,7 @@ export default function SaveActivityScreen() {
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Name your activity..."
-                placeholderTextColor={colors.textDisabled}
+                placeholderTextColor={colors.inkDisabled}
                 className="flex-1 text-base text-ink font-medium"
                 style={{ paddingVertical: 0 }}
                 maxLength={100}
@@ -193,7 +193,7 @@ export default function SaveActivityScreen() {
                 value={description}
                 onChangeText={setDescription}
                 placeholder="How'd it go? Share details about your workout..."
-                placeholderTextColor={colors.textDisabled}
+                placeholderTextColor={colors.inkDisabled}
                 className="text-sm text-ink"
                 multiline
                 numberOfLines={4}
@@ -231,7 +231,7 @@ export default function SaveActivityScreen() {
                     <Ionicons
                       name={sport.icon}
                       size={16}
-                      color={isActive ? colors.onAccent : colors.textDisabled}
+                      color={isActive ? colors.onAccent : colors.inkDisabled}
                     />
                     <Text
                       className={`text-xs font-semibold ${
@@ -356,7 +356,7 @@ export default function SaveActivityScreen() {
               <Ionicons
                 name="checkmark-circle"
                 size={20}
-                color={title.trim() ? colors.onAccent : colors.textDisabled}
+                color={title.trim() ? colors.onAccent : colors.inkDisabled}
               />
               <Text
                 className={`font-bold text-sm ${

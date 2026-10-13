@@ -69,7 +69,7 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
       {/* Theme */}
       <Text
         className="text-xs font-semibold uppercase tracking-widest mb-3"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         Theme
       </Text>
@@ -86,8 +86,8 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
               accessibilityLabel={THEME_LABELS[option.value]}
               className="flex-1 rounded-2xl border-2 p-2.5 active:opacity-80"
               style={{
-                borderColor: selected ? colors.accent : colors.border,
-                backgroundColor: selected ? colors.accentSoft : colors.card,
+                borderColor: selected ? colors.accent : colors.line,
+                backgroundColor: selected ? colors.accentSoft : colors.surface,
               }}
             >
               <ThemePreview scheme={option.value} />
@@ -96,11 +96,11 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
                 <Ionicons
                   name={option.icon}
                   size={14}
-                  color={selected ? colors.accent : colors.textMuted}
+                  color={selected ? colors.accent : colors.inkMuted}
                 />
                 <Text
                   className="text-[13px] font-semibold"
-                  style={{ color: selected ? colors.accentText : colors.textSecondary }}
+                  style={{ color: selected ? colors.accentText : colors.inkSecondary }}
                 >
                   {THEME_LABELS[option.value]}
                 </Text>
@@ -113,14 +113,14 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
       {/* Time format, with a live sample of the difference. */}
       <Text
         className="text-xs font-semibold uppercase tracking-widest mb-3"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         Time format
       </Text>
 
       <View
         className="rounded-2xl border px-4 py-4"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         <Segmented
           value={prefs.timeFormat}
@@ -133,15 +133,15 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
 
         <View
           className="flex-row items-center justify-between rounded-xl px-3.5 py-3 mt-3"
-          style={{ backgroundColor: colors.cardMuted }}
+          style={{ backgroundColor: colors.surfaceMuted }}
         >
           <View className="flex-row items-center gap-2">
-            <Ionicons name="time-outline" size={15} color={colors.textMuted} />
-            <Text className="text-[13px]" style={{ color: colors.textSecondary }}>
+            <Ionicons name="time-outline" size={15} color={colors.inkMuted} />
+            <Text className="text-[13px]" style={{ color: colors.inkSecondary }}>
               {TIME_LABELS[prefs.timeFormat]} clock
             </Text>
           </View>
-          <Text className="text-[15px] font-semibold" style={{ color: colors.text }}>
+          <Text className="text-[15px] font-semibold" style={{ color: colors.ink }}>
             {formatSample(prefs.timeFormat)}
           </Text>
         </View>

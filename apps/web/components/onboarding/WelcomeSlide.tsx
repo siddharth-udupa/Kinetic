@@ -42,12 +42,12 @@ export default function WelcomeSlide({ name, onNext }: Props) {
         <IconBadge icon="flash-outline" size={56} />
       </div>
 
-      <h2 className="text-[32px] leading-10 font-bold text-balance" style={{ color: colors.text }}>
+      <h2 className="text-[32px] leading-10 font-bold text-balance" style={{ color: colors.ink }}>
         Welcome{name ? `, ${name}` : ""}
       </h2>
       <p
         className="mt-3 text-[15px] leading-6 text-pretty"
-        style={{ color: colors.textSecondary }}
+        style={{ color: colors.inkSecondary }}
       >
         Three quick questions and you&apos;re set up. Everything here can be changed later, so
         there are no wrong answers.
@@ -61,17 +61,17 @@ export default function WelcomeSlide({ name, onNext }: Props) {
             <div key={item.title} className="mb-5 flex items-start">
               <span
                 className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                style={{ backgroundColor: colors.cardMuted }}
+                style={{ backgroundColor: colors.surfaceMuted }}
               >
-                <Icon size={15} strokeWidth={2} style={{ color: colors.textSecondary }} aria-hidden />
+                <Icon size={15} strokeWidth={2} style={{ color: colors.inkSecondary }} aria-hidden />
               </span>
               <div className="flex-1 pl-3.5">
-                <p className="text-[15px] font-semibold" style={{ color: colors.text }}>
+                <p className="text-[15px] font-semibold" style={{ color: colors.ink }}>
                   {item.title}
                 </p>
                 <p
                   className="mt-0.5 text-[14px] leading-5 text-pretty"
-                  style={{ color: colors.textSecondary }}
+                  style={{ color: colors.inkSecondary }}
                 >
                   {item.body}
                 </p>
@@ -83,10 +83,10 @@ export default function WelcomeSlide({ name, onNext }: Props) {
 
       <div
         className="mt-1 flex w-fit items-center gap-2 rounded-full px-3.5 py-2"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
-        <Clock size={14} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
-        <span className="text-[13px] font-medium" style={{ color: colors.textSecondary }}>
+        <Clock size={14} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden />
+        <span className="text-[13px] font-medium" style={{ color: colors.inkSecondary }}>
           About 30 seconds
         </span>
       </div>

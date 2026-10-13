@@ -94,7 +94,7 @@ export function SlideHeading({
 
       <Text
         className="text-[28px] leading-9 font-bold"
-        style={{ color: colors.text }}
+        style={{ color: colors.ink }}
       >
         {title}
       </Text>
@@ -102,7 +102,7 @@ export function SlideHeading({
       {subtitle ? (
         <Text
           className="text-[15px] leading-6 mt-3"
-          style={{ color: colors.textSecondary }}
+          style={{ color: colors.inkSecondary }}
         >
           {subtitle}
         </Text>
@@ -158,7 +158,7 @@ export function PrimaryButton({
 }) {
   const { colors } = useTheme()
   const blocked = disabled && !loading
-  const contentColor = blocked ? colors.textMuted : colors.onAccent
+  const contentColor = blocked ? colors.inkMuted : colors.onAccent
 
   return (
     <Pressable
@@ -168,7 +168,7 @@ export function PrimaryButton({
       accessibilityLabel={label}
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       className="h-14 w-full rounded-2xl flex-row items-center justify-center gap-2 active:opacity-80"
-      style={{ backgroundColor: blocked ? colors.cardMuted : colors.accent }}
+      style={{ backgroundColor: blocked ? colors.surfaceMuted : colors.accent }}
     >
       {loading ? (
         <ActivityIndicator color={colors.onAccent} />
@@ -201,12 +201,12 @@ export function GhostButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       className="h-14 flex-1 rounded-2xl flex-row items-center justify-center gap-2 border active:opacity-70"
-      style={{ borderColor: colors.border, backgroundColor: colors.card }}
+      style={{ borderColor: colors.line, backgroundColor: colors.surface }}
     >
-      <Text className="text-[15px] font-semibold" style={{ color: colors.textSecondary }}>
+      <Text className="text-[15px] font-semibold" style={{ color: colors.inkSecondary }}>
         {label}
       </Text>
-      {icon ? <Ionicons name={icon} size={17} color={colors.textMuted} /> : null}
+      {icon ? <Ionicons name={icon} size={17} color={colors.inkMuted} /> : null}
     </Pressable>
   )
 }
@@ -252,7 +252,7 @@ export function RadioDot({ selected }: { selected: boolean }) {
   return (
     <View
       className="h-5 w-5 rounded-full items-center justify-center border-2"
-      style={{ borderColor: selected ? colors.accent : colors.borderStrong }}
+      style={{ borderColor: selected ? colors.accent : colors.lineStrong }}
     >
       {selected ? (
         <View
@@ -289,28 +289,28 @@ export function ChoiceCard({
       accessibilityLabel={title}
       className="w-full rounded-2xl border-2 p-5 mb-3 active:opacity-80"
       style={{
-        borderColor: selected ? colors.accent : colors.border,
-        backgroundColor: selected ? colors.accentSoft : colors.card,
+        borderColor: selected ? colors.accent : colors.line,
+        backgroundColor: selected ? colors.accentSoft : colors.surface,
       }}
     >
       <View className="flex-row items-start justify-between">
         <View
           className="h-11 w-11 rounded-xl items-center justify-center"
-          style={{ backgroundColor: selected ? colors.accent : colors.cardMuted }}
+          style={{ backgroundColor: selected ? colors.accent : colors.surfaceMuted }}
         >
           <Ionicons
             name={icon}
             size={20}
-            color={selected ? colors.onAccent : colors.textSecondary}
+            color={selected ? colors.onAccent : colors.inkSecondary}
           />
         </View>
         <RadioDot selected={selected} />
       </View>
 
-      <Text className="text-[17px] font-semibold mt-4" style={{ color: colors.text }}>
+      <Text className="text-[17px] font-semibold mt-4" style={{ color: colors.ink }}>
         {title}
       </Text>
-      <Text className="text-[14px] leading-5 mt-1" style={{ color: colors.textSecondary }}>
+      <Text className="text-[14px] leading-5 mt-1" style={{ color: colors.inkSecondary }}>
         {subtitle}
       </Text>
 
@@ -320,9 +320,9 @@ export function ChoiceCard({
             <View
               key={chip}
               className="px-2.5 py-1 rounded-md"
-              style={{ backgroundColor: colors.cardMuted }}
+              style={{ backgroundColor: colors.surfaceMuted }}
             >
-              <Text className="text-xs font-semibold" style={{ color: colors.textSecondary }}>
+              <Text className="text-xs font-semibold" style={{ color: colors.inkSecondary }}>
                 {chip}
               </Text>
             </View>
@@ -351,7 +351,7 @@ export function Segmented<T extends string>({
   return (
     <View
       className="flex-row rounded-xl p-1 gap-1"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
       {options.map((option) => {
         const selected = option.value === value
@@ -371,7 +371,7 @@ export function Segmented<T extends string>({
             <Text
               className="text-[13px] font-semibold"
               numberOfLines={1}
-              style={{ color: selected ? colors.accentText : colors.textSecondary }}
+              style={{ color: selected ? colors.accentText : colors.inkSecondary }}
             >
               {option.label}
             </Text>
@@ -401,8 +401,8 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
   return (
     <View className="mb-4">
       <View className="flex-row items-center gap-2 mb-2.5">
-        <Ionicons name={icon} size={15} color={colors.textMuted} />
-        <Text className="text-[13px] font-semibold" style={{ color: colors.textSecondary }}>
+        <Ionicons name={icon} size={15} color={colors.inkMuted} />
+        <Text className="text-[13px] font-semibold" style={{ color: colors.inkSecondary }}>
           {label}
         </Text>
       </View>
@@ -438,7 +438,7 @@ export function Banner({
       />
       <Text
         className="flex-1 text-[13px] leading-5"
-        style={{ color: isDanger ? colors.danger : colors.textSecondary }}
+        style={{ color: isDanger ? colors.danger : colors.inkSecondary }}
       >
         {children}
       </Text>
@@ -452,9 +452,9 @@ export function Chip({ label }: { label: string }) {
   return (
     <View
       className="px-2.5 py-1 rounded-md"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
-      <Text className="text-xs font-semibold" style={{ color: colors.textSecondary }}>
+      <Text className="text-xs font-semibold" style={{ color: colors.inkSecondary }}>
         {label}
       </Text>
     </View>
@@ -482,18 +482,18 @@ export function ReviewRow({
         accessibilityLabel={`${label}: ${value}. Change`}
         className="flex-row items-center justify-between py-3.5 active:opacity-60"
       >
-        <Text className="text-[15px]" style={{ color: colors.textSecondary }}>
+        <Text className="text-[15px]" style={{ color: colors.inkSecondary }}>
           {label}
         </Text>
         <View className="flex-row items-center gap-1.5 flex-1 justify-end pl-4">
-          <Text className="text-[15px] font-semibold" numberOfLines={1} style={{ color: colors.text }}>
+          <Text className="text-[15px] font-semibold" numberOfLines={1} style={{ color: colors.ink }}>
             {value}
           </Text>
-          <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+          <Ionicons name="chevron-forward" size={16} color={colors.inkMuted} />
         </View>
       </Pressable>
       {isLast ? null : (
-        <View className="h-px" style={{ backgroundColor: colors.border }} />
+        <View className="h-px" style={{ backgroundColor: colors.line }} />
       )}
     </>
   )
@@ -512,13 +512,13 @@ export function ReviewSection({
     <View className="mb-4">
       <Text
         className="text-xs font-semibold uppercase tracking-widest mb-2.5"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         {title}
       </Text>
       <View
         className="rounded-2xl px-4 border"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         {children}
       </View>
@@ -532,9 +532,9 @@ function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
   // theme the athlete has not picked yet is the whole point of the thumbnail.
   const p = getColors(tone)
   return (
-    <View className="flex-1 h-full px-1.5 py-2" style={{ backgroundColor: p.card }}>
-      <View className="h-1 w-4 rounded-full mb-1" style={{ backgroundColor: p.borderStrong }} />
-      <View className="h-1 w-6 rounded-full mb-1" style={{ backgroundColor: p.border }} />
+    <View className="flex-1 h-full px-1.5 py-2" style={{ backgroundColor: p.surface }}>
+      <View className="h-1 w-4 rounded-full mb-1" style={{ backgroundColor: p.lineStrong }} />
+      <View className="h-1 w-6 rounded-full mb-1" style={{ backgroundColor: p.line }} />
       <View className="h-1 w-5 rounded-full" style={{ backgroundColor: p.accent }} />
     </View>
   )
@@ -550,13 +550,13 @@ export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }
   return (
     <View
       className="h-16 w-full rounded-xl overflow-hidden border"
-      style={{ borderColor: getColors(dominant).borderStrong }}
+      style={{ borderColor: getColors(dominant).lineStrong }}
     >
       <View className="flex-1 flex-row">
         {scheme === "system" ? (
           <>
             <PreviewHalf tone="light" />
-            <View className="w-px" style={{ backgroundColor: COLORS.light.textDisabled }} />
+            <View className="w-px" style={{ backgroundColor: COLORS.light.inkDisabled }} />
             <PreviewHalf tone="dark" />
           </>
         ) : (

@@ -25,7 +25,7 @@ const MAP_ENTRY = /^ {2}([a-zA-Z]+): "([a-z-]+)",$/gm
 const CSS_ENTRY = /^ {2}--color-([a-z-]+): var\(--ob-([a-z-]+)\);$/gm
 
 /**
- * `cardHover` → `card-hover`, matching `toKebab` in `@repo/shared`. The token in
+ * `surfaceHover` → `surface-hover`, matching `toKebab` in `@repo/shared`. The token in
  * the map is camelCase; the CSS variable it reaches the DOM as is not.
  */
 const kebab = (token) => token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)

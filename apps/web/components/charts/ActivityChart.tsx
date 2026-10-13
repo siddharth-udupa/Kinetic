@@ -149,7 +149,7 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
               strokeWidth={1.5}
               fill="url(#elevGrad)"
               dot={false}
-              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.card, stroke: colors.info }}
+              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.surface, stroke: colors.info }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -187,7 +187,7 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
               stroke={colors.chartLine}
               strokeWidth={1.5}
               dot={false}
-              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.card, stroke: colors.chartLine }}
+              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.surface, stroke: colors.chartLine }}
             />
           </LineChart>
         </ResponsiveContainer>

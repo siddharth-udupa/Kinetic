@@ -87,11 +87,11 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
       */}
       <div
         className="mb-6 rounded-2xl px-4 py-3.5"
-        style={{ backgroundColor: colors.cardMuted }}
+        style={{ backgroundColor: colors.surfaceMuted }}
       >
         <p
           className="mb-2.5 text-[11px] font-semibold tracking-widest uppercase"
-          style={{ color: colors.textMuted }}
+          style={{ color: colors.inkMuted }}
         >
           How you&apos;ll appear
         </p>
@@ -99,11 +99,11 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
         <div className="flex items-center gap-3">
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-            style={{ backgroundColor: isValid ? colors.accent : colors.border }}
+            style={{ backgroundColor: isValid ? colors.accent : colors.line }}
           >
             <span
               className="text-[16px] font-bold"
-              style={{ color: isValid ? colors.onAccent : colors.textMuted }}
+              style={{ color: isValid ? colors.onAccent : colors.inkMuted }}
             >
               {(normalized[0] ?? "?").toUpperCase()}
             </span>
@@ -112,11 +112,11 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
           <div className="min-w-0 flex-1">
             <p
               className="truncate text-[16px] font-semibold"
-              style={{ color: hasText ? colors.text : colors.textSecondary }}
+              style={{ color: hasText ? colors.ink : colors.inkSecondary }}
             >
               {hasText ? `@${normalized}` : "@your_username"}
             </p>
-            <p className="mt-0.5 text-[12px]" style={{ color: colors.textSecondary }}>
+            <p className="mt-0.5 text-[12px]" style={{ color: colors.inkSecondary }}>
               {isValid ? "Ready to save" : "Your public profile name"}
             </p>
           </div>
@@ -134,11 +134,11 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
           htmlFor="onboarding-username"
           className="flex h-14 items-center rounded-xl border px-4 transition focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
           style={{
-            borderColor: message ? colors.danger : isValid ? colors.accent : colors.border,
-            backgroundColor: colors.card,
+            borderColor: message ? colors.danger : isValid ? colors.accent : colors.line,
+            backgroundColor: colors.surface,
           }}
         >
-          <span className="mr-1 text-[16px] font-medium" style={{ color: colors.textMuted }}>
+          <span className="mr-1 text-[16px] font-medium" style={{ color: colors.inkMuted }}>
             @
           </span>
           <input
@@ -153,7 +153,7 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
             spellCheck={false}
             autoComplete="username"
             maxLength={MAX_LENGTH}
-            style={{ color: colors.text }}
+            style={{ color: colors.ink }}
           />
           {isValid ? (
             <CheckCircle size={20} strokeWidth={2} style={{ color: colors.accent }} aria-hidden />
@@ -168,11 +168,11 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
             {message}
           </p>
         ) : (
-          <p className="flex-1 text-[13px]" style={{ color: colors.textMuted }}>
+          <p className="flex-1 text-[13px]" style={{ color: colors.inkMuted }}>
             {MIN_LENGTH}–{MAX_LENGTH} characters
           </p>
         )}
-        <p className="text-[13px]" style={{ color: colors.textMuted }}>
+        <p className="text-[13px]" style={{ color: colors.inkMuted }}>
           {normalized.length}/{MAX_LENGTH}
         </p>
       </div>
@@ -187,8 +187,8 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
 
       {/* Reassurance in place of the skip control, which is hidden here. */}
       <div className="mt-7 flex items-center gap-2">
-        <Lock size={13} strokeWidth={2} className="shrink-0" style={{ color: colors.textMuted }} aria-hidden />
-        <p className="flex-1 text-[12px]" style={{ color: colors.textMuted }}>
+        <Lock size={13} strokeWidth={2} className="shrink-0" style={{ color: colors.inkMuted }} aria-hidden />
+        <p className="flex-1 text-[12px]" style={{ color: colors.inkMuted }}>
           A username is required, so this step can&apos;t be skipped.
         </p>
       </div>

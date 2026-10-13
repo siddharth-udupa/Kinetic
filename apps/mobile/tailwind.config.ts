@@ -36,7 +36,7 @@ const { COLOR_UTILITIES, COLORS, toChannels, toKebab } = require("@repo/shared")
  * same map by `pnpm check:colors`.
  */
 
-/** `cardMuted` → `--color-card-muted`. */
+/** `surfaceMuted` → `--color-surface-muted`. */
 function varName(token: string): string {
   return `--color-${toKebab(token)}`
 }

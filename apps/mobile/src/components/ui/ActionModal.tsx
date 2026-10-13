@@ -176,19 +176,19 @@ export function ActionModal({
         return {
           container: "bg-ink border border-transparent active:bg-ink-secondary",
           text: "text-ink-inverse font-bold",
-          spinnerColor: colors.textInverse,
+          spinnerColor: colors.inkInverse,
         }
       case "outline":
         return {
           container: "bg-surface-muted border border-line-strong active:bg-surface-muted-hover",
           text: "text-ink font-semibold",
-          spinnerColor: colors.textMuted,
+          spinnerColor: colors.inkMuted,
         }
       case "ghost":
         return {
           container: "bg-transparent border border-transparent active:bg-surface-muted",
           text: "text-ink-secondary font-semibold",
-          spinnerColor: colors.textMuted,
+          spinnerColor: colors.inkMuted,
         }
       case "primary":
       default:
@@ -261,7 +261,7 @@ export function ActionModal({
                   className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-surface-muted active:opacity-75"
                   accessibilityLabel="Close modal"
                 >
-                  <Ionicons name="close" size={18} color={colors.textDisabled} />
+                  <Ionicons name="close" size={18} color={colors.inkDisabled} />
                 </TouchableOpacity>
               )}
 

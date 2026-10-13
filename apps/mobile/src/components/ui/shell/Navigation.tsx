@@ -39,7 +39,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
       </View>
 
       {compact ? null : (
-        <Text className="text-[17px] font-bold" style={{ color: colors.text }}>
+        <Text className="text-[17px] font-bold" style={{ color: colors.ink }}>
           {APP_NAME}
         </Text>
       )}
@@ -68,9 +68,9 @@ export function HeaderIconButton({
       accessibilityLabel={label}
       hitSlop={8}
       className="size-10 items-center justify-center rounded-xl active:opacity-70"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
-      <Ionicons name={icon} size={19} color={colors.textSecondary} />
+      <Ionicons name={icon} size={19} color={colors.inkSecondary} />
 
       {badge ? (
         <View
@@ -80,7 +80,7 @@ export function HeaderIconButton({
             height: 8,
             backgroundColor: colors.accent,
             borderWidth: 2,
-            borderColor: colors.cardMuted,
+            borderColor: colors.surfaceMuted,
           }}
         />
       ) : null}
@@ -112,8 +112,8 @@ export function TopBar({ onPressNotifications, trailing }: TopBarProps) {
         // The safe-area inset is consumed here rather than by a spacer, so the
         // bottom border lands below the status bar instead of running behind it.
         paddingTop: Math.max(insets.top, 12),
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        borderColor: colors.line,
       }}
     >
       <View className="h-11 flex-row items-center justify-between">
@@ -183,8 +183,8 @@ export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
       className="flex-row border-t px-2 pt-2"
       style={{
         paddingBottom: Math.max(insets.bottom, 10),
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        borderColor: colors.line,
       }}
     >
       {TABS.map((tab) => {
@@ -214,13 +214,13 @@ export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
               <Ionicons
                 name={isActive ? tab.iconActive : tab.icon}
                 size={22}
-                color={isActive ? colors.accent : colors.textMuted}
+                color={isActive ? colors.accent : colors.inkMuted}
               />
             </View>
 
             <Text
               className="mt-1 text-[10px] font-semibold"
-              style={{ color: isActive ? colors.accentText : colors.textMuted }}
+              style={{ color: isActive ? colors.accentText : colors.inkMuted }}
             >
               {tab.label}
             </Text>
@@ -253,13 +253,13 @@ function RecordButton({ label, onPress }: { label: string; onPress: () => void }
         style={{
           backgroundColor: colors.accent,
           borderWidth: 4,
-          borderColor: colors.card,
+          borderColor: colors.surface,
         }}
       >
         <Ionicons name="reload-circle" size={26} color={colors.onAccent} />
       </View>
 
-      <Text className="mt-1 text-[10px] font-semibold" style={{ color: colors.textMuted }}>
+      <Text className="mt-1 text-[10px] font-semibold" style={{ color: colors.inkMuted }}>
         {label}
       </Text>
     </Pressable>

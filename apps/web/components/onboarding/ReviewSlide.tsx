@@ -139,7 +139,7 @@ export default function ReviewSlide({
 
       <p
         className="mt-2 text-center text-[12px] leading-5"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         All of this lives in your profile and can be changed whenever you like.
       </p>

@@ -7,8 +7,8 @@ type ColorToken = Exclude<ColorTokenName, "cardShadow">
  * The Tailwind utility name each colour token is exposed as.
  *
  * A token has up to three names, and only one of them is short: the token key
- * (`card`), the CSS custom property (`--ob-card` on web, `--color-card` on
- * mobile), and the class you actually write (`bg-surface`). This map is the
+ * (`surface`), the CSS custom property (`--ob-surface` on web, `--color-surface`
+ * on mobile), and the class you actually write (`bg-surface`). This map is the
  * second one, so the two apps cannot disagree about it —
  * `apps/mobile/tailwind.config.ts` derives its whole colour block from here, and
  * `scripts/check-color-utilities.mjs` holds `apps/web/app/globals.css` to it.
@@ -24,39 +24,39 @@ type ColorToken = Exclude<ColorTokenName, "cardShadow">
 export const COLOR_UTILITIES = {
   // Surfaces
   page: "page",
-  card: "surface",
-  cardHover: "surface-hover",
-  cardPressed: "surface-pressed",
-  cardMuted: "surface-muted",
-  cardMutedHover: "surface-muted-hover",
-  cardMutedPressed: "surface-muted-pressed",
+  surface: "surface",
+  surfaceHover: "surface-hover",
+  surfacePressed: "surface-pressed",
+  surfaceMuted: "surface-muted",
+  surfaceMutedHover: "surface-muted-hover",
+  surfaceMutedPressed: "surface-muted-pressed",
   raised: "raised",
   raisedHover: "raised-hover",
   raisedPressed: "raised-pressed",
   raisedBorder: "raised-border",
-  controlDisabled: "disabled",
+  disabled: "disabled",
 
   // Activity detail
   activityPage: "activity-page",
   activityPanel: "activity-panel",
   activityCard: "activity-card",
-  activityBorder: "activity-line",
+  activityLine: "activity-line",
   activityHandle: "activity-handle",
 
   // Borders
-  border: "line",
-  borderStrong: "line-strong",
-  borderMuted: "line-muted",
+  line: "line",
+  lineStrong: "line-strong",
+  lineMuted: "line-muted",
 
   // Text
-  text: "ink",
-  textSecondary: "ink-secondary",
-  textMuted: "ink-muted",
-  textDisabled: "ink-disabled",
-  textInverse: "ink-inverse",
-  activityText: "activity-ink",
-  activityTextSecondary: "activity-ink-secondary",
-  activityTextMuted: "activity-ink-muted",
+  ink: "ink",
+  inkSecondary: "ink-secondary",
+  inkMuted: "ink-muted",
+  inkDisabled: "ink-disabled",
+  inkInverse: "ink-inverse",
+  activityInk: "activity-ink",
+  activityInkSecondary: "activity-ink-secondary",
+  activityInkMuted: "activity-ink-muted",
 
   // Accent
   accent: "accent",

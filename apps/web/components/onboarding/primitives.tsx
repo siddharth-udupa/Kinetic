@@ -113,14 +113,14 @@ export function SlideHeading({
         </p>
       ) : null}
 
-      <h2 className="text-[28px] leading-9 font-bold text-balance" style={{ color: colors.text }}>
+      <h2 className="text-[28px] leading-9 font-bold text-balance" style={{ color: colors.ink }}>
         {title}
       </h2>
 
       {subtitle ? (
         <p
           className="mt-3 text-[15px] leading-6 text-pretty"
-          style={{ color: colors.textSecondary }}
+          style={{ color: colors.inkSecondary }}
         >
           {subtitle}
         </p>
@@ -189,7 +189,7 @@ export function PrimaryButton({
 }) {
   const { colors } = useTheme()
   const blocked = disabled && !loading
-  const contentColor = blocked ? colors.textMuted : colors.onAccent
+  const contentColor = blocked ? colors.inkMuted : colors.onAccent
   const Icon = icon ? ICONS[icon] : null
 
   return (
@@ -200,7 +200,7 @@ export function PrimaryButton({
       aria-label={label}
       aria-busy={loading || undefined}
       className={`flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl text-[16px] font-semibold transition active:opacity-80 disabled:cursor-not-allowed ${FOCUS}`}
-      style={{ backgroundColor: blocked ? colors.cardMuted : colors.accent }}
+      style={{ backgroundColor: blocked ? colors.surfaceMuted : colors.accent }}
     >
       {loading ? (
         <Spinner color={contentColor} />
@@ -232,10 +232,10 @@ export function GhostButton({
       onClick={onPress}
       aria-label={label}
       className={`flex h-14 flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border text-[15px] font-semibold transition active:opacity-70 ${FOCUS}`}
-      style={{ borderColor: colors.border, backgroundColor: colors.card }}
+      style={{ borderColor: colors.line, backgroundColor: colors.surface }}
     >
-      <span style={{ color: colors.textSecondary }}>{label}</span>
-      {Icon ? <Icon size={17} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden /> : null}
+      <span style={{ color: colors.inkSecondary }}>{label}</span>
+      {Icon ? <Icon size={17} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden /> : null}
     </button>
   )
 }
@@ -281,7 +281,7 @@ export function RadioDot({ selected }: { selected: boolean }) {
   return (
     <span
       className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2"
-      style={{ borderColor: selected ? colors.accent : colors.borderStrong }}
+      style={{ borderColor: selected ? colors.accent : colors.lineStrong }}
     >
       {selected ? (
         <span
@@ -323,17 +323,17 @@ export function ChoiceCard({
           ? "bg-accent-soft"
           : "bg-surface hover:bg-surface-hover"
       }`}
-      style={{ borderColor: selected ? colors.accent : colors.border }}
+      style={{ borderColor: selected ? colors.accent : colors.line }}
     >
       <div className="flex items-start justify-between">
         <span
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: selected ? colors.accent : colors.cardMuted }}
+          style={{ backgroundColor: selected ? colors.accent : colors.surfaceMuted }}
         >
           <Icon
             size={20}
             strokeWidth={2}
-            style={{ color: selected ? colors.onAccent : colors.textSecondary }}
+            style={{ color: selected ? colors.onAccent : colors.inkSecondary }}
             aria-hidden
           />
         </span>
@@ -342,13 +342,13 @@ export function ChoiceCard({
 
       <span
         className="mt-4 block text-[17px] font-semibold"
-        style={{ color: colors.text }}
+        style={{ color: colors.ink }}
       >
         {title}
       </span>
       <span
         className="mt-1 block text-[14px] leading-5"
-        style={{ color: colors.textSecondary }}
+        style={{ color: colors.inkSecondary }}
       >
         {subtitle}
       </span>
@@ -383,7 +383,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       className="flex gap-1 rounded-xl p-1"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
       {options.map((option) => {
         const selected = option.value === value
@@ -409,7 +409,7 @@ export function Segmented<T extends string>({
           >
             <span
               className="truncate text-[13px] font-semibold"
-              style={{ color: selected ? colors.accentText : colors.textSecondary }}
+              style={{ color: selected ? colors.accentText : colors.inkSecondary }}
             >
               {option.label}
             </span>
@@ -440,8 +440,8 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
   return (
     <div className="mb-4">
       <div className="mb-2.5 flex items-center gap-2">
-        <Icon size={15} strokeWidth={2} style={{ color: colors.textMuted }} aria-hidden />
-        <span className="text-[13px] font-semibold" style={{ color: colors.textSecondary }}>
+        <Icon size={15} strokeWidth={2} style={{ color: colors.inkMuted }} aria-hidden />
+        <span className="text-[13px] font-semibold" style={{ color: colors.inkSecondary }}>
           {label}
         </span>
       </div>
@@ -479,7 +479,7 @@ export function Banner({
       />
       <div
         className="flex-1 text-[13px] leading-5"
-        style={{ color: isDanger ? colors.danger : colors.textSecondary }}
+        style={{ color: isDanger ? colors.danger : colors.inkSecondary }}
       >
         {children}
       </div>
@@ -493,9 +493,9 @@ export function Chip({ label }: { label: string }) {
   return (
     <span
       className="rounded-md px-2.5 py-1 text-xs font-semibold"
-      style={{ backgroundColor: colors.cardMuted }}
+      style={{ backgroundColor: colors.surfaceMuted }}
     >
-      <span style={{ color: colors.textSecondary }}>{label}</span>
+      <span style={{ color: colors.inkSecondary }}>{label}</span>
     </span>
   )
 }
@@ -521,21 +521,21 @@ export function ReviewRow({
         aria-label={`${label}: ${value}. Change`}
         className={`flex w-full cursor-pointer items-center justify-between py-3.5 text-start transition active:opacity-60 ${FOCUS}`}
       >
-        <span className="text-[15px]" style={{ color: colors.textSecondary }}>
+        <span className="text-[15px]" style={{ color: colors.inkSecondary }}>
           {label}
         </span>
         <span className="flex flex-1 items-center justify-end gap-1.5 pl-4">
           <span
             className="truncate text-[15px] font-semibold"
-            style={{ color: colors.text }}
+            style={{ color: colors.ink }}
           >
             {value}
           </span>
-          <ChevronForward style={{ color: colors.textMuted }} size={16} strokeWidth={2} aria-hidden />
+          <ChevronForward style={{ color: colors.inkMuted }} size={16} strokeWidth={2} aria-hidden />
         </span>
       </button>
 
-      {isLast ? null : <div className="h-px" style={{ backgroundColor: colors.border }} />}
+      {isLast ? null : <div className="h-px" style={{ backgroundColor: colors.line }} />}
     </>
   )
 }
@@ -547,13 +547,13 @@ export function ReviewSection({ title, children }: { title: string; children: Re
     <section className="mb-4">
       <h3
         className="mb-2.5 text-xs font-semibold tracking-widest uppercase"
-        style={{ color: colors.textMuted }}
+        style={{ color: colors.inkMuted }}
       >
         {title}
       </h3>
       <div
         className="rounded-2xl border px-4"
-        style={{ borderColor: colors.border, backgroundColor: colors.card }}
+        style={{ borderColor: colors.line, backgroundColor: colors.surface }}
       >
         {children}
       </div>
@@ -568,9 +568,9 @@ function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
   const p = getColors(tone)
 
   return (
-    <div className="h-full flex-1 px-1.5 py-2" style={{ backgroundColor: p.card }}>
-      <div className="mb-1 h-1 w-4 rounded-full" style={{ backgroundColor: p.borderStrong }} />
-      <div className="mb-1 h-1 w-6 rounded-full" style={{ backgroundColor: p.border }} />
+    <div className="h-full flex-1 px-1.5 py-2" style={{ backgroundColor: p.surface }}>
+      <div className="mb-1 h-1 w-4 rounded-full" style={{ backgroundColor: p.lineStrong }} />
+      <div className="mb-1 h-1 w-6 rounded-full" style={{ backgroundColor: p.line }} />
       <div className="h-1 w-5 rounded-full" style={{ backgroundColor: p.accent }} />
     </div>
   )
@@ -586,13 +586,13 @@ export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }
   return (
     <div
       className="h-16 w-full overflow-hidden rounded-xl border"
-      style={{ borderColor: getColors(dominant).borderStrong }}
+      style={{ borderColor: getColors(dominant).lineStrong }}
     >
       <div className="flex h-full flex-1">
         {scheme === "system" ? (
           <>
             <PreviewHalf tone="light" />
-            <div className="w-px" style={{ backgroundColor: COLORS.light.textDisabled }} />
+            <div className="w-px" style={{ backgroundColor: COLORS.light.inkDisabled }} />
             <PreviewHalf tone="dark" />
           </>
         ) : (

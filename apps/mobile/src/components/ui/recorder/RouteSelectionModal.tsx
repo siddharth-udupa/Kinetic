@@ -38,7 +38,7 @@ export default function RouteSelectionModal({
               onPress={onClose}
               className="bg-surface-muted p-1.5 rounded-full"
             >
-              <Ionicons name="close" size={20} color={colors.textMuted} />
+              <Ionicons name="close" size={20} color={colors.inkMuted} />
             </TouchableOpacity>
           </View>
 
@@ -62,7 +62,7 @@ export default function RouteSelectionModal({
                 5.0 km • 45m elevation
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.textDisabled} />
+            <Ionicons name="chevron-forward" size={20} color={colors.inkDisabled} />
           </TouchableOpacity>
 
           {selectedRoute && (
