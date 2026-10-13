@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { signIn, signUp } from "@/lib/auth-client"
 import { ICONS, type IconName } from "@/components/onboarding/icons"
 import { Banner, IconBadge, PrimaryButton, Segmented } from "@/components/onboarding/primitives"
-import { ThemeProvider, themeVars, useTheme } from "@/components/theme"
+import { ThemeProvider, useTheme } from "@/hooks/useTheme"
 
 type Mode = "signin" | "signup"
 
@@ -137,7 +137,7 @@ export default function AuthScreen() {
 function AuthSurface() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { colors, isDark } = useTheme()
+  const { colors, vars } = useTheme()
 
   const [mode, setMode] = useState<Mode>("signin")
   const [name, setName] = useState("")
@@ -225,7 +225,7 @@ function AuthSurface() {
     <div
       className="flex flex-col"
       style={{
-        ...themeVars(colors, isDark),
+        ...vars,
         backgroundColor: colors.page,
         /*
          * Claim the viewport below the shell header rather than growing with

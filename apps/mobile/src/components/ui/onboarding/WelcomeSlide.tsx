@@ -6,7 +6,7 @@ import {
   SlideShell,
   type IconName,
 } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   name: string

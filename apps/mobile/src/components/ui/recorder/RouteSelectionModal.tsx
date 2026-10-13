@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, TouchableOpacity, Modal, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export type RouteSelectionModalProps = {
   visible: boolean

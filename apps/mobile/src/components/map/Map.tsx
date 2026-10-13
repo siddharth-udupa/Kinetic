@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { decodePolyline } from "@repo/gpx"
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 let MapLibreModule: typeof import("@maplibre/maplibre-react-native") | null = null
 

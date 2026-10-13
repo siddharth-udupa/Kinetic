@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, ActivityIndicator } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import type { TabType } from "./TabNavigation"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 

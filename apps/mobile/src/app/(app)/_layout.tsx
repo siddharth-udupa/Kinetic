@@ -1,7 +1,7 @@
 import { Redirect, Stack } from "expo-router"
 import { ActivityIndicator, View } from "react-native"
 import { useSession } from "@/lib/auth-client"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export default function AppLayout() {
   const { data: session, isPending } = useSession()

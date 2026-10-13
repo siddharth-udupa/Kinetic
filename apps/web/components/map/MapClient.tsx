@@ -6,7 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
-import { useTheme } from '@/components/theme'
+import { useTheme } from '@/hooks/useTheme'
 
 type MapClientProps = {
   encodedPolyline?: string

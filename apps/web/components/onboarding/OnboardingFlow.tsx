@@ -3,7 +3,7 @@
 import { type ThemeScheme } from "@repo/shared"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ThemeProvider, themeVars, useTheme } from "../theme"
+import { ThemeProvider, useTheme } from "@/hooks/useTheme"
 import type { OnboardingPrefs } from "./prefs"
 import ProgressHeader from "./ProgressHeader"
 import WelcomeSlide from "./WelcomeSlide"
@@ -46,7 +46,7 @@ export default function OnboardingFlow({ userName, initialPrefs }: Props) {
 
 function OnboardingSurface({ userName, initialPrefs }: Props) {
   const router = useRouter()
-  const { colors, isDark, setScheme } = useTheme()
+  const { colors, vars, setScheme } = useTheme()
 
   const [currentSlide, setCurrentSlide] = useState<number>(SLIDE.welcome)
   const [username, setUsername] = useState("")
@@ -189,7 +189,7 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     <div
       className="flex flex-col"
       style={{
-        ...themeVars(colors, isDark),
+        ...vars,
         backgroundColor: colors.page,
         /*
          * Claim the viewport below the shell header rather than growing with

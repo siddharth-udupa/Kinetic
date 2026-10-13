@@ -2,7 +2,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { metersToDistance, metersToElevation, speedToMps, type DistanceUnit, type ElevationUnit, type SpeedUnit } from "@repo/units"
-import { useTheme } from "@/components/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type ActivityChartsClientProps = {
   distanceData: number[]

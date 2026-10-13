@@ -9,7 +9,7 @@ import {
   ThemePreview,
   type IconName,
 } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import { THEME_LABELS, TIME_LABELS } from "./prefs"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 

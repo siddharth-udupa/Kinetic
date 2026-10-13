@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import { useSession, signOut } from "@/lib/auth-client"
 import { APP_NAME } from "@repo/shared"
-import { useTheme } from "@/components/theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   Avatar,
   BrandMark,

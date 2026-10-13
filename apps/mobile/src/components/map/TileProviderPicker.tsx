@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { View, Text, TouchableOpacity, Modal, ScrollView, StyleProp, ViewStyle } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { tileProviders, DEFAULT_TILE_PROVIDER, type TileProviderId } from "@repo/maps"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export type TileProviderPickerProps = {
   currentProviderId: TileProviderId

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shell/Navbar";
 import { AppShell } from "@/components/shell/AppShell";
-import { readSchemeHint, THEME_COOKIE, themeInitScript, themeInitStyle } from "@/components/theme-init";
+import { readSchemeHint, THEME_COOKIE, themeInitScript, themeInitStyle } from "@/lib/theme-init";
 import { APP_NAME, APP_TAGLINE } from "@repo/shared";
 import { cookies } from "next/headers";
 

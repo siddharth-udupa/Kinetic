@@ -17,7 +17,7 @@ import { durationToSeconds } from "@repo/units"
 import type { ManualActivityInput } from "@repo/validation"
 import { authClient } from "@/lib/auth-client"
 import { invalidateActivitiesCache } from "@/hooks/useActivities"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

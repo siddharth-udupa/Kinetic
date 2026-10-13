@@ -15,7 +15,7 @@ import { metersToDistance, metersToElevation, formatDurationShort, formatPace } 
 import type { ActivityDetailsType } from "@repo/types"
 import { authClient, useSession } from "@/lib/auth-client"
 import { removeActivityFromCache } from "@/hooks/useActivities"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   ActivityNotFound,
   ActivityHeaderOverlay,

@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import { ActivityTypes } from "@repo/types"
 
 export type ActivityAthleteHeaderProps = {

@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { ICONS } from "./icons"
 import { Banner, PrimaryButton, SlideHeading, SlideShell } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   username: string

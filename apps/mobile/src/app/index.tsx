@@ -2,7 +2,7 @@ import { Redirect } from "expo-router"
 import { View, ActivityIndicator } from "react-native"
 import { useSession } from "@/lib/auth-client"
 import { usePreferences } from "@/lib/preferencesStore"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export default function Index() {
   const { data: session, isPending } = useSession()

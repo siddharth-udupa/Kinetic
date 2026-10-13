@@ -21,7 +21,7 @@ import {
 import MapView from "@/components/map/Map"
 import ActionModal from "@/components/ui/ActionModal"
 import { useActivityRecorder } from "@/hooks/useActivityRecorder"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   getActiveSession,
   computeElapsedSeconds,

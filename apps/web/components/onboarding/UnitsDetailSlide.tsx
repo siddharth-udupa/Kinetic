@@ -9,7 +9,7 @@ import {
   SlideShell,
   TextAction,
 } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   ELEVATION,
   PACE,

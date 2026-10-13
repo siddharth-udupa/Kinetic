@@ -8,7 +8,7 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   ELEVATION_LABELS,
   PACE_LABELS,

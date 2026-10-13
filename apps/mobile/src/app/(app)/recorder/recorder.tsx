@@ -29,7 +29,7 @@ import FloatingMapControls from "@/components/ui/recorder/FloatingMapControls";
 import LiveMetricsCard from "@/components/ui/recorder/LiveMetricsCard";
 import RouteSelectionModal from "@/components/ui/recorder/RouteSelectionModal";
 import { useActivityRecorder } from "@/hooks/useActivityRecorder";
-import { useTheme } from "@/components/ui/theme";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function RecorderScreen() {
 	const router = useRouter();

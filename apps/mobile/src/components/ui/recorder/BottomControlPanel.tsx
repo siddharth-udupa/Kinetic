@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { ActivityTypes } from "@repo/types"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 
 export type BottomControlPanelProps = {

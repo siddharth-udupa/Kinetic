@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export type ActivitySocialBarProps = {
   onKudosPress?: () => void

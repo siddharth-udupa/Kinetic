@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import type { ActivityCardType } from "@repo/types"
 import { DEFAULT_PREFERENCES, usePreferences } from "@/lib/preferencesStore"
 import type { User } from "@/lib/auth-client"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 interface ActivityFeedProps {
   user: User

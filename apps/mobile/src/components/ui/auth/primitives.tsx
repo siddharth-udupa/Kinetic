@@ -1,7 +1,7 @@
 import { useState, type ComponentProps, type ReactNode } from "react"
 import { Pressable, Text, TextInput, View, type TextInputProps } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 /**
  * The `name` prop's real union. `Ionicons` is a `createIconSet` component, so

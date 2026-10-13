@@ -3,7 +3,7 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { ChevronRight } from "lucide-react"
-import { useTheme } from "@/components/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 /**
  * Keyboard focus ring, identical to the one the onboarding flow uses.

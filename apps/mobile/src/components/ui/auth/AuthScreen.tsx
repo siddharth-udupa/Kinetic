@@ -19,7 +19,7 @@ import {
   PrimaryButton,
   Segmented,
 } from "@/components/ui/onboarding/primitives"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import {
   AuthField,
   FieldAction,

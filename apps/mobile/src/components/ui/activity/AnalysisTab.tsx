@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import ActivityChartWrapper from "@/components/charts/ActivityChartWrapper"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
 /* The activity tier throughout: this renders inside the sheet, which stacks

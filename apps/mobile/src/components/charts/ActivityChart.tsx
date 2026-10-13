@@ -19,7 +19,7 @@ import type {
   SpeedUnit,
 } from "@repo/units"
 import type { ColorTokens } from "@repo/shared"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import { buildChartData } from "./chartMath"
 
 export { buildChartData } from "./chartMath"

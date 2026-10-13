@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 import { COLORS, getColors } from "@repo/shared"
 import { ICONS, type IconName } from "./icons"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import type { OnboardingPrefs } from "./prefs"
 
 export type { IconName }

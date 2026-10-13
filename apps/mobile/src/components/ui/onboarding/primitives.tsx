@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { COLORS, getColors } from "@repo/shared"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
 export type IconName = keyof typeof Ionicons.glyphMap

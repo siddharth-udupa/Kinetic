@@ -3,8 +3,8 @@ import { getColors, type ThemeScheme } from "@repo/shared"
 /**
  * The scheme handoff between the browser, the server and React.
  *
- * Deliberately not in `theme.tsx`: that module is `"use client"`, but the root layout
- * needs to call these from the server.
+ * Deliberately not in `hooks/useTheme.tsx`: that module is `"use client"`, but the root
+ * layout needs to call these from the server.
  *
  * The server cannot ask the OS what scheme the athlete is on, so a server component
  * renders light and the page visibly repaints dark once React hydrates. Two pieces

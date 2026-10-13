@@ -2,7 +2,7 @@
 
 import type { ThemeScheme } from "@repo/shared"
 import type { ReactNode } from "react"
-import { ThemeProvider, themeVars, useTheme } from "@/components/theme"
+import { ThemeProvider, useTheme } from "@/hooks/useTheme"
 
 /**
  * The app-wide theme surface.
@@ -44,12 +44,12 @@ export function AppShell({
  * what keeps the nav's markup free of inline colour styling.
  */
 function ThemedShell({ children }: { children: ReactNode }) {
-  const { colors, isDark } = useTheme()
+  const { colors, vars } = useTheme()
 
   return (
     <div
       className="flex min-h-full flex-1 flex-col"
-      style={{ ...themeVars(colors, isDark), backgroundColor: colors.page }}
+      style={{ ...vars, backgroundColor: colors.page }}
     >
       {children}
     </div>

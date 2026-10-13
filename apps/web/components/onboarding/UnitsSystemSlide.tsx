@@ -2,7 +2,7 @@
 
 import { ICONS } from "./icons"
 import { ChoiceCard, PrimaryButton, SlideHeading, SlideShell } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 import { SYSTEMS, type UnitSystem } from "./prefs"
 import type { OnboardingPrefs } from "./prefs"
 

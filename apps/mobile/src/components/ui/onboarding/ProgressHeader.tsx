@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   /** 1-based. */

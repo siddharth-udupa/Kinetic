@@ -1,7 +1,7 @@
 "use client"
 
 import { ICONS } from "./icons"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   /** 1-based. */

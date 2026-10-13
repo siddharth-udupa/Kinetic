@@ -2,7 +2,7 @@
 
 import { ICONS, type IconName } from "./icons"
 import { IconBadge, PrimaryButton, SlideShell } from "./primitives"
-import { useTheme } from "../theme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   name: string

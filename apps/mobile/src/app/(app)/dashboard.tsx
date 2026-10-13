@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 import ActivityFeed from "@/components/ActivityFeed"
 import { useActivities } from "@/hooks/useActivities"
 import { clearPreferences } from "@/lib/preferencesStore"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 import { TabBar, TopBar, type TabKey } from "@/components/ui/shell/Navigation"
 
 // Lazy-load MapScreen component

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback, ActivityIndicator } from "react-native"
 import { Ionicons, Feather } from "@expo/vector-icons"
-import { useTheme } from "@/components/ui/theme"
+import { useTheme } from "@/hooks/useTheme"
 
 export type ActivityHeaderOverlayProps = {
   topInset: number
