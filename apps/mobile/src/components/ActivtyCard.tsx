@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons as ExpoIonicons, MaterialCommunityIcons as ExpoMaterialCommunityIcons } from "@expo/vector-icons";
 import type { ActivityCardType, PreferencesType } from "@repo/types";
 import {
 	formatDateAndTime,
@@ -8,18 +8,20 @@ import {
 	metersToElevation,
 	mpsToSpeed,
 } from "@repo/units";
-import { Image } from "expo-image";
+import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
-import { cssInterop } from "nativewind";
+import { styled } from "nativewind";
 import { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import type { User } from "@/lib/auth-client";
 import ActivityMap from "./map/Map";
 
-// Allow `className` on the third-party components used in this card.
-cssInterop(Image, { className: "style" });
-cssInterop(Ionicons, { className: "style" });
-cssInterop(MaterialCommunityIcons, { className: "style" });
+// `className` on the third-party components used in this card. v5 replaced the
+// global `cssInterop` registration with `styled`, which returns a wrapper rather
+// than mutating the component — so these local names are what the card renders.
+const Image = styled(ExpoImage);
+const Ionicons = styled(ExpoIonicons);
+const MaterialCommunityIcons = styled(ExpoMaterialCommunityIcons);
 
 interface ActivityCardProps {
 	activity: ActivityCardType;

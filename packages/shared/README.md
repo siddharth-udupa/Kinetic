@@ -9,6 +9,10 @@ is no build step (see `ARCHITECTURE.md`).
 | `src/color-utilities.ts` | The class name each token is exposed as. |
 | `src/brand.ts` | Product name, tagline, mark. |
 
+Run `pnpm theme:mobile` from the repo root after changing the palette. It
+regenerates `apps/mobile/theme.css`, which `pnpm check:colors` then holds to the
+values here.
+
 ## Colours
 
 `colors.ts` is the single source of truth for colour on both platforms. Change a
@@ -33,13 +37,21 @@ disagree about it.
 
 On the web, `colorsToCssVars(colors, isDark)` flattens a palette into the
 `--ob-*` custom properties the shell wrapper carries, which is what lets a plain
-Tailwind class like `bg-surface` resolve to the active theme. On mobile,
-NativeWind resolves class names at build time, so `apps/mobile/tailwind.config.ts`
-compiles the same objects into `--color-*` custom properties instead.
+Tailwind class like `bg-surface` resolve to the active theme. On mobile, the same
+class name resolves through `--color-*` custom properties, filled in at runtime by
+`ThemeProvider` from `getColors()`.
 
-`apps/web/app/globals.css` is the one list that cannot be generated — CSS cannot
-import TypeScript — so `pnpm check:colors` compares it against `COLOR_UTILITIES`
-and fails on any disagreement.
+CSS cannot import TypeScript, so the two stylesheets are derived rather than
+imported:
+
+| Target | Produced by | Dark values |
+| --- | --- | --- |
+| `apps/web/app/globals.css` | hand-written `@theme inline`, checked by `pnpm check:colors` | `--ob-*` swapped by the shell wrapper |
+| `apps/mobile/theme.css` | `pnpm theme:mobile` | supplied at runtime by `ThemeProvider` |
+
+`pnpm check:colors` compares all three — the utility map, the web stylesheet and
+the generated mobile theme — against the palette here, and fails on any
+disagreement.
 
 ### Rules
 

@@ -193,7 +193,7 @@ export function ActionModal({
       case "primary":
       default:
         return {
-          container: "bg-accent border border-transparent active:opacity-90 shadow-sm",
+          container: "bg-accent border border-transparent active:opacity-90 shadow-xs",
           text: "text-on-accent font-bold",
           spinnerColor: colors.onAccent,
         }

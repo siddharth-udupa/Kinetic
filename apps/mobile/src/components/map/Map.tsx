@@ -133,7 +133,7 @@ export default function MapView({
               opacity={0.8}
             />
             {userLocation && (
-              <View className="absolute w-4 h-4 rounded-full bg-accent border-2 border-on-accent shadow-sm" />
+              <View className="absolute w-4 h-4 rounded-full bg-accent border-2 border-on-accent shadow-xs" />
             )}
           </View>
           <Text className="text-ink-secondary text-xs font-semibold mt-1">

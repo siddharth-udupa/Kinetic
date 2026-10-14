@@ -6,6 +6,13 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+  # Native binary for the Tailwind v4 oxide engine.
+  '@tailwindcss/oxide': true
+  lightningcss: true
+# The RC pairs must be exact. Nativewind delegates CSS parsing to lightningcss, and
+# the install guide pins it because newer builds fail to deserialize global.css.
+overrides:
+  lightningcss: 1.30.1
 minimumReleaseAgeExclude:
   - '@expo/cli@57.0.16 || 57.0.25'
   - '@expo/config@57.0.8'

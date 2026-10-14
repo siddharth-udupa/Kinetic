@@ -70,9 +70,33 @@ const { colors } = useTheme()
 ### Mobile (`apps/mobile`)
 
 Use the same named utilities: `bg-surface`, `text-ink-muted`, `border-line`,
-`bg-accent-soft`. They are wired to the shared tokens in
-`apps/mobile/tailwind.config.ts` and follow the resolved scheme, so a component
-writes `bg-surface` once rather than a `bg-white dark:bg-slate-900` pair.
+`bg-accent-soft`. They are wired to the shared tokens in `apps/mobile/theme.css`
+and follow the resolved scheme, so a component writes `bg-surface` once rather
+than a `bg-white dark:bg-slate-900` pair.
+
+Mobile runs **Nativewind v5**, which is Tailwind v4. That changes four things
+worth knowing before you touch the config:
+
+- **Tailwind is CSS-first.** There is no `tailwind.config.ts`. Tokens live in
+  `apps/mobile/theme.css`, which is **generated** — run `pnpm theme:mobile` after
+  changing the palette, and never hand-edit it.
+- **Dark mode is `Appearance`, not a class.** v5 rejects `darkMode: "class"` and
+  qualified root selectors like `:root.dark` on native. `ThemeProvider`
+  (wrapping the router in `app/_layout.tsx`) reads `useColorScheme()` and supplies
+  the resolved palette through `VariableContextProvider`. To change the theme, call
+  `useThemeScheme().setScheme(...)` — **not** `Appearance.setColorScheme`, which
+  React Native Web does not implement at all.
+- **The web build is statically rendered, so the provider waits one render.** The
+  server cannot know the scheme and always emits the light palette, and React's
+  hydration patches text but not attributes — a provider that rendered the resolved
+  values on the first client render would keep the server's inline `style` forever.
+  `ThemeProvider` therefore emits nothing until mounted, on web only. Native has no
+  server pass and is correct from the first frame.
+- **Every token must stay out of the compiler's inlining.** `metro.config.js`
+  reads the token list out of `theme.css` and passes it as
+  `inlineVariables.exclude`. Inlined, a token freezes at the light value that
+  file declares; excluded, the stylesheet keeps the reference and the provider
+  fills it in. A token missing from that list renders light in dark mode.
 
 Opacity modifiers work on the opaque tokens (`bg-surface/90`,
 `border-accent/30`) but not the translucent ones — `accent-soft`, the `-soft`
@@ -87,6 +111,13 @@ const { colors } = useTheme()
 <Ionicons name="flash" size={20} color={colors.accent} />
 ```
 
+Third-party components that do not forward `className` need a `styled` wrapper —
+v5 removed the global `cssInterop` registration:
+
+```tsx
+const Icon = styled(ExpoIonicons)
+```
+
 ### Adding a new colour
 
 1. Add the key to `LIGHT_COLORS` in `packages/shared/src/colors.ts`, with a
@@ -98,10 +129,16 @@ const { colors } = useTheme()
    `satisfies Record<…>`, so a token with no entry there will not compile. This step
    is also what gives mobile the class.
 4. Add the matching `--color-<name>: var(--ob-<token>);` line to `@theme inline` in
-   `apps/web/app/globals.css`. This is the only hand-written step, and
-   `pnpm check:colors` fails if the line and the map disagree — so it cannot ship
-   broken. It is a separate command from `pnpm lint`; run both.
-5. Comment the value where the reasoning is not obvious — contrast ratios, why
+   `apps/web/app/globals.css`.
+5. Add the token to the section it belongs to in `SECTIONS` in
+   `scripts/generate-mobile-theme.mjs`, then run `pnpm theme:mobile`. The generator
+   fails loudly on a palette token it has no section for, so step 5 cannot be
+   forgotten silently.
+6. Run `pnpm check:colors`. It compares all three targets — the utility map, the
+   web stylesheet and the generated mobile theme — against the shared palette, so
+   a mismatch anywhere cannot ship. It is a separate command from `pnpm lint`; run
+   both.
+7. Comment the value where the reasoning is not obvious — contrast ratios, why
    dark differs from light. The existing tokens are commented for a reason, and
    future readers depend on it.
 

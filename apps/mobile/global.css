@@ -1,40 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /*
- * Semantic aliases, all `@apply`ing the shared tokens from
- * `packages/shared/src/colors.ts`. The palette lives in TypeScript; this file
- * only names the roles, so `bg-card-main` follows the resolved scheme on its own.
+ * Tailwind v4 entry point.
+ *
+ * The four imports are split rather than `@import "tailwindcss"` because utilities
+ * must stay unlayered: a single import puts them below React Native Web's defaults
+ * in the cascade, and web overrides win over the class you wrote.
+ *
+ * `theme.css` is generated from the shared palette — see its header.
  */
-@layer utilities {
-  /* Theme background utility classes */
-  .bg-app {
-    @apply bg-page;
-  }
-  .bg-card-main {
-    @apply bg-surface;
-  }
-  .bg-card-subtle {
-    @apply bg-surface-muted-hover;
-  }
-  .bg-pill {
-    @apply bg-surface-muted;
-  }
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";
 
-  /* Theme border utility classes */
-  .border-app {
-    @apply border-line;
-  }
-  .border-app-subtle {
-    @apply border-line-muted;
-  }
-
-  /* Theme text utility classes */
-  .text-primary-app {
-    @apply text-ink;
-  }
-  .text-secondary-app {
-    @apply text-ink-muted;
-  }
-}
+@import "./theme.css";

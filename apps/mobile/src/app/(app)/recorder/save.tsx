@@ -166,7 +166,7 @@ export default function SaveActivityScreen() {
       >
         <View className="pt-3">
           {/* 1. TITLE BOX */}
-          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Title <Text className="text-accent">*</Text>
             </Text>
@@ -184,7 +184,7 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 2. DESCRIPTION */}
-          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Description
             </Text>
@@ -210,7 +210,7 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 3. TYPE (SPORT TYPE SELECTOR) */}
-          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Sport Type
             </Text>
@@ -247,7 +247,7 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 4. OVERVIEW */}
-          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-sm">
+          <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-3">
               Overview
             </Text>
@@ -294,7 +294,7 @@ export default function SaveActivityScreen() {
           </View>
 
           {/* 5. MAP */}
-          <View className="mx-4 mb-3 rounded-2xl overflow-hidden bg-ink border border-line shadow-sm h-48 relative">
+          <View className="mx-4 mb-3 rounded-2xl overflow-hidden bg-ink border border-line shadow-xs h-48 relative">
             <MapView isStatic={true} livePoints={points} />
             <View className="absolute bottom-2 left-2 bg-ink/80 px-2.5 py-1 rounded-md border border-line-strong/50 flex-row items-center">
               <Ionicons name="location-sharp" size={12} color={colors.accent} />

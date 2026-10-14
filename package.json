@@ -11,6 +11,7 @@
     "tiles": "pnpm --filter tile_provider dev",
     "lint": "biome lint",
     "check:colors": "node scripts/check-color-utilities.mjs",
+    "theme:mobile": "node scripts/generate-mobile-theme.mjs",
     "dbg": "pnpm --filter db dbg",
     "dbm": "pnpm --filter db dbm",
     "dbp": "pnpm --filter db dbp",

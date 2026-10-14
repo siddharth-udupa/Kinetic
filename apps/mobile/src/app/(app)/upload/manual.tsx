@@ -97,7 +97,7 @@ function formatErrorMessage(resData: any): string {
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
     <View
-      className="bg-surface shadow-sm rounded-2xl mx-4 mb-3 p-4 border border-line-muted"
+      className="bg-surface shadow-xs rounded-2xl mx-4 mb-3 p-4 border border-line-muted"
     >
       {children}
     </View>
@@ -159,7 +159,7 @@ function SegmentedControl<T extends string>({
             key={opt}
             onPress={() => onChange(opt)}
             className={`flex-1 py-1.5 rounded-lg items-center ${
-              isActive ? "bg-raised shadow-sm" : ""
+              isActive ? "bg-raised shadow-xs" : ""
             }`}
             activeOpacity={0.7}
           >

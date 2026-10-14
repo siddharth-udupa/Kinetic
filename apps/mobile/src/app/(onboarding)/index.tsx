@@ -10,9 +10,9 @@ import {
 } from "react-native"
 import { useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useColorScheme } from "nativewind"
 import { useSession } from "@/lib/auth-client"
 import { useOnboarding, DEFAULT_PREFS, type OnboardingPrefs } from "@/hooks/useOnboarding"
+import { useThemeScheme } from "@/components/ThemeProvider"
 import ProgressHeader from "@/components/ui/onboarding/ProgressHeader"
 import WelcomeSlide from "@/components/ui/onboarding/WelcomeSlide"
 import UsernameSlide from "@/components/ui/onboarding/UsernameSlide"
@@ -59,21 +59,18 @@ export default function OnboardingScreen() {
    * Tapping a theme on the appearance slide repaints the running app. If the
    * user leaves without finishing, the override is dropped so the rest of the
    * app keeps following the system appearance.
+   *
+   * Through `ThemeProvider` rather than `Appearance` directly, because the
+   * platform API is a one-way street on the web build: React Native Web has no
+   * `setColorScheme`, so a tap there would have been a silent no-op.
    */
-  const { setColorScheme } = useColorScheme()
-  const setColorSchemeRef = useRef(setColorScheme)
-  setColorSchemeRef.current = setColorScheme
-
+  const { setScheme } = useThemeScheme()
   const didCommit = useRef(false)
 
-  const applyColorScheme = useCallback((theme: OnboardingPrefs["theme"]) => {
-    try {
-      setColorSchemeRef.current(theme)
-    } catch {
-      // `setColorScheme` needs `darkMode: "class"`. If a stale Tailwind build
-      // is cached, the preview simply does nothing — never a crash.
-    }
-  }, [])
+  const applyColorScheme = useCallback(
+    (theme: OnboardingPrefs["theme"]) => setScheme(theme),
+    [setScheme],
+  )
 
   useEffect(
     () => () => {

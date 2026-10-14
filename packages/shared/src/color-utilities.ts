@@ -10,8 +10,9 @@ type ColorToken = Exclude<ColorTokenName, "cardShadow">
  * (`surface`), the CSS custom property (`--ob-surface` on web, `--color-surface`
  * on mobile), and the class you actually write (`bg-surface`). This map is the
  * second one, so the two apps cannot disagree about it —
- * `apps/mobile/tailwind.config.ts` derives its whole colour block from here, and
- * `scripts/check-color-utilities.mjs` holds `apps/web/app/globals.css` to it.
+ * `apps/mobile/theme.css` derives its whole colour block from here, and
+ * `scripts/check-color-utilities.mjs` holds `apps/web/app/globals.css` and
+ * `apps/mobile/theme.css` to it.
  *
  * `satisfies Record<ColorToken, string>` makes it exhaustive: a token added to
  * `colors.ts` with no entry here will not compile. That is the step of "add a

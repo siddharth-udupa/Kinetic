@@ -14,10 +14,10 @@
  * or arbitrary hex classes like `bg-[#FC5200]`.
  *
  * This block is the one place the palette is written out by hand, because CSS
- * cannot import TypeScript. `apps/mobile/tailwind.config.ts` generates its own
- * list from `COLOR_UTILITIES` in `@repo/shared`; `pnpm check:colors` fails if the
- * two disagree, so a line added here without a matching token in the map cannot
- * reach a build.
+ * cannot import TypeScript. `apps/mobile/theme.css` generates its own list from
+ * `COLOR_UTILITIES` in `@repo/shared` via `pnpm theme:mobile`; `pnpm check:colors`
+ * fails if the three disagree, so a line added here without a matching token in
+ * the map cannot reach a build.
  */
 @theme inline {
   /* Surfaces */
