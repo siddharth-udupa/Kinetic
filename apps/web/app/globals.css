@@ -7,14 +7,9 @@
   cursor: default;
 }
 
-/* Height of the sticky app shell header: `h-14` (56px) plus its 1px bottom
-   border, going to `h-16` (64px) plus border from the `lg` breakpoint up.
-   These track `components/shell/Navbar.tsx` — change one, change the other.
-
-   A full-height page needs it because the body column is `min-h-full`: without
-   a definite height there is no free space for a `flex-1` child to grow into,
-   so the page would be sized by its content and scroll the document instead of
-   scrolling its own body. */
+/* Sticky shell header height, including its 1px border. Tracks `components/shell/Navbar.tsx`.
+   Full-height pages need it: the body column is `min-h-full`, so without a definite
+   height there is no free space for a `flex-1` child to grow into. */
 :root {
   --shell-header-h: 3.5625rem;
 }
@@ -25,8 +20,7 @@
   }
 }
 
-/* Onboarding flow — the fade the mobile stack plays on push, and a scrollbar
-   the flow hides the way the native ScrollView does. */
+/* Onboarding flow: the fade the mobile stack plays on push, and a hidden scrollbar. */
 @keyframes ob-slide-in {
   from {
     opacity: 0;

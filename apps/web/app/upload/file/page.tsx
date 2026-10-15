@@ -160,7 +160,6 @@ export default function GPXUploadPage() {
 
       <form onSubmit={handleUpload} className="space-y-0">
         
-        {/* GPX File Drop / Input Box */}
         <div className="pb-6 border-b border-line">
           <label className="text-xs font-medium text-ink mb-2 block">
             GPX File <span className="text-danger-text">*</span>
@@ -211,7 +210,6 @@ export default function GPXUploadPage() {
           </div>
         </div>
 
-        {/* Title */}
         <div className="flex flex-col gap-1.5 py-6">
           <label htmlFor="title" className="text-xs text-ink-secondary">
             Title <span className="text-ink-disabled font-normal">(optional - defaults to file name)</span>
@@ -226,7 +224,6 @@ export default function GPXUploadPage() {
           />
         </div>
 
-        {/* Description */}
         <div className="flex flex-col gap-1.5 pb-6 border-b border-line">
           <label htmlFor="description" className="text-xs text-ink-secondary">Description</label>
           <textarea
@@ -239,7 +236,6 @@ export default function GPXUploadPage() {
           />
         </div>
 
-        {/* Submit button */}
         <div className="pt-6 flex items-center gap-4">
           <button
             type="submit"

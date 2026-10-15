@@ -33,14 +33,7 @@ import { CREATE_ACTIONS, NAV_GROUPS, NAV_LINKS, isCurrent, type NavChild } from 
 /** Which panel is open. One at a time — they would otherwise overlap. */
 type OpenPanel = "feed" | "training" | "create" | "account" | "search" | null
 
-/**
- * The app header.
- *
- * Draws from the onboarding theme's tokens — `AppShell` publishes them as
- * `--color-*` on the shell wrapper above — so it is the same object in light and
- * dark, and visually continuous with the onboarding and auth screens it links
- * into.
- */
+/** App header. Draws from the `--color-*` tokens `AppShell` publishes. */
 export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -50,8 +43,8 @@ export default function Navbar() {
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  /* `document` is read to portal the mobile sheet out of the header, and does
-     not exist while server-rendering. */
+  // `document` portals the mobile sheet out of the header, and does not exist
+  // while server-rendering.
   const [mounted, setMounted] = useState(false)
 
   const headerRef = useRef<HTMLElement>(null)
@@ -61,9 +54,8 @@ export default function Navbar() {
 
   useEffect(() => setMounted(true), [])
 
-  /* Close on an outside click. Bound to `mousedown` rather than `click` so the
-     panel closes under the same gesture that opened whatever was on top of it,
-     instead of waiting for the mouse to be released. */
+  // Close on an outside click. Bound to `mousedown` so the panel closes under
+  // the same gesture that opened whatever was on top of it.
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
       if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
@@ -75,20 +67,16 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handlePointerDown)
   }, [])
 
-  /* Every panel is a transient affordance tied to a route, so navigating away
-     has to dismiss all of them — otherwise the mobile sheet survives the
-     navigation it was opened for and covers the page it just revealed.
-
-     `pathname` is the trigger and is not read in the body; the setters are
-     stable, so the effect fires exactly once per navigation. */
+  // Every panel is tied to a route, so navigating away dismisses them all.
+  // Otherwise the mobile sheet covers the page it just revealed.
   // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the trigger, not a read dependency
   useEffect(() => {
     setOpenPanel(null)
     setMobileOpen(false)
   }, [pathname])
 
-  /* Escape closes the topmost thing. The mobile sheet wins over a panel,
-     because it is the one covering the page. */
+  // Escape closes the topmost thing. The mobile sheet wins over a panel because
+  // it is the one covering the page.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key !== "Escape") return
@@ -118,9 +106,8 @@ export default function Navbar() {
     }
   }, [mobileOpen])
 
-  /* Widened at the boundary because `NAV_GROUPS` types `id` as a plain string:
-     the model is shared with the mobile nav, which has no panels at all. The
-     union is what keeps a typo in a panel name a compile error. */
+  /* Widened here because `NAV_GROUPS` types `id` as a plain string: the model is
+     shared with the mobile nav, which has no panels at all. */
   function togglePanel(next: string) {
     setOpenPanel((current) => (current === next ? null : (next as OpenPanel)))
   }
@@ -144,21 +131,12 @@ export default function Navbar() {
     router.push("/auth")
   }
 
-  /*
-   * One definition, rendered in two places: inline on wide viewports and inside
-   * the mobile sheet. `id` is suffixed per instance so the label still points at
-   * its own input — two elements sharing one id would leave the sheet's label
-   * bound to the inline field, which is not even on screen when it is used.
-   */
-  /*
-   * `focusRef` is the ref *object*, typed by inference rather than an explicit
-   * `React.Ref<…>`: the workspace resolves two copies of `@types/react`, and an
-   * annotation written here is structurally incompatible with the one
-   * `useRef` infers. Passing the object sidesteps the collision.
-   */
+  // One definition, rendered inline on wide viewports and in the mobile sheet,
+  // with `id` suffixed per instance so each label points at its own input.
+  // `focusRef` is typed by inference: the workspace resolves two copies of `@types/react`.
   const searchField = (idSuffix: string, focusRef?: { current: HTMLInputElement | null }) => (
-    // A plain <form>: it is not a landmark here, and adding `role="search"`
-    // would put one on every rendered instance of this field.
+    // A plain <form>: it is not a landmark here, and `role="search"` would put
+    // one on every instance of this field.
     <form onSubmit={handleSearchSubmit}>
       <label htmlFor={`nav-search-${idSuffix}`} className="sr-only">
         Search activities and athletes
@@ -190,17 +168,14 @@ export default function Navbar() {
         backgroundColor: colors.surface,
         borderColor: colors.line,
         // The blur is doing the separating, so the surface only needs to be
-        // near-opaque — fully transparent would let a scrolled card show
-        // through the wordmark.
+        // near-opaque.
         background: `color-mix(in srgb, ${colors.surface} 88%, transparent)`,
       }}
     >
-      {/* The container is `xl` rather than `max-w-7xl`: at 1280px and up the
-          bar has room for the sections, the search field and the account
-          cluster without the groups crowding the wordmark. */}
+      {/* `xl` rather than `max-w-7xl`: from 1280px up the bar has room for the
+          sections, the search field and the account cluster. */}
       <div className="mx-auto w-full max-w-400 px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center gap-3 lg:h-16 lg:gap-5">
-          {/* ── Brand ── */}
           <Link
             href={user ? "/dashboard" : "/"}
             className={`shrink-0 rounded-xl ${FOCUS}`}
@@ -212,7 +187,6 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* ── Primary sections ── */}
           <nav className="hidden min-w-0 flex-1 items-center gap-1 lg:flex" aria-label="Primary">
             {NAV_GROUPS.map((group) => {
               const current = isCurrent(pathname, group.matches)
@@ -275,11 +249,9 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* ── Search: an inline field once there is room for it, a panel below
-                 that, so it never squeezes the sections off the bar. ── */}
+          {/* Inline field at `xl` and up, a panel below that. */}
           <div className="ml-auto hidden w-64 xl:block">{searchField("inline")}</div>
 
-          {/* ── Actions ── */}
           <div className="ml-auto flex items-center gap-1.5 xl:ml-0">
             <button
               type="button"
@@ -306,9 +278,7 @@ export default function Navbar() {
 
             {user ? (
               <>
-                {/* The one saturated surface in the header — the same rule the
-                    onboarding flow follows, where each screen has a single
-                    accent-filled control. */}
+                {/* The one saturated surface in the header. */}
                 <div className="relative hidden lg:block">
                   <button
                     type="button"
@@ -426,21 +396,16 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Search panel, below `xl` ── */}
       {openPanel === "search" ? (
         <div className="border-t px-4 py-3 sm:px-6 lg:px-8 xl:hidden" style={{ borderColor: colors.line }}>
           <div className="mx-auto w-full max-w-400">{searchField("panel", searchRef)}</div>
         </div>
       ) : null}
 
-      {/* Portalled: the header carries `backdrop-blur`, and a backdrop filter
-          makes its box the containing block for `position: fixed` descendants —
-          so a sheet rendered in place resolves `inset-0` against the 56px header
-          rather than the viewport, collapsing to header height. Rendering into
-          `document.body` takes it outside that block entirely.
-
-          Gated on `mounted` because `document` does not exist during SSR. The
-          sheet is closed on the server anyway, so nothing is lost by waiting. */}
+      {/* Portalled: a backdrop filter makes the header the containing block for
+          `position: fixed` descendants, so a sheet rendered in place would
+          resolve `inset-0` against the header instead of the viewport.
+          Gated on `mounted` because `document` does not exist during SSR. */}
       {mounted && mobileOpen
         ? createPortal(
             <MobileSheet
@@ -456,14 +421,7 @@ export default function Navbar() {
   )
 }
 
-/**
- * The full-height mobile menu.
- *
- * Owns the viewport rather than hanging off the header, so every section can be
- * listed flat — the old overlay used accordions, which meant a section had to be
- * expanded before it could be read, and the panel clipped once its content
- * outgrew the remaining height.
- */
+/** The full-height mobile menu. Sections are listed flat, not accordions. */
 function MobileSheet({
   searchField,
   user,

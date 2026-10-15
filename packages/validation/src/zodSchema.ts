@@ -1,18 +1,9 @@
 import { z } from "zod"
 import { ACTIVITY_TYPES } from "@repo/types"
 
-// ---------------------------------------------------------------------------
-// Activity type
-// ---------------------------------------------------------------------------
-
 /**
- * Single source of truth for the activity type field.
- *
- * The `activity_type` pgEnum only accepts lowercase values, so everything is
- * normalised to lowercase here — clients may send "Run", "run" or " RUN " and
- * always end up with a value Postgres will accept. Anything outside the enum
- * (including the old "Other" option) is rejected at the edge instead of
- * blowing up on an INSERT.
+ * The activity type field, checked once at the edge. The `activity_type` pgEnum takes
+ * lowercase only, so values are lowercased here instead of failing on INSERT.
  */
 export const ActivityTypeSchema = z
   .string()
@@ -27,10 +18,7 @@ export const ActivityTypeSchema = z
 /** @deprecated use {@link ActivityTypeSchema} */
 export const ActivityTypesSchema = ActivityTypeSchema
 
-// ---------------------------------------------------------------------------
 // Shared field schemas
-// ---------------------------------------------------------------------------
-
 const MAX_TRACK_POINTS = 100_000
 const MAX_TITLE_LENGTH = 100
 const MAX_DESCRIPTION_LENGTH = 1000
@@ -50,12 +38,8 @@ const DescriptionSchema = z
   .optional()
 
 /**
- * A date-time string that `new Date()` can actually parse.
- *
- * Kept as a `string` (rather than transformed to a `Date`) so the inferred
- * input type stays usable by the client forms, but invalid values like
- * "not-a-date" are now rejected instead of silently becoming `Invalid Date`
- * and later crashing the Postgres INSERT.
+ * A date-time string `new Date()` can parse, left a `string` for client form input
+ * types. Rejects bad values here rather than producing `Invalid Date` and crashing the INSERT.
  */
 const DateStringSchema = z
   .string()
@@ -71,10 +55,7 @@ const DurationObjectSchema = z.object({
   sec: z.number().int().min(0).max(59),
 })
 
-// ---------------------------------------------------------------------------
-// Mobile (recorder) payload
-// ---------------------------------------------------------------------------
-
+// Mobile recorder payload
 export const MobileActivityPointSchema = z.object({
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
@@ -108,10 +89,7 @@ export const MobileActivitySchema = z
     path: ["endedAt"],
   })
 
-// ---------------------------------------------------------------------------
-// GPX payload
-// ---------------------------------------------------------------------------
-
+// GPX upload payload
 export const GpxActivitySchema = z.object({
   title: TitleSchema,
   description: DescriptionSchema,
@@ -122,10 +100,7 @@ export const GpxActivitySchema = z.object({
   type: ActivityTypeSchema.default("run"),
 })
 
-// ---------------------------------------------------------------------------
-// Manual payload
-// ---------------------------------------------------------------------------
-
+// Manually entered activity
 export const MetaDataSchema = z.object({
   distanceUnit: z.enum(["metric", "imperial"]),
   elevUnitGain: z.enum(["meters", "feet"]),
@@ -164,10 +139,7 @@ export const ManualActivitySchema = z
     { message: "End time must be after start time", path: ["endTime"] }
   )
 
-// ---------------------------------------------------------------------------
-// Misc / legacy
-// ---------------------------------------------------------------------------
-
+// Legacy shapes
 export const CreateActivitySchema = z.object({
   distance: z.number().nonnegative(),
   duration: DurationObjectSchema,

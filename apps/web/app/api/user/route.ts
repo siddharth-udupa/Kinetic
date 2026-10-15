@@ -19,7 +19,6 @@ export async function PATCH(req: NextRequest) {
 
     const trimmed = username.trim().toLowerCase()
 
-    // Validate: 3–20 chars, alphanumeric + underscores only
     if (!/^[a-z0-9_]{3,20}$/.test(trimmed)) {
       return NextResponse.json(
         { error: "Username must be 3-20 characters: letters, numbers, and underscores only." },
@@ -27,7 +26,6 @@ export async function PATCH(req: NextRequest) {
       )
     }
 
-    // Uniqueness check
     const existing = await getUserByUsername(trimmed)
     if (existing && existing.id !== session.user.id) {
       return NextResponse.json({ error: "Username is already taken." }, { status: 409 })

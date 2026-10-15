@@ -74,8 +74,6 @@ export type preferencesType = typeof userPreferences.$inferSelect
 export type preferencesInsertType = typeof userPreferences.$inferInsert
 
 
-// Better auth tables 
-
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -109,7 +107,7 @@ export const account = pgTable("account", {
   accessTokenExpiresAt: timestamp("access_token_expires_at"),
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
-  password: text("password"),   // ← hashed password lives here, NOT on user table
+  password: text("password"),   // Hashed password lives here, not on the user table.
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 })

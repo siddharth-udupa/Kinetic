@@ -5,23 +5,11 @@ import type { ReactNode } from "react"
 import { ChevronRight } from "lucide-react"
 import { useTheme } from "@/hooks/useTheme"
 
-/**
- * Keyboard focus ring, identical to the one the onboarding flow uses.
- *
- * Every control in the nav composes this rather than inventing its own, so the
- * focus treatment matches on the header and on the slides behind it.
- */
+/** Keyboard focus ring, shared by every nav control. */
 export const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
 
-/**
- * The mark and wordmark lockup.
- *
- * The old navbar leaned on a hard-coded two-path chevron logo plus a giant orange
- * italic wordmark. It is replaced with the accent-soft plate the onboarding
- * slides already use for their icon badges, so the brand reads as part of the
- * same system instead of bolted on top of it.
- */
+/** The mark and wordmark lockup. */
 export function BrandMark({
   name,
   icon,
@@ -52,13 +40,7 @@ export function BrandMark({
   )
 }
 
-/**
- * The circular avatar.
- *
- * Falls back to initials on an accent plate. The old version used a brand
- * gradient — the one treatment the new system deliberately avoids — because a
- * gradient at 36px reads as noise rather than as an identity.
- */
+/** The circular avatar. Falls back to initials on an accent plate. */
 export function Avatar({
   src,
   name,
@@ -71,9 +53,8 @@ export function Avatar({
   const { colors } = useTheme()
 
   if (src) {
-    // A plain <img>: the URL comes from the auth provider and is unknown at
-    // build time, so next/image would need every host allow-listed to optimise
-    // a 36px circle. `alt` is empty because the name sits beside it.
+    // A plain <img>: the avatar host is unknown at build time, so next/image
+    // would need every host allow-listed to optimise a 36px circle.
     return (
       // biome-ignore lint/performance/noImgElement: remote avatar host is not known at build time, so next/image cannot be configured for it
       <img
@@ -109,13 +90,7 @@ export function Avatar({
   )
 }
 
-/**
- * A floating panel: dropdown or mobile sheet.
- *
- * The old nav used `rounded-md shadow-lg border-gray-100` on a white background
- * that did not survive dark mode. This reads its surface, border and shadow from
- * the theme tokens, so a panel is the same object on either scheme.
- */
+/** A floating panel: dropdown or mobile sheet. */
 export function NavPanel({
   children,
   className = "",
@@ -131,9 +106,8 @@ export function NavPanel({
       style={{
         backgroundColor: colors.surface,
         borderColor: colors.line,
-        // Light needs the shadow to lift the panel off the page. Dark has no
-        // luminance gap for a shadow to exploit, so it leans on the border and
-        // a deeper, softer drop.
+        // Light lifts the panel with a shadow. Dark has no luminance gap for one
+        // to exploit, so it leans on the border and a deeper drop.
         boxShadow: isDark
           ? "0 18px 40px -22px rgba(0, 0, 0, 0.85)"
           : "0 18px 40px -24px rgba(15, 23, 42, 0.28)",
@@ -144,13 +118,7 @@ export function NavPanel({
   )
 }
 
-/**
- * A row inside a panel.
- *
- * `chevron` marks the row as a destination rather than an action, which is what
- * separates "Activity feed" from "Sign out" at a glance. `tone` is the only
- * place a destructive row is allowed to differ from the rest.
- */
+/** A row inside a panel. `chevron` marks a destination; `tone` is the only variation. */
 export function NavRow({
   href,
   onClick,

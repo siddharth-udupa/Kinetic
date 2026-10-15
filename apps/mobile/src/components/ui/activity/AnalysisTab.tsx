@@ -5,7 +5,7 @@ import ActivityChartWrapper from "@/components/charts/ActivityChartWrapper"
 import { useTheme } from "@/hooks/useTheme"
 import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
-/* The activity tier throughout: this renders inside the sheet, which stacks
+/* Activity tier throughout: this renders inside the sheet, which stacks
    activityPage → activityPanel → activityCard over a map. */
 
 export type ActivityAnalysisTabProps = {

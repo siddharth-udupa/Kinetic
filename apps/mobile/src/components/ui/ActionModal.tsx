@@ -29,53 +29,27 @@ export type ModalButtonConfig = {
 }
 
 export type ActionModalProps = {
-  /** Controls visibility of the modal */
   visible: boolean
-
-  /** Title text displayed at the top of the modal */
   title: string
-
-  /** Description/body text or custom component */
   description?: React.ReactNode
-
-  /** Primary button options object */
   primaryButton?: ModalButtonConfig
-
-  /** Optional secondary button options object */
   secondaryButton?: ModalButtonConfig
 
-  /* Direct convenience props */
-  /** Label for primary button */
+  /* Convenience props, for callers that do not want to build a config object. */
   primaryText?: string
-  /** Callback for primary button */
   onPrimaryPress?: () => void | Promise<void>
-  /** Variant for primary button (defaults to 'primary') */
   primaryVariant?: ModalButtonVariant
-  /** Loading state for primary button */
   isPrimaryLoading?: boolean
 
-  /** Label for secondary button */
   secondaryText?: string
-  /** Callback for secondary button */
   onSecondaryPress?: () => void | Promise<void>
-  /** Variant for secondary button (defaults to 'outline') */
   secondaryVariant?: ModalButtonVariant
-  /** Loading state for secondary button */
   isSecondaryLoading?: boolean
 
-  /** Called when modal backdrop is pressed or modal close is requested */
   onClose?: () => void
-
-  /** Whether clicking the backdrop closes the modal (defaults to true) */
   closeOnBackdropPress?: boolean
-
-  /** Optional icon displayed at the top center of the modal */
   icon?: keyof typeof Ionicons.glyphMap | React.ReactNode
-
-  /** Preset variant for top icon container style */
   iconVariant?: "default" | "warning" | "danger" | "success" | "info"
-
-  /** Custom container class name for extra tailwind styling */
   className?: string
 }
 
@@ -101,7 +75,6 @@ export function ActionModal({
 }: ActionModalProps) {
   const { colors } = useTheme()
 
-  // Resolve primary button configuration
   const resolvedPrimary: ModalButtonConfig | null = primaryButton
     ? primaryButton
     : onPrimaryPress || primaryText
@@ -113,7 +86,6 @@ export function ActionModal({
         }
       : null
 
-  // Resolve secondary button configuration (optional)
   const resolvedSecondary: ModalButtonConfig | null = secondaryButton
     ? secondaryButton
     : onSecondaryPress || secondaryText
@@ -248,13 +220,11 @@ export function ActionModal({
     >
       <TouchableWithoutFeedback onPress={handleBackdropPress}>
         <View className="flex-1 justify-center items-center p-5 bg-overlay">
-          {/* Glassmorphic backdrop blur card */}
           <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
             <View
               style={styles.modalCard}
               className={`bg-surface/95 rounded-3xl p-6 w-full max-w-sm border border-line-muted shadow-2xl ${className}`}
             >
-              {/* Close Icon in top-right */}
               {onClose && (
                 <TouchableOpacity
                   onPress={onClose}
@@ -265,15 +235,12 @@ export function ActionModal({
                 </TouchableOpacity>
               )}
 
-              {/* Optional Top Icon Header */}
               {renderIcon()}
 
-              {/* Title */}
               <Text className="text-ink text-xl font-bold text-center mb-2">
                 {title}
               </Text>
 
-              {/* Description / Body text */}
               {description ? (
                 typeof description === "string" ? (
                   <Text className="text-ink-secondary text-sm font-normal text-center leading-5 mb-6">
@@ -286,7 +253,6 @@ export function ActionModal({
                 <View className="mb-4" />
               )}
 
-              {/* Action Buttons */}
               <View className="w-full">
                 {resolvedPrimary && resolvedSecondary ? (
                   <View className="flex-row items-center space-x-3 gap-3">

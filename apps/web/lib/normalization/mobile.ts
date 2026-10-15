@@ -16,15 +16,11 @@ import {
   type NormalizedActivityData,
 } from "./shared"
 
-/** Douglas–Peucker tolerance used everywhere we simplify a track. */
+/** Douglas–Peucker tolerance for every track simplification. */
 const SIMPLIFY_TOLERANCE = 0.0001
 
-/**
- * Normalises the payload posted by the mobile recorder.
- *
- * `MobileActivitySchema` already lowercases and validates `type`, so it can be
- * handed to the `activity_type` pgEnum untouched.
- */
+/** Normalises the payload posted by the mobile recorder. `MobileActivitySchema`
+ *  lowercases `type` already. */
 export function normalizeMobileActivity(data: unknown): NormalizedActivityData {
   const parsed = MobileActivitySchema.parse(data)
 
@@ -50,8 +46,7 @@ export function normalizeMobileActivity(data: unknown): NormalizedActivityData {
     const stats = computeStats(rawPoints)
     const simplified = douglasPeucker(rawPoints, SIMPLIFY_TOLERANCE)
 
-    // A single point simplifies to an empty polyline — an empty string would
-    // be stored and later rendered as a broken map.
+    // A single point simplifies to nothing, and an empty polyline renders as a broken map.
     if (simplified.length > 0) {
       encodedPolyline = encodePolyline(simplified) || null
     }

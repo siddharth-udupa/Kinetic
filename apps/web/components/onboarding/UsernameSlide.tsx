@@ -77,14 +77,8 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
         subtitle="This is how other runners will find you. You can change it any time."
       />
 
-      {/*
-        Live preview of the finished profile.
-
-        Deliberately built to not look like the field below it: flat muted
-        surface with no border, a leading avatar instead of an `@` prefix, and
-        a caption. An earlier version was a bordered box with a leading glyph,
-        which users read as a second input and tried to tap.
-      */}
+      {/* Preview of the finished profile. Built not to look like the field below
+          it, so it is not read as a second input and tapped. */}
       <div
         className="mb-6 rounded-2xl px-4 py-3.5"
         style={{ backgroundColor: colors.surfaceMuted }}
@@ -123,7 +117,6 @@ export default function UsernameSlide({ username, onChange, onSave, onNext, isSa
         </div>
       </div>
 
-      {/* Input */}
       <form
         onSubmit={(event: FormEvent<HTMLFormElement>) => {
           event.preventDefault()

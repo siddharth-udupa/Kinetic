@@ -15,8 +15,8 @@ const MVT_CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
 const CACHE_CONTROL = "public, max-age=86400, immutable"
 
 /**
- * Validates path params as a tile coordinate, dropping the optional `.pbf`
- * suffix. Throws a ZodError, which the server turns into a 400.
+ * Validates path params as a tile coord and strips an optional `.pbf` suffix.
+ * Throws a ZodError, which the server turns into a 400.
  */
 function parseCoord(params: CpeakRequest["params"]): TileCoord {
   const { z, x, y } = params
@@ -38,27 +38,23 @@ export function tileRoutes(app: Cpeak, { db }: TileRoutesOptions) {
     response.setHeader("etag", etag)
     response.setHeader("cache-control", CACHE_CONTROL)
 
-    // A re-validating client only needs the status, not the bytes again, and a
-    // 304 must not carry a body.
+    // A re-validating client only needs the status, and a 304 must carry no body.
     if (request.headers["if-none-match"] === etag) {
       response.status(304).end()
       return
     }
 
-    // For format=pbf the stored bytes are gzipped MVT, and they go out as they
-    // are: `content-encoding: gzip` is what tells the client to unpack them
-    // before parsing. MapLibre GL JS hands the response straight to its tile
-    // parser, so without the header it fails on the compressed bytes. Cpeak has
-    // no binary helper, so the buffer goes straight onto the Node response.
+    // Stored bytes are already gzipped MVT, so they go out as they are. MapLibre
+    // hands the response straight to its tile parser and fails on compressed
+    // bytes without the header. Cpeak has no binary helper.
     response.setHeader("content-type", MVT_CONTENT_TYPE)
     response.setHeader("content-encoding", "gzip")
     response.setHeader("content-length", tile.tileData.byteLength)
     response.status(200).end(tile.tileData)
   }
 
-  // A Cpeak `:param` matches a whole path segment, so this one route answers
-  // both `{z}/{x}/{y}` and `{z}/{x}/{y}.pbf` — the suffix is stripped in
-  // parseCoord. Adding a second `/tiles/:z/:x/:y.pbf` route would land on the
-  // same node of the router and throw as a duplicate at boot.
+  // A Cpeak `:param` matches a whole path segment, so this one route answers both
+  // `{z}/{x}/{y}` and `{z}/{x}/{y}.pbf`. A second `.pbf` route would hit the
+  // same router node and throw as a duplicate at boot.
   app.route("get", "/tiles/:z/:x/:y", getTileHandler)
 }

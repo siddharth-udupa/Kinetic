@@ -1,14 +1,7 @@
 /*
- * The palette. Both apps `@import` this file directly — there is no generator and
- * no second copy.
- *
- * One name per colour: the token, the variable and the class you write are the
- * same word, so `surface` is `--color-surface` and `bg-surface`.
- *
- * `@theme` registers the utilities and carries the light values. The dark half
- * overrides the same variables under `prefers-color-scheme`, which is the only
- * dark-mode mechanism Nativewind v5 supports on native; web additionally swaps
- * them at runtime so an explicit Light or Dark choice can override the system.
+ * The palette. Both apps `@import` it; no generator, no second copy. One name per
+ * colour: `surface` is `--color-surface` and `bg-surface`. `@theme` holds the light
+ * values; dark overrides them under `prefers-color-scheme` on native, web swaps too.
  */
 
 @theme {
@@ -99,8 +92,8 @@
   --shadow-card: 0 10px 35px -18px rgb(15 23 42 / 0.28);
 }
 
-/* A shadow, not a colour, so it cannot live in the `--color-*` namespace — and a
-   literal in `@theme` would be compiled into `shadow-card` and frozen there. */
+/* A shadow, not a colour, so it stays out of `--color-*`. A literal in `@theme`
+   would be compiled into `shadow-card` and frozen there. */
 @utility shadow-card {
   box-shadow: var(--shadow-card);
 }

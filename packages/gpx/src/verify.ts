@@ -1,13 +1,7 @@
 /**
- * Lightweight GPX verification — runs cheap structural checks on the raw XML
- * string *before* the full parse, so obviously invalid files are rejected
- * without ever touching fast-xml-parser.
- *
- * This is NOT a GPX schema validator. It checks necessary conditions only:
- *   1. File size within limit
- *   2. <gpx root element present
- *   3. At least one <trkpt element present
- *   4. First <trkpt has plausible lat/lon attributes
+ * Cheap structural checks on the raw XML, run before the full parse so a bad file never
+ * reaches the parser. Not a schema validator: a size cap, a <gpx> root, one <trkpt>,
+ * and plausible lat/lon on the first point.
  */
 
 const MAX_GPX_SIZE = 10_000_000 // 10 MB
@@ -17,7 +11,6 @@ export type GpxVerificationResult =
   | { ok: false; reason: string }
 
 export function verifyGpx(xmlString: string): GpxVerificationResult {
-  // 1. Size cap — O(1)
   if (xmlString.length > MAX_GPX_SIZE) {
     return {
       ok: false,
@@ -25,7 +18,6 @@ export function verifyGpx(xmlString: string): GpxVerificationResult {
     }
   }
 
-  // 2. Root <gpx element — only need to scan the first ~1 KB
   const head = xmlString.slice(0, 1024)
   if (!head.includes("<gpx")) {
     return {
@@ -34,7 +26,6 @@ export function verifyGpx(xmlString: string): GpxVerificationResult {
     }
   }
 
-  // 3. At least one <trkpt element anywhere in the file
   const trkptIndex = xmlString.indexOf("<trkpt")
   if (trkptIndex === -1) {
     return {
@@ -43,7 +34,6 @@ export function verifyGpx(xmlString: string): GpxVerificationResult {
     }
   }
 
-  // 4. First <trkpt has valid lat/lon — probe a small window around it
   const window = xmlString.slice(trkptIndex, trkptIndex + 200)
   const latMatch = window.match(/lat\s*=\s*["']([^"']+)["']/)
   const lonMatch = window.match(/lon\s*=\s*["']([^"']+)["']/)

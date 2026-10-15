@@ -21,8 +21,8 @@ export default function Index() {
     return <Redirect href={"/(auth)/auth" as any} />
   }
 
-  // "ready" means the answer came from the device copy, or from the one
-  // request we still owe on a device that has never seen this account.
+  // "ready" means the answer came from the device copy, or from the one request
+  // still owed on a device that has never seen this account.
   if (status !== "ready") {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -31,9 +31,8 @@ export default function Index() {
     )
   }
 
-  // No preferences at all means we could not reach the server on a device with
-  // no local copy. Sending them to onboarding keeps the existing behaviour:
-  // they can complete or skip it and continue either way.
+  // No preferences at all means the server was unreachable on a device with no
+  // local copy. Onboarding can be completed or skipped either way.
   if (!preferences?.onBoarded) {
     return <Redirect href={"/(onboarding)" as any} />
   }

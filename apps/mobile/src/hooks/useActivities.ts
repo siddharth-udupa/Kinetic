@@ -4,16 +4,14 @@ import { authClient } from "@/lib/auth-client"
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL!
 
-// Global listener registry so all active useActivities hooks update instantly when an activity is deleted anywhere
+// So a delete in one screen drops the activity from every mounted hook at once.
 const deleteListeners = new Set<(activityId: string) => void>()
 
-// Module-level cache so fetched activities persist across component unmounts and tab navigation
+// Module-level cache, so activities survive unmounts and tab changes.
 let cachedUserId: string | null = null
 let cachedActivities: ActivityCardType[] | null = null
 
-/**
- * Remove an activity by ID from all active `useActivities` caches/states across the app.
- */
+/** Remove an activity by ID from every mounted `useActivities` hook. */
 export function removeActivityFromCache(activityId: string) {
   if (cachedActivities) {
     cachedActivities = cachedActivities.filter(
@@ -25,9 +23,7 @@ export function removeActivityFromCache(activityId: string) {
   })
 }
 
-/**
- * Invalidate the in-memory activities cache so next fetch gets fresh data from server.
- */
+/** Drop the in-memory cache so the next fetch hits the server. */
 export function invalidateActivitiesCache() {
   cachedUserId = null
   cachedActivities = null
@@ -89,7 +85,6 @@ export function useActivities(userId: string | undefined) {
     }
   }, [userId, fetchActivities])
 
-  // Subscribe to deletion events so deleted activities get filtered out of state immediately
   useEffect(() => {
     const handleActivityDeleted = (deletedId: string) => {
       setActivities((prev) =>

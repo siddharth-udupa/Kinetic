@@ -20,18 +20,9 @@ export type NavGroup = {
   children: NavChild[]
 }
 
-/**
- * The navigation model, defined once.
- *
- * The old navbar declared its links inline in three places — the desktop bar,
- * two dropdown menus and the mobile overlay — so the four copies drifted. The
- * desktop bar, its dropdowns and the mobile sheet are all now generated from
- * this, which means a route can only ever be added or renamed in one spot.
- *
- * `matches` is a list of path prefixes rather than a single string: "Feed" is
- * current on both the dashboard and an individual activity, and encoding that
- * once here is what stops the highlight flickering between siblings.
- */
+// One nav model for the desktop bar, its dropdowns and the mobile sheet, so a
+// route is added in one spot. `matches` holds path prefixes, so "Feed" stays
+// current on an individual activity rather than flickering between siblings.
 export const NAV_GROUPS: NavGroup[] = [
   {
     id: "feed",
@@ -109,12 +100,7 @@ export const CREATE_ACTIONS: NavChild[] = [
   },
 ]
 
-/**
- * Whether a path belongs to a section.
- *
- * Scoped past the route root so `/uploading` cannot light up "Training", which
- * a bare `startsWith` would happily do.
- */
+/** Matches path prefixes. Scoped past the root so `/uploading` cannot light up "Training". */
 export function isCurrent(pathname: string, matches: string[]) {
   return matches.some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }

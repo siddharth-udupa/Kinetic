@@ -75,7 +75,6 @@ export default function ActivityFeed({
   )
 }
 
-// Header Banner Widget Component
 function ListHeaderComponent() {
   const { colors } = useTheme()
 

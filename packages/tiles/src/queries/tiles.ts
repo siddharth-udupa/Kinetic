@@ -4,8 +4,7 @@ import { metadata, tiles } from "../schema.js"
 import { toStorageRow, type TileCoord } from "../tileId.js"
 
 /**
- * Looks up one tile, or undefined when the file has no tile for that
- * coordinate (outside `minzoom`/`maxzoom`, or simply not covered).
+ * One tile, or undefined when the file has none for that coord: outside minzoom/maxzoom, or uncovered.
  */
 export async function getTile(db: MbtilesDb, { z, x, y }: TileCoord) {
   return db.query.tiles.findFirst({
@@ -39,18 +38,14 @@ function toNumbers(value: string | undefined): number[] | undefined {
   return numbers.every((n) => Number.isFinite(n)) ? numbers : undefined
 }
 
-/**
- * The file's `metadata` table, parsed into the shape a map client needs to
- * build a style and pick a zoom range.
- */
+/** The file's `metadata` table, parsed into the shape a map client expects. */
 export async function getMbtilesMetadata(
   db: MbtilesDb
 ): Promise<MbtilesMetadata> {
   const rows = await db.select().from(metadata)
   const values = Object.fromEntries(rows.map((row) => [row.name, row.value]))
 
-  // Only vector tiles carry the `json` row, and a malformed one should not take
-  // the server down.
+  // Only vector tiles carry the `json` row, and a bad one must not take the server down.
   let vectorLayers: unknown[] | undefined
   if (values.json) {
     try {

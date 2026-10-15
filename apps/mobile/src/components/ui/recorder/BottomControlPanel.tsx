@@ -59,14 +59,11 @@ export default function BottomControlPanel({
       style={{ paddingBottom: Math.max(bottomInset + 16, 28) }}
       className="bg-surface rounded-t-[36px] shadow-2xl pt-3 px-6 justify-between border-t border-line-muted"
     >
-      {/* Drag Handle Bar */}
       <View className="w-10 h-1 bg-ink-muted rounded-full self-center mt-1 mb-4" />
 
-      {/* Main Controls Row */}
       <View className="my-1 py-1">
         {status === "idle" && (
           <View className="flex-row items-center justify-between">
-            {/* Left Button: Activity Switcher */}
             <TouchableOpacity
               onPress={onOpenActivityModal}
               activeOpacity={0.8}
@@ -74,7 +71,6 @@ export default function BottomControlPanel({
             >
               <View className="w-[72px] h-[72px] rounded-full bg-accent-soft justify-center items-center relative">
                 {getActivityIcon(activityType)}
-                {/* Checkmark Badge */}
                 <View className="absolute top-0 right-0 bg-accent w-5 h-5 rounded-full justify-center items-center border-2 border-surface">
                   <Ionicons name="checkmark" size={11} color={colors.onAccent} />
                 </View>
@@ -84,7 +80,6 @@ export default function BottomControlPanel({
               </Text>
             </TouchableOpacity>
 
-            {/* Center Button: Start Recording */}
             <TouchableOpacity
               onPress={onStartRecording}
               activeOpacity={0.85}
@@ -93,7 +88,6 @@ export default function BottomControlPanel({
               <Ionicons name="play" size={44} color={colors.onAccent} style={{ marginLeft: 4 }} />
             </TouchableOpacity>
 
-            {/* Right Button: Add Route */}
             <TouchableOpacity
               onPress={onOpenRouteModal}
               activeOpacity={0.8}
@@ -111,7 +105,6 @@ export default function BottomControlPanel({
 
         {status === "recording" && (
           <View className="w-full px-1 py-1">
-            {/* Big Full-Width Pause Button */}
             <TouchableOpacity
               onPress={onPauseRecording}
               activeOpacity={0.85}
@@ -127,7 +120,6 @@ export default function BottomControlPanel({
 
         {(status === "paused" || status === "finished") && (
           <View className="w-full flex-row items-center gap-3 px-1 py-1">
-            {/* Resume Button */}
             <TouchableOpacity
               onPress={onResumeRecording}
               activeOpacity={0.85}
@@ -139,7 +131,6 @@ export default function BottomControlPanel({
               </Text>
             </TouchableOpacity>
 
-            {/* Finish Button */}
             <TouchableOpacity
               onPress={onFinishRecording}
               activeOpacity={0.85}

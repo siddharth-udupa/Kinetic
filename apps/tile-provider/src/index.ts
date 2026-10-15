@@ -8,10 +8,8 @@ import { existsSync } from "node:fs"
 import { env } from "./env.js"
 import { buildServer } from "./server.js"
 
-/**
- * Opens the tileset before the server starts, so a wrong path or a file that
- * is not MBTiles fails the boot with an explanation instead of serving 404s.
- */
+/** Opens the tileset before the server starts, so a bad path fails boot with an
+ * explanation instead of serving 404s. */
 async function openTileset(file: string): Promise<{
   db: MbtilesDb
   metadata: MbtilesMetadata

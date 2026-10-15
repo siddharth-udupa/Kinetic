@@ -60,7 +60,6 @@ export default function ActivityFeed({ initialActivities, userPreferences, userI
         </Suspense>
       ))}
 
-      {/* The invisible div observer */}
       <div ref={sentinelRef} className="h-1" />
 
       {/* Explicit ink — these would otherwise inherit the browser's default black. */}

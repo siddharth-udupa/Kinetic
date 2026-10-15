@@ -1,9 +1,7 @@
 /*
- * Tailwind v4 entry point.
- *
- * The four imports are split rather than `@import "tailwindcss"` because utilities
- * must stay unlayered: a single import puts them below React Native Web's defaults
- * in the cascade, and web overrides win over the class you wrote.
+ * Tailwind v4 entry point. The imports are split so utilities stay unlayered:
+ * one `@import "tailwindcss"` puts them below React Native Web's defaults, whose
+ * overrides then win over the class written.
  */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);

@@ -66,7 +66,6 @@ export default function ActivityHeaderOverlay({
         </View>
       </View>
 
-      {/* Options Menu Modal */}
       <Modal
         visible={isMenuOpen}
         transparent
@@ -77,7 +76,6 @@ export default function ActivityHeaderOverlay({
           <View className="flex-1 bg-overlay justify-end">
             <TouchableWithoutFeedback>
               <View className="bg-surface rounded-t-3xl p-5 border-t border-line shadow-2xl">
-                {/* Header indicator */}
                 <View className="items-center mb-4">
                   <View className="w-10 h-1.5 rounded-full bg-line-strong mb-3" />
                   <Text className="text-base font-bold text-ink">
@@ -85,7 +83,6 @@ export default function ActivityHeaderOverlay({
                   </Text>
                 </View>
 
-                {/* Options List */}
                 <View className="mb-4">
                   <TouchableOpacity
                     onPress={handleDeletePress}
@@ -110,7 +107,6 @@ export default function ActivityHeaderOverlay({
                   </TouchableOpacity>
                 </View>
 
-                {/* Cancel Button */}
                 <TouchableOpacity
                   onPress={() => setIsMenuOpen(false)}
                   className="w-full py-3.5 rounded-xl bg-surface-muted items-center active:opacity-80"

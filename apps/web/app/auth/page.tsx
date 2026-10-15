@@ -1,11 +1,8 @@
 import { Suspense } from "react"
 import AuthScreen from "@/components/auth/AuthScreen"
 
-/**
- * The auth form reads `callbackUrl` through `useSearchParams`, which needs a
- * Suspense boundary above it — the shell is rendered on its own so this stays
- * a host file rather than a second implementation.
- */
+/** `AuthScreen` reads `callbackUrl` through `useSearchParams`, which needs a
+ *  Suspense boundary above it. */
 export default function AuthPage() {
   return (
     <Suspense

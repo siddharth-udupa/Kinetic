@@ -5,12 +5,9 @@ export type ColorScheme = Exclude<ThemeScheme, "system">
 export const BRAND_COLOR = "#FC4C02"
 
 /**
- * The palette, as values for the places a class cannot reach: an SVG attribute,
- * a Recharts prop, a MapLibre paint property, an icon.
- *
- * The colour classes come from `packages/shared/theme.css`, which both apps
- * import directly — this module does not feed it, and the two are kept in step
- * by hand. Name a token the same word in both places.
+ * The palette as values, for what a class cannot reach: SVG attributes, Recharts
+ * props, MapLibre paint, icons. Kept in step with `theme.css` by hand, so name every
+ * token the same word in both.
  */
 const LIGHT_COLORS = {
   // Surfaces
@@ -27,8 +24,7 @@ const LIGHT_COLORS = {
   raisedBorder: "#E5E7EB",
   disabled: "#F3F4F6",
 
-  // The activity detail screen, which stacks three surfaces instead of two
-  // because it sits over a map and needs the extra step to read as depth.
+  // Activity detail stacks three surfaces over a map, not two.
   activityPage: "#F3F4F6",
   activityPanel: "#FFFFFF",
   activityCard: "#FAFAFA",
@@ -40,8 +36,7 @@ const LIGHT_COLORS = {
   lineStrong: "#D1D5DB",
   lineMuted: "#EDEFF2",
 
-  // Text. The muted tier clears the 4.5:1 minimum on white, so helper text, step
-  // counters and placeholders do not wash out.
+  // Text. Muted clears 4.5:1 on white, so helper text stays readable.
   ink: "#111827",
   inkSecondary: "#4B5563",
   inkMuted: "#6B7280",
@@ -53,8 +48,7 @@ const LIGHT_COLORS = {
   activityInkSecondary: "#4B5563",
   activityInkMuted: "#6B7280",
 
-  // Brand accent. The brand orange is only 3.4:1 on white, so words need a
-  // deeper tint.
+  // Brand accent. The orange is 3.4:1 on white, so words need a deeper tint.
   accent: BRAND_COLOR,
   accentHover: "#E84802",
   accentPressed: "#CF3E02",
@@ -112,8 +106,7 @@ export type ColorTokenName = keyof typeof LIGHT_COLORS
 export type ColorTokens = Readonly<Record<ColorTokenName, string>>
 
 const DARK_COLORS: ColorTokens = {
-  // Surfaces. Elevation inverts: a hover lightens on a dark page, darkens on a
-  // light one.
+  // Surfaces. Hover lightens on a dark page, darkens on a light one.
   page: "#020617",
   surface: "#0F172A",
   surfaceHover: "#16213C",
@@ -127,8 +120,7 @@ const DARK_COLORS: ColorTokens = {
   raisedBorder: "#475569",
   disabled: "#1E293B",
 
-  // The activity detail stack, darker than `page` because these panels float
-  // over a map rather than scrolling on it.
+  // Activity detail stack, darker than `page` - these panels float over a map.
   activityPage: "#0B1220",
   activityPanel: "#0F1929",
   activityCard: "#111C2D",
@@ -147,8 +139,8 @@ const DARK_COLORS: ColorTokens = {
   inkDisabled: "#64748B",
   inkInverse: "#0F172A",
 
-  // The activity panels read as near-black in light mode too, so they carry their
-  // own light-on-dark ink ramp rather than borrowing `ink`.
+  // Activity panels read near-black in light mode too, so they need their own
+  // light-on-dark ink ramp rather than `ink`.
   activityInk: "#D5DDE8",
   activityInkSecondary: "#B8C3D3",
   activityInkMuted: "#8A9AB2",
@@ -157,7 +149,7 @@ const DARK_COLORS: ColorTokens = {
   accent: BRAND_COLOR,
   accentHover: "#FF6B35",
   accentPressed: "#FF8A5C",
-  // Drops to 3.0:1 against the raised pill, so words lift a step to clear AA.
+  // 3.0:1 against the raised pill, so words lift a step to clear AA.
   accentText: "#FF9A6E",
   accentSoft: "rgba(252, 76, 2, 0.16)",
   onAccent: "#FFFFFF",

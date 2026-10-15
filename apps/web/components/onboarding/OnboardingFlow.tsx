@@ -56,15 +56,9 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
   const [isFinishing, setIsFinishing] = useState(false)
   const [finishError, setFinishError] = useState<string | null>(null)
 
-  /* ── Live theme preview ──────────────────────────────────────────────
-   * Tapping a theme on the appearance slide repaints the running flow, the same
-   * promise `setColorScheme` makes on mobile. Unlike mobile the override is
-   * scoped to this provider, so it dies with the flow either way — the flag
-   * below exists only to stop the reset from running on the way out.
-   *
-   * A ref rather than state: the flag is read in an unmount cleanup, and a
-   * state flag would re-run the effect the moment it flips.
-   */
+  // Live theme preview: tapping a theme repaints the running flow, as
+  // `setColorScheme` does on mobile, scoped to this provider. A ref, not state:
+  // it is read in an unmount cleanup, so a state flag would re-run the effect.
   const didCommit = useRef(false)
 
   useEffect(
@@ -74,20 +68,18 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     [setScheme],
   )
 
-  // Declared as a plain generic function rather than a `useCallback` wrapper:
-  // hoisting the generic into a callback erases it, leaving `K` as the union of
-  // every pref and letting a slide write the wrong value into a field.
+  // A plain generic function rather than a `useCallback`: hoisting the generic
+  // into a callback erases it, letting a slide write the wrong pref type.
   function updatePref<K extends keyof OnboardingPrefs>(key: K, value: OnboardingPrefs[K]) {
     setPrefs((prev) => ({ ...prev, [key]: value }))
   }
 
-  /* ── Navigation ──────────────────────────────────────────────────── */
   const goTo = useCallback((index: number) => {
     setCurrentSlide(clamp(index))
   }, [])
 
-  /* Swiping is the mobile affordance; a pointer has none. Arrow keys stand in
-   * for it on the web, and are ignored while a field is being typed into. */
+  // Swiping is the mobile affordance; arrow keys stand in for it on the web, and
+  // are ignored while a field is being typed into.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.metaKey || event.ctrlKey || event.altKey) return
@@ -112,7 +104,6 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  /* ── Requests ─────────────────────────────────────────────────────── */
   async function patch(url: string, body: unknown, fallback: string): Promise<string | null> {
     try {
       const response = await fetch(url, {
@@ -132,7 +123,6 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     }
   }
 
-  /* ── Actions ─────────────────────────────────────────────────────── */
   async function handleSaveUsername(next: string): Promise<string | null> {
     setIsSavingUsername(true)
     const err = await patch("/api/user", { username: next }, "Failed to update username.")
@@ -159,8 +149,8 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
   }
 
   async function handleFinish() {
-    // The review screen can be reached by skipping past an unfilled username,
-    // so send them back rather than finishing with a blank profile.
+    // The review screen is reachable by skipping past an unfilled username, so
+    // send them back rather than finishing with a blank profile.
     if (!hasUsername) {
       goTo(SLIDE.username)
       return
@@ -182,7 +172,6 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
     leave()
   }
 
-  /* ── Slides ──────────────────────────────────────────────────────── */
   const canSkip = !SKIP_DISABLED_ON.includes(currentSlide)
 
   return (
@@ -191,28 +180,19 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
       style={{
         ...vars,
         backgroundColor: colors.page,
-        /*
-         * Claim the viewport below the shell header rather than growing with
-         * the body column. `dvh` tracks the mobile URL bar collapsing; the
-         * `100vh` it falls back to is the next best thing. A definite height is
-         * what lets the column hand its free space to the slide, which in turn
-         * scrolls its own body and keeps the action pinned.
-         */
+        // Claims the viewport below the shell header. A definite height lets the
+        // column hand its free space to the slide; `dvh` tracks the mobile URL bar.
         height: "calc(100dvh - var(--shell-header-h))",
       }}
     >
-      {/* ── Progress + skip ── */}
       <ProgressHeader
         step={currentSlide + 1}
         total={TOTAL_SLIDES}
         onSkip={canSkip ? handleSkip : undefined}
       />
 
-      {/*
-        Keyed on the slide index so each step replays the fade the mobile stack
-        plays on push, instead of the previous slide's content being patched
-        under a still-visible heading.
-      */}
+      {/* Keyed on the slide index so each step replays the fade the mobile stack
+          plays on push, instead of the previous slide being patched in place. */}
       <div key={currentSlide} className="ob-slide-in flex min-h-0 flex-1 flex-col">
         {currentSlide === SLIDE.welcome ? (
           <WelcomeSlide name={userName} onNext={() => goTo(SLIDE.username)} />

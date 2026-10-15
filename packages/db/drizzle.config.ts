@@ -12,7 +12,7 @@ config({
     __dirname,
     "../../apps/web/.env"
   ),
-  quiet: true,  //Makes the connection to db slient and give no output
+  quiet: true,
 });
 
 if (!process.env.DATABASE_URL_DIRECT) {

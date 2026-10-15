@@ -50,13 +50,8 @@ function isActivitySource(value: unknown): value is ActivitySource {
   )
 }
 
-/**
- * Maps a normalized activity onto the drizzle insert payload.
- *
- * `null` is collapsed to `undefined` so drizzle omits the column instead of
- * writing an explicit NULL, and `type` is the lowercase `activity_type` enum
- * value produced by the normalizers.
- */
+/** Maps a normalized activity onto the drizzle insert payload. `null` becomes
+ *  `undefined` so drizzle omits the column instead of writing NULL. */
 function toInsertPayload(
   userId: string,
   normalized: NormalizedActivityData
@@ -88,8 +83,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // The GPX source allows a 10 MB XML string, so cap the whole body before
-    // buffering it — otherwise a single request can pin a lot of memory.
+    // GPX posts carry a 10 MB XML string, so cap the body before reading it.
     const contentLength = Number(req.headers.get("content-length") ?? 0)
     if (Number.isFinite(contentLength) && contentLength > 12_000_000) {
       return NextResponse.json(
@@ -135,10 +129,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // --- Validate + normalize ------------------------------------------------
-    // ZodError          -> the client sent bad data  (400, field-level detail)
-    // NormalizationError-> the data is well-formed but unusable (400)
-    // anything else     -> our bug                                (500)
+    // Both error types are bad client input (400). Anything else is a server
+    // bug and falls through to the 500.
     let normalized: NormalizedActivityData
     try {
       switch (source) {
@@ -170,9 +162,7 @@ export async function POST(req: NextRequest) {
       throw err
     }
 
-    // --- Persist -------------------------------------------------------------
-    // Activity + streams are written in one transaction: a failure on the
-    // streams insert must not leave an orphaned activity row behind.
+    // One transaction: a failed streams insert must not leave the activity row.
     const created = await CreateActivity(
       toInsertPayload(userId, normalized),
       normalized.streams ?? undefined

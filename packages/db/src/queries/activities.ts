@@ -62,11 +62,8 @@ export type ActivityStreamsInput = Omit<
 >
 
 /**
- * Inserts an activity and its track streams atomically.
- *
- * Both rows are written inside a single transaction: a failure on the streams
- * insert rolls the activity insert back instead of leaving an activity with no
- * track data behind.
+ * Inserts an activity and its streams atomically: a failed streams insert rolls back
+ * the activity instead of leaving it with no track data.
  */
 export async function CreateActivity(
   data: activitiesInsertType,

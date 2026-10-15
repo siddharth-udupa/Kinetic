@@ -84,7 +84,7 @@ export async function appendPointsToActiveSession(
     for (const point of newPoints) {
       if (!isValidLocationPoint(point)) continue
 
-      // Deduplicate identical points
+      // Drops repeated points from the same fix.
       if (
         lastPoint &&
         lastPoint.latitude === point.latitude &&

@@ -18,17 +18,14 @@ import {
   type NormalizedActivityData,
 } from "./shared"
 
-/** Douglas–Peucker tolerance used everywhere we simplify a track. */
+/** Douglas–Peucker tolerance for every track simplification. */
 const SIMPLIFY_TOLERANCE = 0.0001
 
-/** Hard cap so a crafted 10 MB file cannot allocate an unbounded array. */
+/** Hard cap, so a crafted file cannot allocate an unbounded point array. */
 const MAX_TRACK_POINTS = 100_000
 
-/**
- * Drops trackpoints we cannot compute with. `parserGPX` uses `parseFloat`, so
- * a single malformed `<trkpt>` yields `NaN` coordinates which would silently
- * poison distance/elevation (and then fail the INSERT with a NaN).
- */
+/** Drops unusable trackpoints: `parseFloat` turns one malformed `<trkpt>` into a
+ *  `NaN` coordinate, which would poison distance and elevation. */
 function usablePoints(points: RawTrackpoint[]): RawTrackpoint[] {
   return points.filter(
     (point) =>
@@ -39,12 +36,6 @@ function usablePoints(points: RawTrackpoint[]): RawTrackpoint[] {
   )
 }
 
-/**
- * Normalises an uploaded GPX file.
- *
- * Everything measurable (distance, duration, elevation, speed, track) is
- * derived from the file itself — nothing is invented.
- */
 export function normalizeGpxActivity(data: unknown): NormalizedActivityData {
   const parsed = GpxActivitySchema.parse(data)
 
@@ -88,9 +79,8 @@ export function normalizeGpxActivity(data: unknown): NormalizedActivityData {
     elevationLoss: toNonNegativeInt(stats.elevationLossMeters),
     encodedPolyline: encodePolyline(simplified) || null,
     maxSpeedMps: toNullableNumber(stats.maxSpeedMps),
-    // A GPX file is not always timestamped. Leaving these null is honest;
-    // defaulting to `new Date()` would store the upload time as the activity
-    // time. The columns are nullable and the UI already handles null.
+    // Files are often untimestamped, so a missing time stays null instead of
+    // becoming the upload time.
     startTime: stats.startTime,
     endTime: stats.endTime,
     streams: buildStreams(rawPoints),

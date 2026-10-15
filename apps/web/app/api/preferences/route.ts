@@ -8,7 +8,7 @@ export async function GET(_req: NextRequest) {
     const session = await auth.api.getSession({ headers: await headers() })
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    // createUserPreferences is idempotent — creates the row if it doesn't exist yet
+    // Idempotent: creates the row when it is missing.
     const prefs = await createUserPreferences(session.user.id)
     return NextResponse.json(prefs)
   } catch (err) {
@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
 
     const body = await req.json()
 
-    // Merge with current prefs so we only overwrite provided fields
+    // Merge so only the provided fields change.
     const current = await getUserPreferences(session.user.id)
     if (!current) {
       return NextResponse.json({ error: "Preferences not found" }, { status: 404 })
@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest) {
     const updated = await updateUserPreference(session.user.id, {
       ...current,
       ...body,
-      userId: session.user.id,   // never let the client override userId
+      userId: session.user.id,   // the client cannot change the owner
       updatedAt: new Date(),
     })
 

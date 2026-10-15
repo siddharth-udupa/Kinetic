@@ -34,6 +34,8 @@ export default function MapView({
   livePoints,
   recenterTrigger,
 }: MapProps) {
+  // MapLibre paint props take literal colours, so the layer colours come from
+  // the theme hook rather than a CSS var.
   const { colors } = useTheme()
 
   const points = useMemo(() => {
@@ -83,7 +85,7 @@ export default function MapView({
     let maxLng = Math.max(...points.map((p) => p.lng))
     let maxLat = Math.max(...points.map((p) => p.lat))
 
-    // Minimum bounding box span (~400 meters) to avoid excessive zooming on short distance movements
+    // Floor of ~400m on the bounding box, or short movements over-zoom.
     const MIN_DELTA = 0.004
     const lngDelta = maxLng - minLng
     const latDelta = maxLat - minLat
@@ -119,7 +121,7 @@ export default function MapView({
   const containerStyles = [styles.container, style]
   const mapStyles = style ? [styles.map, style] : styles.map
 
-  // Placeholder when native MapLibre module is unavailable (e.g. Expo Go standard client)
+  // MapLibre is native-only, so Expo Go and the web build get this placeholder.
   if (!MapLibreModule || !MapLibreModule.Map) {
     return (
       <View style={containerStyles} className="bg-page justify-center items-center relative overflow-hidden flex-1 w-full h-full">

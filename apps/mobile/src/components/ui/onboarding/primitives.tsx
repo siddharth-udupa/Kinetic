@@ -8,24 +8,12 @@ import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 export type IconName = keyof typeof Ionicons.glyphMap
 
 /**
- * A preference value narrowed to a string.
- *
- * Every `OnboardingPrefs` field is a string union, but TypeScript cannot prove
- * that for an unresolved `K extends keyof OnboardingPrefs`. The intersection
- * gives the generic components below something they can constrain on.
+ * A preference value narrowed to a string, so the generic components below can constrain on it.
  */
 export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & string
 
-/* ── Layout ────────────────────────────────────────────────────────────── */
-
-/**
- * The frame every slide shares: a scrolling body and an optional footer that
- * stays pinned to the bottom.
- *
- * Pinning the action keeps the primary button in the same place on every slide
- * (so it never has to be hunted for), and `flexGrow` lets a short slide breathe
- * instead of stretching its own contents.
- */
+/** The frame every slide shares: a scrolling body and an optional pinned footer. `flexGrow` lets a
+ *  short slide breathe instead of stretching its contents. */
 export function SlideShell({
   children,
   footer,
@@ -56,12 +44,8 @@ export function SlideShell({
   )
 }
 
-/**
- * Icon plate, heading and subheading.
- *
- * The plate is a low-contrast accent tint rather than a solid brand block — on
- * the old slides a row of these competed with the buttons underneath them.
- */
+/** Icon plate, heading and subheading. The plate is a low-contrast accent tint, not a solid
+ *  brand block, so it never competes with the buttons below. */
 export function SlideHeading({
   icon,
   eyebrow,
@@ -134,15 +118,7 @@ export function IconBadge({
   )
 }
 
-/* ── Buttons ───────────────────────────────────────────────────────────── */
-
-/**
- * The one saturated surface allowed on a slide.
- *
- * Keeping a single accent-filled element per screen is what stops the flow
- * reading as a wall of competing buttons — every other control in the flow is
- * outlined, tinted or text-only.
- */
+/** The one saturated surface allowed on a slide; every other control is muted. */
 export function PrimaryButton({
   label,
   onPress,
@@ -239,13 +215,7 @@ export function TextAction({
   )
 }
 
-/* ── Selection controls ────────────────────────────────────────────────── */
-
-/**
- * Selected state is a border, a tint and a filled dot — never a solid fill.
- * The old options were full-colour blocks, so a glance could not tell which of
- * them was actually chosen.
- */
+/** Selected state is a border, a tint and a filled dot — never a solid fill. */
 export function RadioDot({ selected }: { selected: boolean }) {
   const { colors } = useTheme()
 
@@ -333,10 +303,7 @@ export function ChoiceCard({
   )
 }
 
-/**
- * Segmented control on a muted track, with the chosen option lifted onto a
- * raised pill. Reads as a physical control rather than a row of buttons.
- */
+/** Muted track with the chosen option lifted onto a raised pill. */
 export function Segmented<T extends string>({
   options,
   value,
@@ -410,8 +377,6 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
     </View>
   )
 }
-
-/* ── Content blocks ────────────────────────────────────────────────────── */
 
 export function Banner({
   tone,
@@ -528,8 +493,7 @@ export function ReviewSection({
 
 /** Hoisted: declared inside the renderer, it would remount on every render. */
 function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
-  // Deliberately the palette for `tone` rather than the live one — showing the
-  // theme the athlete has not picked yet is the whole point of the thumbnail.
+  // The palette for `tone`, not the live one: showing the unpicked theme is the point.
   const p = getColors(tone)
   return (
     <View className="flex-1 h-full px-1.5 py-2" style={{ backgroundColor: p.surface }}>
@@ -540,10 +504,7 @@ function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
   )
 }
 
-/**
- * Miniature of the app in a given theme, so the choice is made by looking
- * rather than by reading a label.
- */
+/** Miniature of the app in a given theme, so the choice is made by looking. */
 export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }) {
   const dominant = scheme === "system" ? "light" : scheme
 

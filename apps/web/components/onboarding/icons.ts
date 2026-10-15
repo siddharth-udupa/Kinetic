@@ -33,14 +33,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-/**
- * Ionicons glyph name → lucide equivalent.
- *
- * The mobile flow is written against Ionicons names, so the port keeps those
- * names and resolves them here. Every icon decision in the flow stays
- * reviewable in one file, and the two implementations can still be diffed
- * line for line.
- */
+/** Ionicons name to lucide equivalent, so the port keeps mobile's names in one file. */
 export const ICONS = {
   "flash-outline": Zap,
   "map-outline": Map,

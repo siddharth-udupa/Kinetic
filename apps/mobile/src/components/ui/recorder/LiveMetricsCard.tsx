@@ -36,7 +36,6 @@ export default function LiveMetricsCard({
 
   return (
     <View className="mx-4 mb-3">
-      {/* Light Green / Dynamic Header Bar */}
       <GpsHeaderBanner
         status={status}
         locationStatus={locationStatus}
@@ -46,9 +45,7 @@ export default function LiveMetricsCard({
       />
 
 
-      {/* 3-Column Metrics Grid */}
       <View className="bg-surface border border-line rounded-b-2xl p-4 shadow-xl flex-row justify-between items-center">
-        {/* Column 1: Time */}
         <View className="flex-1 items-center">
           <Text className="text-ink text-2xl font-black tracking-tight">
             {formattedTime}
@@ -60,7 +57,6 @@ export default function LiveMetricsCard({
 
         <View className="w-[1px] h-8 bg-line" />
 
-        {/* Column 2: Split avg / Pace / Speed */}
         <View className="flex-1 items-center">
           <Text className="text-ink text-2xl font-black tracking-tight">
             {status === "idle" && pointsCount === 0
@@ -76,7 +72,6 @@ export default function LiveMetricsCard({
 
         <View className="w-[1px] h-8 bg-line" />
 
-        {/* Column 3: Distance */}
         <View className="flex-1 items-center">
           <Text className="text-ink text-2xl font-black tracking-tight">
             {status === "idle" && distanceMeters === 0 ? "0" : formattedDistance}

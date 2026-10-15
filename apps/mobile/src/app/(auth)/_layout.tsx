@@ -5,8 +5,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        // "auto" rather than a fixed style: the screen paints its own surface
-        // and follows the colour scheme, so the bar has to follow it too.
+        // "auto": the screen paints its own surface and follows the scheme.
         statusBarStyle: "auto",
         animation: "fade",
       }}

@@ -12,13 +12,7 @@ type Props = {
   onNext: () => void
 }
 
-/**
- * One decision, not five.
- *
- * The old units screen asked for distance, elevation, pace, speed and weight in
- * a single scroll of full-colour buttons. Choosing a system here settles all
- * five at once, which is the answer almost everyone would have given anyway.
- */
+/** One decision, not five: a system choice settles all of them at once. */
 export default function UnitsSystemSlide({ prefs, onChange, onNext }: Props) {
   const { colors } = useTheme()
   const system: UnitSystem = prefs.distanceUnit === "imperial" ? "imperial" : "metric"

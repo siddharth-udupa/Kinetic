@@ -1,9 +1,6 @@
 import AuthScreen from "@/components/ui/auth/AuthScreen"
 
-/**
- * Thin host so the screen itself lives beside the other auth surfaces and can
- * be diffed against the web implementation.
- */
+/** The screen lives beside the other auth surfaces; this only hosts it. */
 export default function AuthRoute() {
   return <AuthScreen />
 }

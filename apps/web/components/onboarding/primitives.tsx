@@ -10,43 +10,16 @@ export type { IconName }
 
 const ChevronForward = ICONS["chevron-forward"]
 
-/**
- * A preference value narrowed to a string.
- *
- * Every `OnboardingPrefs` field is a string union, but TypeScript cannot prove
- * that for an unresolved `K extends keyof OnboardingPrefs`. The intersection
- * gives the generic components below something they can constrain on.
- */
+/** A pref value narrowed to a string. TypeScript cannot prove the union for an unresolved `K`. */
 export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & string
 
-/**
- * Keyboard focus ring, shared by every control.
- *
- * On mobile the platform draws it; a browser needs an explicit one or the flow
- * is unusable without a mouse.
- */
+/** Focus ring for every control. Mobile draws its own; a browser needs an explicit one. */
 const FOCUS =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]"
 
-/* ── Layout ────────────────────────────────────────────────────────────── */
-
-/**
- * The frame every slide shares: a scrolling body and a footer that stays
- * pinned to the bottom.
- *
- * Pinning the action keeps the primary button in the same place on every slide
- * (so it never has to be hunted for), and the body owns the scroll so a short
- * viewport never pushes the button off screen.
- *
- * The column is capped and centred rather than stretched: on a phone the cap is
- * inactive and the slide is edge to edge, exactly as on mobile; on a desktop it
- * stops the line length and the gap between a choice and its radio dot from
- * drifting apart.
- *
- * Centring is done with `my-auto` on the column rather than `justify-center` on
- * the scroller: a centred flex child is clipped off the top the moment it
- * outgrows the box, and a short viewport is exactly when a slide is tallest.
- */
+// The frame every slide shares: a scrolling body and a pinned footer. Centring
+// uses `my-auto` on the column, because a centred flex child is clipped off the
+// top once it outgrows the box, which happens on the shortest viewports.
 export function SlideShell({
   children,
   footer,
@@ -76,13 +49,7 @@ export function SlideShell({
   )
 }
 
-/**
- * Icon plate, heading and subheading.
- *
- * The plate is a low-contrast accent tint rather than a solid brand block — a
- * row of these competing with the buttons underneath them is what made the old
- * slides read as busy.
- */
+/** Icon plate, heading and subheading. */
 export function SlideHeading({
   icon,
   eyebrow,
@@ -148,8 +115,6 @@ export function IconBadge({ icon, size = 48 }: { icon: IconName; size?: number }
   )
 }
 
-/* ── Buttons ───────────────────────────────────────────────────────────── */
-
 function Spinner({ color }: { color: string }) {
   return (
     <svg
@@ -167,13 +132,7 @@ function Spinner({ color }: { color: string }) {
   )
 }
 
-/**
- * The one saturated surface allowed on a slide.
- *
- * Keeping a single accent-filled element per screen is what stops the flow
- * reading as a wall of competing buttons — every other control in the flow is
- * outlined, tinted or text-only.
- */
+/** The one saturated surface allowed on a slide. */
 export function PrimaryButton({
   label,
   onPress,
@@ -268,13 +227,7 @@ export function TextAction({
   )
 }
 
-/* ── Selection controls ────────────────────────────────────────────────── */
-
-/**
- * Selected state is a border, a tint and a filled dot — never a solid fill.
- * The old options were full-colour blocks, so a glance could not tell which of
- * them was actually chosen.
- */
+/** Selected state is a border, a tint and a filled dot — never a solid fill. */
 export function RadioDot({ selected }: { selected: boolean }) {
   const { colors } = useTheme()
 
@@ -364,10 +317,7 @@ export function ChoiceCard({
   )
 }
 
-/**
- * Segmented control on a muted track, with the chosen option lifted onto a
- * raised pill. Reads as a physical control rather than a row of buttons.
- */
+/** Segmented control: the chosen option is lifted onto a raised pill. */
 export function Segmented<T extends string>({
   options,
   value,
@@ -397,8 +347,8 @@ export function Segmented<T extends string>({
             aria-label={option.label}
             onClick={() => onChange(option.value)}
             className={`flex h-10 flex-1 cursor-pointer items-center justify-center rounded-lg border px-1 transition active:opacity-70 ${FOCUS} ${
-              /* Only the unselected state is left to the class, so the hover
-                 tint is not overridden by an inline transparent background. */
+              // Only the unselected state is left to the class, so an inline
+              // background cannot override the hover tint.
               selected ? "" : "hover:bg-track-hover"
             }`}
             style={
@@ -420,7 +370,7 @@ export function Segmented<T extends string>({
   )
 }
 
-/** A labelled segmented control — the repeating unit of the units screen. */
+/** A labelled segmented control. */
 export function SettingRow<K extends keyof OnboardingPrefs>({
   label,
   icon,
@@ -449,8 +399,6 @@ export function SettingRow<K extends keyof OnboardingPrefs>({
     </div>
   )
 }
-
-/* ── Content blocks ────────────────────────────────────────────────────── */
 
 export function Banner({
   tone,
@@ -563,8 +511,8 @@ export function ReviewSection({ title, children }: { title: string; children: Re
 
 /** Hoisted: declared inside the renderer, it would remount on every render. */
 function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
-  // Deliberately the palette for `tone` rather than the live one — showing the
-  // theme the athlete has not picked yet is the whole point of the thumbnail.
+  // The palette for `tone`, not the live one: showing the theme the athlete has
+  // not picked yet is the point of the thumbnail.
   const p = getColors(tone)
 
   return (
@@ -576,10 +524,7 @@ function PreviewHalf({ tone }: { tone: "light" | "dark" }) {
   )
 }
 
-/**
- * Miniature of the app in a given theme, so the choice is made by looking
- * rather than by reading a label.
- */
+/** Miniature of the app in a given theme, so the choice is made by looking. */
 export function ThemePreview({ scheme }: { scheme: "light" | "dark" | "system" }) {
   const dominant = scheme === "system" ? "light" : scheme
 

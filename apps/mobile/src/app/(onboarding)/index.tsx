@@ -55,15 +55,9 @@ export default function OnboardingScreen() {
   const [isFinishing, setIsFinishing] = useState(false)
   const [finishError, setFinishError] = useState<string | null>(null)
 
-  /* ── Live theme preview ──────────────────────────────────────────────
-   * Tapping a theme on the appearance slide repaints the running app. If the
-   * user leaves without finishing, the override is dropped so the rest of the
-   * app keeps following the system appearance.
-   *
-   * Through `ThemeProvider` rather than `Appearance` directly, because the
-   * platform API is a one-way street on the web build: React Native Web has no
-   * `setColorScheme`, so a tap there would have been a silent no-op.
-   */
+  // Picking a theme on the appearance slide repaints the running app. Leaving without
+  // finishing drops the override, so the app follows the system again. ThemeProvider,
+  // not Appearance: React Native Web has no setColorScheme, so a direct call is a no-op.
   const { setScheme } = useThemeScheme()
   const didCommit = useRef(false)
 
@@ -79,14 +73,12 @@ export default function OnboardingScreen() {
     [applyColorScheme],
   )
 
-  // Declared as a plain generic function rather than a `useCallback` wrapper:
-  // hoisting the generic into a callback erases it, leaving `K` as the union of
-  // every pref and letting a slide write the wrong value into a field.
+  // A plain function, not a useCallback: hoisting the generic into a callback
+  // erases it, leaving `K` as the union of every pref.
   function updatePref<K extends keyof OnboardingPrefs>(key: K, value: OnboardingPrefs[K]) {
     setPrefs((prev) => ({ ...prev, [key]: value }))
   }
 
-  /* ── Navigation ──────────────────────────────────────────────────── */
   const goTo = useCallback(
     (index: number) => {
       const next = clamp(index)
@@ -101,7 +93,6 @@ export default function OnboardingScreen() {
     setCurrentSlide((prev) => (prev === next ? prev : next))
   }
 
-  /* ── Actions ─────────────────────────────────────────────────────── */
   async function handleSaveUsername(next: string): Promise<string | null> {
     setIsSavingUsername(true)
     const err = await updateUsername(next)
@@ -111,8 +102,7 @@ export default function OnboardingScreen() {
   }
 
   async function handleFinish() {
-    // The review screen can be reached by swiping past an unfilled username, so
-    // send them back rather than finishing with a blank profile.
+    // The review slide is reachable by swiping past an unfilled username.
     if (!hasUsername) {
       goTo(SLIDE.username)
       return
@@ -161,7 +151,6 @@ export default function OnboardingScreen() {
         className="flex-1 bg-page"
         style={{ paddingTop: Math.max(insets.top, 12) }}
       >
-        {/* ── Progress + skip ── */}
         <View className="pb-5">
           <ProgressHeader
             step={currentSlide + 1}
@@ -170,7 +159,6 @@ export default function OnboardingScreen() {
           />
         </View>
 
-        {/* ── Slides ── */}
         <ScrollView
           ref={scrollRef}
           horizontal

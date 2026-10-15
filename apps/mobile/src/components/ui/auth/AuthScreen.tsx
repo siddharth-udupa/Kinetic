@@ -32,14 +32,7 @@ type Mode = "signin" | "signup"
 
 const MIN_PASSWORD_LENGTH = 8
 
-/**
- * One copy table for both tabs.
- *
- * The old screen swapped a single heading and left the rest of the page saying
- * "sign in" while the form asked for a name. Every user-visible string for a
- * mode now lives here, so a tab is a different screen rather than a different
- * first paragraph.
- */
+/** Every user-visible string for a mode, so the tabs are two real screens. */
 const COPY: Record<Mode, { eyebrow: string; title: string; subtitle: string; google: string; divider: string; cta: string; trust: string }> = {
   signin: {
     eyebrow: "Welcome back",
@@ -86,8 +79,7 @@ export default function AuthScreen() {
   function changeMode(next: Mode) {
     if (next === mode) return
     setMode(next)
-    // Errors belong to the attempt that produced them; carrying one across the
-    // tab switch told the user the email they just cleared was rejected.
+    // An error belongs to the attempt that produced it.
     setError(null)
     setPending(null)
   }
@@ -111,14 +103,12 @@ export default function AuthScreen() {
 
       const userId = result.data?.user?.id
 
-      // First sign in for this account: pull preferences once and keep them on
-      // the device, so the onboarding gate never has to ask again.
+      // Pull preferences once per account, so the onboarding gate never asks again.
       if (userId) {
         await hydratePreferences(userId)
       }
 
-      // Route through the index gate rather than straight to the dashboard, so
-      // a brand-new account still lands in onboarding.
+      // Through the index gate, not the dashboard, so new accounts hit onboarding.
       router.replace("/" as any)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
@@ -135,8 +125,7 @@ export default function AuthScreen() {
 
     try {
       const { error: oauthError } = await signIn.social({ provider: "google", callbackURL: "/dashboard" })
-      // No error means the browser is already handling the redirect, so the
-      // button deliberately stays busy instead of flashing back to idle.
+      // No error means the browser is handling the redirect, so the button stays busy.
       if (oauthError) setError(oauthError.message ?? "Google sign-in failed.")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed.")
@@ -150,7 +139,7 @@ export default function AuthScreen() {
       style={{ flex: 1, backgroundColor: colors.page }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Body owns the scroll; the action is pinned so it never moves. */}
+      {/* Body owns the scroll; the action stays pinned. */}
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -173,9 +162,7 @@ export default function AuthScreen() {
           }}
         >
           {/*
-            Keyed on the tab so the new mode replays the fade the web flow
-            plays, instead of the previous heading being patched under a
-            still-visible title.
+            Keyed on the tab so the new mode replays the fade.
           */}
           <Animated.View
             key={mode}
@@ -204,7 +191,7 @@ export default function AuthScreen() {
             </Text>
           </Animated.View>
 
-          {/* Tabs — the muted-track segmented control, not two solid buttons. */}
+          {/* Muted-track segmented control, not two solid buttons. */}
           <View className="mt-7">
             <Segmented<Mode>
               options={[
@@ -282,7 +269,7 @@ export default function AuthScreen() {
               }
             />
 
-            {/* Helper line — the reason the button is still disabled. */}
+            {/* The reason the button is still disabled. */}
             <View className="flex-row items-center justify-between px-1">
               <Text className="text-[13px]" style={{ color: colors.inkMuted }}>
                 {isSignup ? `Minimum ${MIN_PASSWORD_LENGTH} characters` : ""}
@@ -303,7 +290,7 @@ export default function AuthScreen() {
         </View>
       </ScrollView>
 
-      {/* Pinned action — same place on every mode, so it is never hunted for. */}
+      {/* Pinned action, in the same place on both modes. */}
       <View
         style={{
           paddingHorizontal: 24,

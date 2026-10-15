@@ -3,11 +3,8 @@ import { Pressable, Text, TextInput, View, type TextInputProps } from "react-nat
 import { Ionicons } from "@expo/vector-icons"
 import { useTheme } from "@/hooks/useTheme"
 
-/**
- * The `name` prop's real union. `Ionicons` is a `createIconSet` component, so
- * its prop type is only reachable through `ComponentProps` — the exported
- * `IoniconsProps` helper is not part of the package's public surface.
- */
+/** `Ionicons` is a `createIconSet`, so its prop type is only reachable through `ComponentProps`;
+ *  the package exports no `IoniconsProps` helper. */
 type IconName = ComponentProps<typeof Ionicons>["name"]
 
 type AuthFieldProps = TextInputProps & {
@@ -17,13 +14,8 @@ type AuthFieldProps = TextInputProps & {
   trailing?: ReactNode
 }
 
-/**
- * Labelled field with a leading glyph.
- *
- * The old inputs were bare bordered boxes with a label floating above them, so
- * the row read as three unrelated inputs. The glyph, the 56px height and the
- * label sitting inside the control make each one read as a single object.
- */
+/** Labelled field with a leading glyph. Glyph, height and inside label make the row read as
+ *  one control rather than a label plus a box. */
 export function AuthField({ label, icon, trailing, style, ...inputProps }: AuthFieldProps) {
   const { colors } = useTheme()
   const [isFocused, setIsFocused] = useState(false)

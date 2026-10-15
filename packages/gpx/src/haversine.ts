@@ -1,10 +1,4 @@
-// Formula is called as haversine formula 
-// which is used to find approx distance between 2 coordinates points considering earth's radius 
-
-
 const EARTH_RADIUS_METERS = 6_371_000
-
-// chances of an error is <0.3%
 
 export function haversineDistance(
   lat1: number, lng1: number,

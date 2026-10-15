@@ -12,14 +12,7 @@ type Mode = "signin" | "signup"
 
 const MIN_PASSWORD_LENGTH = 8
 
-/**
- * One copy table for both tabs.
- *
- * The old screen swapped a single heading and left the rest of the page saying
- * "sign in" while the form asked for a name. Every user-visible string for a
- * mode now lives here, so a tab is a different screen rather than a different
- * first paragraph.
- */
+/** Every user-visible string for a mode, so a tab is a different screen. */
 const COPY: Record<
   Mode,
   {
@@ -87,13 +80,7 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   trailing?: ReactNode
 }
 
-/**
- * Labelled field with a leading glyph.
- *
- * The old inputs were bare bordered boxes with a label floating above them, so
- * the row read as three unrelated inputs. The glyph, the 56px height and the
- * label sitting *inside* the control make each one read as a single object.
- */
+/** Labelled field with a leading glyph and an optional trailing control. */
 function Field({ id, label, icon, trailing, className, ...inputProps }: FieldProps) {
   const { colors } = useTheme()
   const Icon = ICONS[icon]
@@ -148,12 +135,8 @@ function AuthSurface() {
   /** Which request is in flight, so the two buttons disable independently. */
   const [pending, setPending] = useState<"form" | "google" | null>(null)
 
-  /*
-   * The action lives in the pinned footer, outside the <form>, so the footer
-   * cannot simply be a submit button. `requestSubmit` keeps it going through
-   * the form's own submit handler — Enter in a field and the button run the
-   * exact same path, rather than two copies of it drifting apart.
-   */
+  // The action sits in the pinned footer, outside the form, so it cannot be a
+  // submit button. `requestSubmit` keeps Enter and the button on one path.
   const formRef = useRef<HTMLFormElement>(null)
 
   const copy = COPY[mode]
@@ -167,8 +150,8 @@ function AuthSurface() {
   function changeMode(next: Mode) {
     if (next === mode) return
     setMode(next)
-    // Errors belong to the attempt that produced them; carrying one across the
-    // tab switch told the user the email they just cleared was rejected.
+    // An error belongs to the attempt that produced it; carrying one across the
+    // tab switch says the email the user just cleared was rejected.
     setError(null)
     setPending(null)
   }
@@ -209,8 +192,8 @@ function AuthSurface() {
         provider: "google",
         callbackURL: searchParams.get("callbackUrl") ?? "/dashboard",
       })
-      // No error means the browser is already navigating to Google, so the
-      // button deliberately stays busy instead of flashing back to idle.
+      // No error means the browser is already navigating to Google, so the button
+      // stays busy instead of flashing back to idle.
       if (oauthError) setError(oauthError.message ?? "Google sign-in failed.")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed.")
@@ -227,11 +210,7 @@ function AuthSurface() {
       style={{
         ...vars,
         backgroundColor: colors.page,
-        /*
-         * Claim the viewport below the shell header rather than growing with
-         * the body column, so the column can hand its free space to the form
-         * and the action stays pinned even on a short window.
-         */
+        // Claims the viewport below the shell header so the action stays pinned.
         height: "calc(100dvh - var(--shell-header-h))",
       }}
     >
@@ -242,11 +221,8 @@ function AuthSurface() {
           noValidate
           className="mx-auto my-auto flex w-full max-w-md flex-col items-center py-6"
         >
-          {/*
-            Keyed on the tab so the new mode replays the same fade the mobile
-            stack plays, instead of the previous heading being patched under a
-            still-visible title.
-          */}
+          {/* Keyed on the tab so the new mode replays the fade, instead of the
+              previous heading being patched under a still-visible title. */}
           <div key={mode} className="ob-slide-in flex w-full flex-col items-center">
             <IconBadge icon="flash-outline" size={56} />
 
@@ -270,7 +246,6 @@ function AuthSurface() {
             </p>
           </div>
 
-          {/* Tabs — the muted-track segmented control, not two solid buttons. */}
           <div className="mt-7 w-full">
             <Segmented<Mode>
               options={[
@@ -357,7 +332,7 @@ function AuthSurface() {
               }
             />
 
-            {/* Helper line — the reason the button is still disabled. */}
+            {/* The reason the button is still disabled. */}
             <div className="flex items-center justify-between px-1">
               {isSignup ? (
                 <span className="text-[13px]" style={{ color: colors.inkMuted }}>
@@ -384,7 +359,7 @@ function AuthSurface() {
         </form>
       </div>
 
-      {/* Pinned action — same place on every mode, so it is never hunted for. */}
+      {/* Pinned action, in the same place on every mode. */}
       <div className="shrink-0 px-6 pt-1 pb-1">
         <div className="mx-auto w-full max-w-md">
           <PrimaryButton

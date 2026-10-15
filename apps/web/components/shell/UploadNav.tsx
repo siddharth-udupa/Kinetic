@@ -11,15 +11,7 @@ const LINKS = [
   { name: "GPX file", href: "/upload/file", icon: FileUp },
 ]
 
-/**
- * Section navigation for the upload flow.
- *
- * Reuses the shell's tokens and focus ring, and drops the old `orange-50` /
- * `border-orange-200` fill in favour of the accent-soft tint the rest of the app
- * uses to mark a selection. Selection is also carried by the word colour and a
- * weight change, so it survives being read at a glance or with the colour
- * stripped out.
- */
+/** Upload flow navigation. Selection is carried by tint, word colour and weight, not colour alone. */
 export default function UploadNav() {
   const pathname = usePathname()
   const { colors } = useTheme()

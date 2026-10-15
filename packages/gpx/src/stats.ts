@@ -97,8 +97,6 @@ export function computeDuration(points: RawTrackpoint[]): number {
 }
 
 
-// --- Convenience wrapper (preserves original API) ---
-
 export function computeStats(points: RawTrackpoint[]): ActivityStats {
   const elevation = computeElevation(points)
 

@@ -44,7 +44,6 @@ export default function Manual() {
     message: string
   } | null>(null)
 
-  // Validation: Title must not be empty, Distance must be > 0, and Duration must be > 0
   const isTitleValid = data.title.trim().length > 0
   const isDistanceValid = typeof data.distance === "number" && data.distance > 0
   const isDurationValid =
@@ -61,7 +60,6 @@ export default function Manual() {
   const updateDuration = (key: "hr" | "min" | "sec", value: number) =>
     setData(prev => ({ ...prev, duration: { ...prev.duration, [key]: value } }))
 
-  // Format Zod & backend errors into clean human-readable text
   const formatErrorMessage = (resData: any): string => {
     if (!resData) return "An unexpected error occurred while saving."
 
@@ -180,15 +178,13 @@ export default function Manual() {
 
       <form onSubmit={submitHandler} autoComplete="off" className="space-y-0">
 
-        {/* Row 1: Distance, Duration, Elevation */}
         <div className="flex flex-wrap gap-8 pb-6 border-b border-line">
 
-          {/* Distance */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="distance" className="text-xs font-medium text-ink">
               Distance <span className="text-danger-text">*</span>
             </label>
-            {/* Both branches collapse to one token — the invalid-distance case never had its own colour. */}
+            {/* Both ternary branches are the same token: no invalid colour exists. */}
             <div className={`flex items-center border rounded bg-surface overflow-hidden h-9 ${
               !isDistanceValid && data.distance === 0 ? "border-line-strong" : "border-line-strong"
             }`}>
@@ -215,7 +211,6 @@ export default function Manual() {
             </div>
           </div>
 
-          {/* Duration */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="duration-hr" className="text-xs font-medium text-ink">
               Duration <span className="text-danger-text">*</span>
@@ -254,7 +249,6 @@ export default function Manual() {
             </div>
           </div>
 
-          {/* Elevation Gain */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="elevationGain" className="text-xs text-ink-secondary">Elev Gain</label>
             <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
@@ -280,7 +274,6 @@ export default function Manual() {
             </div>
           </div>
 
-          {/* Elevation Loss */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="elevationLoss" className="text-xs text-ink-secondary">Elev Loss</label>
             <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
@@ -307,10 +300,8 @@ export default function Manual() {
           </div>
         </div>
 
-        {/* Row 2: Sport, Start Time, End Time */}
         <div className="flex flex-wrap gap-8 py-6 border-b border-line">
 
-          {/* Sport */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="sport" className="text-xs font-medium text-ink">Sport</label>
             <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
@@ -329,7 +320,6 @@ export default function Manual() {
             </div>
           </div>
 
-          {/* Start Time */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="startTime" className="text-xs font-medium text-ink">Start Time</label>
             <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
@@ -343,7 +333,6 @@ export default function Manual() {
             </div>
           </div>
 
-          {/* End Time */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="endTime" className="text-xs text-ink-secondary">End Time</label>
             <div className="flex items-center border border-line-strong rounded bg-surface overflow-hidden h-9">
@@ -358,7 +347,6 @@ export default function Manual() {
           </div>
         </div>
 
-        {/* Title */}
         <div className="flex flex-col gap-1.5 py-6">
           <label htmlFor="title" className="text-xs font-medium text-ink">
             Title <span className="text-danger-text">*</span>
@@ -373,7 +361,6 @@ export default function Manual() {
           />
         </div>
 
-        {/* Description */}
         <div className="flex flex-col gap-1.5 pb-6 border-b border-line">
           <label htmlFor="description" className="text-xs text-ink-secondary">Description</label>
           <textarea
@@ -386,7 +373,6 @@ export default function Manual() {
           />
         </div>
 
-        {/* Submit button */}
         <div className="pt-6 flex items-center gap-4">
           <button
             type="submit"

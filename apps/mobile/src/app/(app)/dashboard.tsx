@@ -10,7 +10,7 @@ import { clearPreferences } from "@/lib/preferencesStore"
 import { useTheme } from "@/hooks/useTheme"
 import { TabBar, TopBar, type TabKey } from "@/components/ui/shell/Navigation"
 
-// Lazy-load MapScreen component
+// The map bundle is large and only the maps tab needs it.
 const LazyMapScreen = lazy(() => import("@/components/MapScreen"))
 
 export default function DashboardScreen() {
@@ -20,6 +20,7 @@ export default function DashboardScreen() {
   const { isDark, colors } = useTheme()
   const [activeTab, setActiveTab] = useState<TabKey>("home")
 
+  // The feed refetches whenever this screen regains focus.
   const { activities, isLoading, refreshing, error, refetch } = useActivities(session?.user.id)
 
   if (!session) {
@@ -31,8 +32,7 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.page }}>
-      {/* Follows the resolved theme rather than being pinned to
-          `dark-content`, which put dark glyphs on a dark bar in dark mode. */}
+      {/* Follows the resolved theme: a pinned `dark-content` puts dark glyphs on a dark bar. */}
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
       <TopBar />
@@ -81,14 +81,8 @@ export default function DashboardScreen() {
   )
 }
 
-/**
- * The account tab.
- *
- * Sign-out moved here from the header. It used to be a red pill in the top bar,
- * one tap from the home screen; here it sits under the profile it acts on, as a
- * full-width row rather than an icon, so the consequence of the tap is legible
- * before it happens.
- */
+/** The account tab. Sign-out sits under the profile it acts on, as a full-width
+ *  row, so the consequence of the tap is legible before it happens. */
 function AccountTab({ user }: { user: { name?: string | null; email?: string | null; image?: string | null } }) {
   const { colors } = useTheme()
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -96,8 +90,7 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
   async function handleSignOut() {
     setIsSigningOut(true)
     await signOut()
-    // Drop the in-memory snapshot so the next account to sign in on this
-    // device never sees the previous one's units or theme.
+    // Drop the in-memory snapshot so the next account never sees this one's units.
     clearPreferences()
   }
 
@@ -137,10 +130,8 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
           style={{ backgroundColor: colors.surface, borderColor: colors.line }}
         >
           {/*
-            Preferences have no screen yet — onboarding is the only place the
-            units and theme can be changed today. Rather than link to a route that
-            does not exist and throw on tap, the row is left out until there is
-            somewhere for it to go.
+            Preferences have no screen yet — onboarding is the only place units
+            and theme change. The row is left out until there is a route for it.
           */}
 
           <Pressable
@@ -162,7 +153,7 @@ function AccountTab({ user }: { user: { name?: string | null; email?: string | n
   )
 }
 
-/** A tab with no screen yet — same object as the real tabs, minus the content. */
+/** A tab with no screen yet — the real tabs minus the content. */
 function PlaceholderTab({ tab }: { tab: TabKey }) {
   const { colors } = useTheme()
   const label = tab.charAt(0).toUpperCase() + tab.slice(1)

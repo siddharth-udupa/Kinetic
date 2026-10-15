@@ -6,11 +6,10 @@ import { AppState } from "react-native"
 export const authClient = createAuthClient({
   baseURL: process.env.EXPO_PUBLIC_API_URL!,
   sessionOptions: {
-    // Foregrounding is a frequent event (app switch, screen lock, biometric
-    // prompt) and must not translate into a request per foreground. We drive
-    // revalidation ourselves below, gated on staleness.
+    // Foregrounding is frequent (app switch, screen lock, biometric prompt) and must
+    // not send a request every time. Revalidation is driven by the gate below.
     refetchOnWindowFocus: false,
-    // No polling. The staleness gate handles it without burning battery.
+    // No polling. The staleness gate covers it without burning battery.
     refetchInterval: 0,
     refetchWhenOffline: false,
   },
@@ -26,13 +25,8 @@ export const authClient = createAuthClient({
 
 export const { signIn, signUp, signOut, useSession } = authClient
 
-/**
- * Revalidate the session on foreground only if the last check is older than
- * this. Kept in step with `session.cookieCache.maxAge` on the server
- * (apps/web/lib/auth.ts) so that we never outrun the server's own cache:
- * a refetch inside that window would read the same cached data anyway, and
- * skipping it avoids the request entirely.
- */
+/** Revalidate on foreground only if the last successful check is older than this, matching the
+ *  server's `session.cookieCache.maxAge` (apps/web/lib/auth.ts). */
 const REVALIDATION_INTERVAL_MS = 5 * 60 * 1000
 
 type SessionAtomValue = {
@@ -51,9 +45,8 @@ const sessionAtom = authClient.$store.atoms.session as unknown as {
 /** Timestamp of the last session check that reached the server successfully. */
 let lastVerifiedAt = 0
 
-// A fetch is in flight across an isRefetching true -> false transition, so use
-// that edge to record verification. Failed checks deliberately do not count:
-// a transient network error should not suppress the next revalidation.
+// Verification is recorded on the isRefetching true -> false edge. Failed checks
+// do not count, so a transient network error cannot suppress the next revalidation.
 let wasRefetching = false
 sessionAtom.subscribe((value) => {
   if (value.isRefetching) {
@@ -74,9 +67,8 @@ AppState.addEventListener("change", (state) => {
   // in-flight check already covers this foreground.
   if (isRefetching || data == null) return
 
-  // lastVerifiedAt is advanced by the subscription above once the request
-  // settles, and only on success. Bumping it here would let a failed check
-  // suppress the next revalidation.
+  // lastVerifiedAt is advanced by the subscription above, on success only.
+  // Bumping it here would let a failed check suppress the next revalidation.
   refetch()
 })
 

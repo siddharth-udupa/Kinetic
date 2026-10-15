@@ -7,25 +7,7 @@ import { APP_NAME } from "@repo/shared"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
 
-/**
- * Top and bottom navigation for the signed-in app.
- *
- * The old pair were hand-rolled inside the dashboard screen out of raw Tailwind
- * greys and a hard-coded brand orange, which meant neither could respond to the
- * athlete's chosen theme — a dark-mode tab bar still carried a fixed dark
- * surface fighting a light page, and the status bar stayed `dark-content` over
- * it.
- *
- * Both bars now read the onboarding theme, so they are the same objects in both
- * schemes and match the web shell bar for bar.
- */
-
-/* ── Header ─────────────────────────────────────────────────────────────── */
-
-/**
- * Mark and wordmark, matching the accent-soft plate the onboarding slides use
- * for their icon badges.
- */
+/** Mark and wordmark, on the same accent-soft plate the onboarding badges use. */
 export function BrandMark({ compact = false }: { compact?: boolean }) {
   const { colors } = useTheme()
 
@@ -93,14 +75,7 @@ type TopBarProps = {
   trailing?: ReactNode
 }
 
-/**
- * The app header.
- *
- * The athlete's identity and the sign-out action are gone from here: sign-out
- * is a destructive action that belonged behind a deliberate choice, and it used
- * to sit one tap away from the home screen as a red pill. It now lives on the
- * "You" tab, next to the account it acts on.
- */
+/** Sign-out lives on the "You" tab, next to the account it acts on. */
 export function TopBar({ onPressNotifications, trailing }: TopBarProps) {
   const insets = useSafeAreaInsets()
   const { colors } = useTheme()
@@ -109,8 +84,7 @@ export function TopBar({ onPressNotifications, trailing }: TopBarProps) {
     <View
       className="border-b px-4 pb-3"
       style={{
-        // The safe-area inset is consumed here rather than by a spacer, so the
-        // bottom border lands below the status bar instead of running behind it.
+        // Padding, not a spacer: the bottom border must land below the status bar.
         paddingTop: Math.max(insets.top, 12),
         backgroundColor: colors.surface,
         borderColor: colors.line,
@@ -133,8 +107,6 @@ export function TopBar({ onPressNotifications, trailing }: TopBarProps) {
   )
 }
 
-/* ── Tab bar ────────────────────────────────────────────────────────────── */
-
 export type TabKey = "home" | "maps" | "record" | "groups" | "you"
 
 type TabItem = {
@@ -144,13 +116,7 @@ type TabItem = {
   iconActive: IconName
 }
 
-/**
- * Tab order.
- *
- * "Record" sits in the middle and is drawn by `TabBar` itself rather than being
- * one more row entry, because it is an action that leaves the tab set — not
- * another place to be.
- */
+/** Record is drawn by `TabBar` itself: it leaves the tab set rather than being another tab. */
 export const TABS: TabItem[] = [
   { key: "home", label: "Home", icon: "home-outline", iconActive: "home" },
   { key: "maps", label: "Maps", icon: "map-outline", iconActive: "map" },
@@ -165,15 +131,8 @@ type TabBarProps = {
   onRecord: () => void
 }
 
-/**
- * The bottom tab bar.
- *
- * Selection is carried by three signals at once — the accent glyph, the accent
- * word, and a tinted plate behind the icon — because a 10px label in the
- * inactive grey is the only difference otherwise, and that is easy to miss with
- * a thumb. The record button is the one saturated surface, matching the rule the
- * web and onboarding surfaces follow.
- */
+/** Selection carries three signals: accent glyph, accent word, tinted plate, because a 10px
+ *  grey label alone is easy to miss with a thumb. */
 export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
   const insets = useSafeAreaInsets()
   const { colors } = useTheme()
@@ -231,13 +190,7 @@ export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
   )
 }
 
-/**
- * The centre action.
- *
- * Lifted above the bar by half its height so it reads as floating, and ringed
- * in the page colour so the bar appears to pass behind it rather than being
- * interrupted by a floating circle.
- */
+/** Half-lifted and ringed in the page colour, so the bar appears to pass behind it. */
 function RecordButton({ label, onPress }: { label: string; onPress: () => void }) {
   const { colors } = useTheme()
 

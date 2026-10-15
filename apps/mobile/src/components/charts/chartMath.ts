@@ -37,11 +37,9 @@ function isValidNumber(n: unknown): n is number {
 }
 
 /**
- * Build downsampled chart points from raw telemetry streams (meters).
- *
- * Grade % = (Δelev / Δdist) × 100, computed from the *raw meter* arrays so
- * unit conversion can't skew it, then smoothed with a centered moving
- * average. Never throws — invalid samples fall back to the previous value.
+ * Builds downsampled chart points from raw telemetry streams (meters).
+ * Grade % = (Δelev / Δdist) × 100, from the raw arrays so unit conversion cannot
+ * skew it. Never throws: a bad sample repeats the last one.
  */
 export function buildChartData(
   distanceData: number[],
@@ -63,7 +61,7 @@ export function buildChartData(
   const n = rawIndex.length
   if (n === 0) return []
 
-  // 1. Convert units (guarded — a single NaN must not kill the chart).
+  // 1. Convert units. One NaN must not kill the chart.
   const distances: number[] = new Array(n)
   const altitudes: number[] = new Array(n)
   const speedsOut: number[] = new Array(n)
@@ -99,7 +97,7 @@ export function buildChartData(
     }
   }
 
-  // 3. Smooth with a centered moving average to kill GPS jitter.
+  // 3. Centered moving average, to kill GPS jitter.
   const grades: number[] = new Array(n)
   for (let j = 0; j < n; j++) {
     let sum = 0

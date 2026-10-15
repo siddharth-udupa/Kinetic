@@ -22,7 +22,6 @@ export default function FloatingMapControls({
 
   return (
     <View className="px-4 mb-3 flex-row justify-between items-end">
-      {/* Left: Map Info Icon */}
       <TouchableOpacity
         onPress={onOpenInfo}
         className="w-10 h-10 rounded-full bg-surface/90 border border-line justify-center items-center shadow-md active:scale-95"
@@ -31,9 +30,7 @@ export default function FloatingMapControls({
         <Ionicons name="information-outline" size={20} color={colors.inkSecondary} />
       </TouchableOpacity>
 
-      {/* Right: Stack of 3 Floating Action Buttons */}
       <View className="flex-col items-center gap-3">
-        {/* Layer Toggle Button */}
         <TouchableOpacity
           onPress={onOpenLayerPicker}
           className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"
@@ -42,7 +39,6 @@ export default function FloatingMapControls({
           <Ionicons name="layers-outline" size={20} color={colors.ink} />
         </TouchableOpacity>
 
-        {/* 3D Mode Toggle Button */}
         <TouchableOpacity
           onPress={onToggle3dMode}
           className={`w-11 h-11 rounded-full border justify-center items-center shadow-lg active:scale-95 ${
@@ -61,7 +57,6 @@ export default function FloatingMapControls({
           </Text>
         </TouchableOpacity>
 
-        {/* Recenter Button */}
         <TouchableOpacity
           onPress={onRecenterLocation}
           className="w-11 h-11 rounded-full bg-surface border border-line justify-center items-center shadow-lg active:scale-95"

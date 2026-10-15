@@ -21,8 +21,7 @@ export default function GpsHeaderBanner({
 }: GpsHeaderBannerProps) {
   const { colors } = useTheme()
 
-  // Each branch picks a whole variant, so the plate, its edge, its label and the
-  // glyph stay on the same status hue instead of being themed individually.
+  // Each branch picks a whole variant, so plate, edge, label and glyph stay on one hue.
   let bannerBg = "bg-success-soft"
   let borderBg = "border-success-text"
   let textColor = "text-success-text"

@@ -16,9 +16,9 @@ import { Text, TouchableOpacity, View } from "react-native";
 import type { User } from "@/lib/auth-client";
 import ActivityMap from "./map/Map";
 
-// `className` on the third-party components used in this card. v5 replaced the
-// global `cssInterop` registration with `styled`, which returns a wrapper rather
-// than mutating the component — so these local names are what the card renders.
+// v5 dropped the global `cssInterop` registration, so third-party components
+// need a `styled` wrapper to take `className`. `styled` returns a new component
+// rather than mutating the original, hence these local names.
 const Image = styled(ExpoImage);
 const Ionicons = styled(ExpoIonicons);
 const MaterialCommunityIcons = styled(ExpoMaterialCommunityIcons);

@@ -14,7 +14,6 @@ export async function createUserPreferences(userId: string) {
 
   if (inserted) return inserted
 
-  // Row already existed — fetch and return it
   const [existing] = await db
     .select()
     .from(userPreferences)

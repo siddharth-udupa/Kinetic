@@ -3,7 +3,7 @@ import type { IconName, PrefValue } from "./primitives"
 
 export type UnitSystem = "metric" | "imperial"
 
-/** Everything a single system choice implies, so one tap fills the rest in. */
+/** What a single system choice implies, so one tap fills the rest in. */
 export const SYSTEM_DEFAULTS: Record<
   UnitSystem,
   Pick<

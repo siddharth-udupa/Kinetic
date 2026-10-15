@@ -3,13 +3,9 @@ declare const process: { env: Record<string, string | undefined> }
 const DEFAULT_TILE_SERVER_URL = "http://localhost:4000"
 
 /**
- * Base URL of the `@repo/tile_provider` service, which serves the
- * `apps/tile_provider/data/south-india.mbtiles` tileset over HTTP.
- *
- * `localhost` only works for a browser on the same machine; a phone on the LAN
- * needs `NEXT_PUBLIC_TILE_SERVER_URL` (web) or `EXPO_PUBLIC_TILE_SERVER_URL`
- * (mobile) pointing at the dev machine. Each `process.env.X` has to be written
- * out in full for Next and Expo to inline it.
+ * Base URL of the tile-provider service. `localhost` works only on the same machine;
+ * a phone needs NEXT_PUBLIC_TILE_SERVER_URL (web) or EXPO_PUBLIC_TILE_SERVER_URL (mobile).
+ * Next and Expo inline only names spelled out in full.
  */
 function readTileServerUrl(): string {
   if (typeof process === "undefined") return DEFAULT_TILE_SERVER_URL

@@ -46,6 +46,7 @@ export default function RecorderScreen() {
 	const [recenterTrigger, setRecenterTrigger] = useState(0);
 
 	const recorderType = activityType === "ride" ? "ride" : "run";
+	// A foreground service keeps tracking alive while the app is off-screen.
 	const {
 		status,
 		locationStatus,
@@ -91,7 +92,6 @@ export default function RecorderScreen() {
 
 	return (
 		<View className="flex-1 bg-ink relative">
-			{/* Fullscreen Map Background */}
 			<View className="absolute inset-0">
 				<MapView
 					providerId={providerId}
@@ -109,7 +109,6 @@ export default function RecorderScreen() {
 				/>
 			</View>
 
-			{/* Top Left Back Button (Floating circular chevron down) */}
 			<TouchableOpacity
 				onPress={handleGoBack}
 				style={{ top: Math.max(insets.top + 8, 16) }}
@@ -119,9 +118,7 @@ export default function RecorderScreen() {
 				<Ionicons name="chevron-down" size={24} color={colors.ink} />
 			</TouchableOpacity>
 
-			{/* Bottom Overlay Container */}
 			<View className="absolute bottom-0 left-0 right-0 z-20 justify-end">
-				{/* Floating Map Action Buttons (Stack above Metrics Card) */}
 				<FloatingMapControls
 					is3dMode={is3dMode}
 					onOpenLayerPicker={() => setIsLayerPickerOpen(true)}
@@ -135,7 +132,6 @@ export default function RecorderScreen() {
 					}
 				/>
 
-				{/* Error Notification Banner */}
 				{errorMsg && (
 					<View className="mx-4 mb-2 bg-danger px-4 py-2.5 rounded-xl border border-danger-hover">
 						<Text className="text-on-accent text-xs font-bold text-center">
@@ -144,7 +140,6 @@ export default function RecorderScreen() {
 					</View>
 				)}
 
-				{/* Live Activity Metrics Card */}
 				<LiveMetricsCard
 					formattedTime={formattedTime}
 					formattedPace={formattedPace}
@@ -159,7 +154,6 @@ export default function RecorderScreen() {
 					onRequestPermissions={requestLocationPermissions}
 				/>
 
-				{/* Curved bottom panel */}
 				<BottomControlPanel
 					status={status}
 					activityType={activityType}
@@ -174,7 +168,6 @@ export default function RecorderScreen() {
 				/>
 			</View>
 
-			{/* Map Layer Switcher Modal */}
 			<Modal
 				visible={isLayerPickerOpen}
 				animationType="slide"
@@ -241,7 +234,6 @@ export default function RecorderScreen() {
 				</View>
 			</Modal>
 
-			{/* Activity Type Selection Modal */}
 			<ActivityTypeModal
 				visible={isActivityTypeModalOpen}
 				activityType={activityType}
@@ -249,7 +241,6 @@ export default function RecorderScreen() {
 				onClose={() => setIsActivityTypeModalOpen(false)}
 			/>
 
-			{/* Route Selection Modal */}
 			<RouteSelectionModal
 				visible={isAddRouteModalOpen}
 				selectedRoute={selectedRoute}

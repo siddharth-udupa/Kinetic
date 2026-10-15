@@ -31,8 +31,7 @@ export function useOnboarding() {
   const [error, setError] = useState<string | null>(null)
 
   /**
-   * Set the username for the current user.
-   * Returns null on success, or an error string on failure.
+   * Set the username. Returns null on success, or an error message on failure.
    */
   async function updateUsername(username: string): Promise<string | null> {
     setError(null)
@@ -58,10 +57,7 @@ export function useOnboarding() {
     }
   }
 
-  /**
-   * Save preference fields (partial update).
-   * Pass { onBoarded: true } to mark onboarding complete.
-   */
+  /** Save preference fields (partial update). Pass { onBoarded: true } to finish onboarding. */
   async function updatePreferences(data: Partial<OnboardingPrefs> & { onBoarded?: boolean }): Promise<string | null> {
     setError(null)
     setIsLoading(true)
@@ -76,9 +72,8 @@ export function useOnboarding() {
         setError(msg)
         return msg
       }
-      // Write through to the device copy. The server returns the full merged
-      // row, so this is authoritative — without it the next launch would read
-      // a stale `onBoarded: false` off disk and replay onboarding.
+      // The server returns the merged row, so the device copy is authoritative here.
+      // Without this the next launch reads a stale `onBoarded: false` off disk.
       if (res.data) {
         await applyServerPreferences(res.data)
       }
@@ -92,12 +87,12 @@ export function useOnboarding() {
     }
   }
 
-  /** Convenience: finalize onboarding with current preferences and mark as onboarded. */
+  /** Save these preferences and mark onboarding complete. */
   async function completeOnboarding(prefs: OnboardingPrefs): Promise<string | null> {
     return updatePreferences({ ...prefs, onBoarded: true })
   }
 
-  /** Skip onboarding — uses all defaults, just flips the flag. */
+  /** Skip onboarding: leave every preference at its default and just flip the flag. */
   async function skipOnboarding(): Promise<string | null> {
     return updatePreferences({ onBoarded: true })
   }

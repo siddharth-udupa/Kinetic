@@ -37,12 +37,7 @@ export const REVIEW_TARGETS = {
   appearance: 4,
 } as const
 
-/**
- * Everything chosen, in one place, each row tappable to go back and change it.
- *
- * Re-reading back a whole screen of small decisions is the last chance to catch
- * a mis-tap, and doing it here costs one glance instead of seven back-taps.
- */
+/** Everything chosen in one place, each row tappable to go back and change it. */
 export default function ReviewSlide({
   prefs,
   username,

@@ -25,14 +25,8 @@ const THEMES: { value: OnboardingPrefs["theme"]; icon: IconName }[] = [
   { value: "dark", icon: "moon-outline" },
 ]
 
-/**
- * Theme and time format, with the theme applied to the running app.
- *
- * Choosing a look is a visual decision, so tapping a card repaints the screen
- * immediately — including this one. `onPreviewTheme` resolves through the same
- * NativeWind scheme everything else reads from, so there is no separate "preview
- * mode" to get out of sync.
- */
+/** Tapping a card repaints the running app, this slide included: `onChange`
+ *  resolves through the same NativeWind scheme everything else reads. */
 export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
   const { colors } = useTheme()
 
@@ -66,7 +60,6 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
         subtitle="Pick a look and the app changes as you tap — so you can see it before you commit."
       />
 
-      {/* Theme */}
       <Text
         className="text-xs font-semibold uppercase tracking-widest mb-3"
         style={{ color: colors.inkMuted }}

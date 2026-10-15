@@ -41,8 +41,7 @@ function buildChartData(
     const alt = metersToElevation(altitudeData[i]!, elevationUnit)
     const spd = speedToMps(speedData[i]!, speedUnit)
 
-    // Grade: (vertical change / horizontal distance) × 100
-    // Both deltas use raw meter values for accuracy
+    // Grade: (vertical change / horizontal distance) × 100, from raw metres
     let grade = 0
     if (prevAlt !== null && prevDist !== null) {
       const dAlt = altitudeData[i]! - altitudeData[i - step]!   // meters
@@ -84,8 +83,8 @@ function ChartTooltip(
 
 
 export default function ActivityChart({ distanceData, altitudeData, speedData, distanceUnit, elevationUnit, speedUnit }: ActivityChartsClientProps) {
-  // Recharts draws into SVG attributes rather than class names, so the axes and
-  // grid need resolved values instead of the `chart-*` utilities.
+  // Recharts draws into SVG attributes, not class names, so the axes and grid
+  // need resolved values rather than the `chart-*` utilities.
   const { colors } = useTheme()
 
   const data = buildChartData(
@@ -102,7 +101,6 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
   const elevLabel = elevationUnit === "feet" ? "ft" : "m"
   return (
     <div className="flex flex-col gap-8 my-10">
-      {/* ── Elevation Chart ── */}
       <div>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 6 }}>
@@ -154,44 +152,6 @@ export default function ActivityChart({ distanceData, altitudeData, speedData, d
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      {/* ── Speed Chart ── */}
-      {/* <div>
-        <h3 className="text-sm font-semibold text-ink mb-3">Speed</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={colors.chartGrid} />
-            <XAxis
-              dataKey="distance"
-              tick={{ fontSize: 11, fill: colors.chartLabel }}
-              tickLine={false}
-              axisLine={{ stroke: colors.chartAxis }}
-              label={{ value: distLabel, position: "insideBottomRight", offset: -4, fontSize: 11, fill: colors.chartLabel }}
-            />
-            <YAxis
-              tick={{ fontSize: 11, fill: colors.chartLabel }}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: speedUnit, position: "insideTopLeft", offset: 10, fontSize: 11, fill: colors.chartLabel }}
-            />
-            <Tooltip
-              content={
-                <ChartTooltip
-                  distLabel={distLabel}
-                  elevLabel={elevLabel}
-                />
-              }
-            />
-            <Line
-              type="monotone"
-              dataKey="speed"
-              stroke={colors.chartLine}
-              strokeWidth={1.5}
-              dot={false}
-              activeDot={{ r: 3, strokeWidth: 1.5, fill: colors.surface, stroke: colors.chartLine }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div> */}
     </div>
   )
 }

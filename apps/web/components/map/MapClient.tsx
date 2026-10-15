@@ -124,8 +124,8 @@ export default function MapClient({
     }
   }, [isStatic])
 
-  /* Repaints the route on a theme switch. Deliberately not a dep of the map-building
-     effect above: that would tear down and re-create the map, losing the camera. */
+  /* Repaints the route on a theme switch. Not a dep of the map-building effect
+     above: that would tear down and re-create the map, losing the camera. */
   useEffect(() => {
     const map = mapRef.current
     if (!map?.getLayer('routeLine')) return

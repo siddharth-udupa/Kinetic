@@ -3,11 +3,7 @@ import { haversineDistance } from "./haversine"
 import { ActivityStreams } from "@repo/types"
 
 /**
- * Builds time-series stream arrays from raw trackpoints.
- * These are stored in the activity_streams DB table and used to power:
- * - Elevation profile charts
- * - Pace-over-time graphs
- * - Split calculations
+ * Builds the time-series arrays stored in `activity_streams`: elevation charts, pace graphs, splits.
  */
 export function buildStreams(points: RawTrackpoint[]): ActivityStreams {
   const time: number[] = []
@@ -23,25 +19,20 @@ export function buildStreams(points: RawTrackpoint[]): ActivityStreams {
   for (let i = 0; i < points.length; i++) {
     const p = points[i]
 
-    // Time
     const t = p.time ? (p.time.getTime() - startTime) / 1000 : i
     time.push(Math.round(t))
 
-    // Distance
     if (i > 0) {
       const prev = points[i - 1]
       cumulativeDistance += haversineDistance(prev.lat, prev.lng, p.lat, p.lng)
     }
     distance.push(Math.round(cumulativeDistance))
 
-    // Elevation
     altitude.push(p.ele ?? 0)
 
-    // Coordinates
     lat.push(p.lat)
     lng.push(p.lng)
 
-    // Speed: use 3-point rolling window to smooth GPS noise
     if (i === 0) {
       speed.push(0)
     } else {

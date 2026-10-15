@@ -53,15 +53,13 @@ export default function ActivityDetailScreen() {
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
 
   // 3 snap positions (Y coordinate offset from top of screen)
-  const EXPANDED_Y = SCREEN_HEIGHT * 0.08  // 8% from top
-  const HALF_Y = SCREEN_HEIGHT * 0.50      // 50% from top
-  const COLLAPSED_Y = SCREEN_HEIGHT * 0.78 // 78% from top
+  const EXPANDED_Y = SCREEN_HEIGHT * 0.08
+  const HALF_Y = SCREEN_HEIGHT * 0.50
+  const COLLAPSED_Y = SCREEN_HEIGHT * 0.78
 
-  // Reanimated bottom sheet shared values
   const translateY = useSharedValue(HALF_Y)
   const contextY = useSharedValue(HALF_Y)
 
-  // Pan gesture for the drag handle and athlete header
   const handlePanGesture = Gesture.Pan()
     .activeOffsetY([-8, 8])
     .failOffsetX([-16, 16])
@@ -84,13 +82,10 @@ export default function ActivityDetailScreen() {
       let targetY = HALF_Y
 
       if (velocityY < -400) {
-        // Fast swipe UP
         targetY = currentY > HALF_Y ? HALF_Y : EXPANDED_Y
       } else if (velocityY > 400) {
-        // Fast swipe DOWN
         targetY = currentY < HALF_Y ? HALF_Y : COLLAPSED_Y
       } else {
-        // Nearest snap point distance calculation
         const distToExpanded = Math.abs(currentY - EXPANDED_Y)
         const distToHalf = Math.abs(currentY - HALF_Y)
         const distToCollapsed = Math.abs(currentY - COLLAPSED_Y)
@@ -202,8 +197,7 @@ export default function ActivityDetailScreen() {
   }
 
   if (isLoading) {
-    /* The activity tier, not the app tier — this screen replaces the whole route and
-       lands on the sheet's surface. */
+    // The activity tier, not the app tier: this screen replaces the route.
     return (
       <View className="flex-1 bg-activity-page items-center justify-center">
         <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
@@ -231,7 +225,6 @@ export default function ActivityDetailScreen() {
     <View className="flex-1 bg-page">
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor="transparent" translucent />
 
-      {/* MAP LAYER (Interactive & Fixed Background Map) */}
       <View className="flex-1">
         <MapView
           encodedPolyline={data.encodedPolyline || undefined}
@@ -246,7 +239,6 @@ export default function ActivityDetailScreen() {
           }}
         />
 
-        {/* Top Header Floating Overlay (Back, Share, Actions) */}
         <ActivityHeaderOverlay
           topInset={insets.top}
           onBack={handleBack}
@@ -254,7 +246,6 @@ export default function ActivityDetailScreen() {
           isDeleting={isDeleting}
         />
 
-        {/* Floating Tile Provider Picker Button */}
         <TileProviderPicker
           currentProviderId={currentProviderId}
           onSelectProvider={(newProvider) => setCurrentProviderId(newProvider)}
@@ -262,7 +253,6 @@ export default function ActivityDetailScreen() {
         />
       </View>
 
-      {/* REANIMATED BOTTOM SHEET MODAL (Fixed Full Height with translateY Transform) */}
       <Animated.View
         style={[
           {
@@ -276,7 +266,6 @@ export default function ActivityDetailScreen() {
         ]}
         className="bg-activity-page border-t border-activity-line rounded-t-[32px] shadow-2xl z-30 overflow-hidden"
       >
-        {/* Drag Handle & Top Athlete Header Region */}
         <GestureDetector gesture={handlePanGesture}>
           <View className="w-full bg-activity-page">
             <View
@@ -304,10 +293,9 @@ export default function ActivityDetailScreen() {
         </GestureDetector>
 
         {/* Keep scrolling inside the sheet without forwarding it to a parent scroll view.
-
-            Background is the class, not an inline `colors.activityPage`: the sticky tab
-            bar below needs an opaque fill, and two sources for one token is how half a
-            screen ends up on the wrong scheme. */}
+            The background is the class, not an inline color: the sticky tab bar below
+            needs an opaque fill, and two sources for one token is how a screen ends up
+            on the wrong scheme. */}
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           bounces={false}

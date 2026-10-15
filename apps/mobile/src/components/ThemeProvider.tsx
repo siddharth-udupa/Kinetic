@@ -4,16 +4,9 @@ import { Appearance, Platform, useColorScheme } from "react-native"
 import { VariableContextProvider } from "nativewind"
 
 /**
- * The app-wide theme, as runtime CSS variables.
- *
- * `packages/shared/theme.css` declares every token, and its `prefers-color-scheme`
- * block follows the system. This provider exists for the one thing that block
- * cannot do: an explicit Light or Dark choice, which on native is `Appearance`
- * and on React Native Web — which implements no setter at all — is a value
- * override, filled in here for the resolved scheme.
- *
- * v4 did this by swapping a `.dark` class on the root. v5 rejects that selector
- * on native, so the swap happens through React context instead.
+ * The app-wide theme, as runtime CSS variables. Native runs Nativewind v5 (Tailwind v4),
+ * where dark mode is `prefers-color-scheme`, the only mode v5 has on native. On web
+ * nothing is emitted until mounted, or the server's inline `style` sticks.
  */
 
 /** `#FC4C02` and friends, in the form `packages/shared/theme.css` declares. */
@@ -57,10 +50,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({
       scheme,
       setScheme: (next) => {
-        // Native has a real system-wide override and `useColorScheme` already
-        // reads it back, so setting it is all that is needed. React Native Web has
-        // no setter at all — the scheme there is only ever `matchMedia`, which the
-        // override above carries on its own.
+        // No setter on React Native Web, where the scheme is only ever `matchMedia`.
         if (Platform.OS !== "web") {
           Appearance.setColorScheme(next === "system" ? "unspecified" : next)
         }
@@ -71,22 +61,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   )
 
   const variables = useMemo(() => {
-    /*
-     * The web build is statically rendered, and the server has no way to know the
-     * athlete's scheme, so it always emits the light palette. Handing React a
-     * different inline `style` on the first client render than the markup it is
-     * hydrating does not get corrected: hydration patches text, not attributes, so
-     * the provider would keep the server's values and every token-driven class
-     * (`bg-surface`, `text-ink`) would stay light for good.
-     *
-     * Emitting nothing until mounted makes both sides agree and lets the second
-     * render set the real palette. Native never had a server pass, so it keeps the
-     * resolved values from the first frame — waiting there would only cost a flash
-     * of the wrong theme on a cold start.
-     */
+    // Nothing until mounted on web, so hydration matches the server. Native has no
+    // server pass, so waiting there would only cost a flash of the wrong theme.
     if (Platform.OS === "web" && !hydrated) return NO_VARIABLES
     return toVariables(getColors(scheme))
   }, [scheme, hydrated])
+
+  // Web fills the values in here, because matchMedia alone cannot express an
+  // explicit Light or Dark choice. Native resolves each token on its own.
 
   return (
     <ThemeContext.Provider value={value}>
@@ -95,14 +77,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   )
 }
 
-/**
- * The resolved scheme, and the setter for the one place that changes it.
- *
- * `useTheme` reads colours rather than the scheme, because that is what almost
- * every call site needs — the literal value for an icon or an SVG. The appearance
- * slide needs the other half: tapping a theme repaints the running app, so it has
- * to be able to set one.
- */
+/** Resolved scheme, plus the setter the appearance slide needs. */
 export function useThemeScheme() {
   const context = useContext(ThemeContext)
   if (!context) throw new Error("useThemeScheme must be used inside <ThemeProvider>")

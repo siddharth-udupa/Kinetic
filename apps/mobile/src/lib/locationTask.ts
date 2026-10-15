@@ -6,9 +6,6 @@ import { COLORS } from "@repo/shared"
 
 export const LOCATION_TASK_NAME = "activity-location-task"
 
-// ---------------------------------------------------------------------------
-// Pub/sub for live GPS updates
-// ---------------------------------------------------------------------------
 type LocationListener = (point: ActivityPoint) => void
 const listeners = new Set<LocationListener>()
 
@@ -20,9 +17,6 @@ export function subscribeToLocationUpdates(listener: LocationListener) {
 
 export { isValidLocationPoint }
 
-// ---------------------------------------------------------------------------
-// Native modules (optional — guarded by try/catch)
-// ---------------------------------------------------------------------------
 let TaskManager: typeof import("expo-task-manager") | null = null
 let Location: typeof import("expo-location") | null = null
 
@@ -30,7 +24,8 @@ try {
   TaskManager = require("expo-task-manager")
   Location = require("expo-location")
 } catch {
-  // Native modules unavailable — background tracking won't work
+  // expo-location is an optional native module. Fail soft so the web build
+  // works without it and foreground tracking still runs.
 }
 
 /** Convert raw location coords into an ActivityPoint. */
@@ -45,10 +40,6 @@ function coordsToPoint(coords: any, timestamp: number): ActivityPoint {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Background location lifecycle
-// ---------------------------------------------------------------------------
-
 /** Stop any stale/orphaned background location task on startup. */
 export async function cleanupStaleLocationTasks(): Promise<void> {
   if (!Location?.hasStartedLocationUpdatesAsync) return
@@ -58,16 +49,16 @@ export async function cleanupStaleLocationTasks(): Promise<void> {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
     }
   } catch {
-    // Silently ignore — cleanup is best-effort
+    // Silently ignored: a stale task is not worth failing startup over.
   }
 }
 
-/** Start background location tracking with Android foreground service. */
+/** Start background location tracking. Needs a registered foreground task: Android runs it in the
+ *  foreground service configured below, iOS in the background location mode. */
 export async function startBackgroundLocationTask(): Promise<boolean> {
   if (!Location?.requestBackgroundPermissionsAsync) return false
 
   try {
-    // Check TaskManager availability
     const isTaskAvailable = typeof (Location as any)?.isTaskManagerAvailableAsync === "function"
       ? await (Location as any).isTaskManagerAvailableAsync()
       : true
@@ -119,9 +110,6 @@ export async function stopBackgroundLocationTask(): Promise<void> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Background task definition
-// ---------------------------------------------------------------------------
 if (TaskManager?.defineTask) {
   try {
     TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
@@ -155,6 +143,7 @@ if (TaskManager?.defineTask) {
       }
     })
   } catch {
-    // defineTask registration failed — background tracking unavailable
+    // A repeat registration throws here, so this only ever fails once.
+    // Background tracking is unavailable either way.
   }
 }

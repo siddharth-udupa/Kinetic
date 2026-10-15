@@ -87,12 +87,9 @@ export default function UsernameSlide({
       />
 
       {/*
-        Live preview of the finished profile.
-
-        Deliberately built to not look like the field below it: flat muted
-        surface with no border, a leading avatar instead of an `@` prefix, and
-        a caption. An earlier version was a bordered box with a leading glyph,
-        which users read as a second input and tried to tap.
+        Live preview of the finished profile. Built to not look like the field
+        below: flat surface, no border, leading avatar. A bordered box with a
+        leading glyph read as a second input, and users tried to tap it.
       */}
       <View
         className="rounded-2xl px-4 py-3.5 mb-6"
@@ -133,7 +130,6 @@ export default function UsernameSlide({
         </View>
       </View>
 
-      {/* Input */}
       <View
         className="flex-row items-center rounded-xl border px-4 h-14"
         style={{

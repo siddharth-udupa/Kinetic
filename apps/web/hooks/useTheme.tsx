@@ -11,17 +11,8 @@ import {
   type ReactNode,
 } from "react"
 
-/**
- * The app-wide theme: which scheme is active, and the palette it resolves to.
- *
- * The colour classes come from `packages/shared/theme.css`; the values here are
- * the same tokens, read as data for the places a class cannot reach. This module
- * owns only the React plumbing.
- *
- * Colours reach the DOM as `--color-*` custom properties on a wrapper rather than
- * as `dark:` classes, which is what lets the onboarding appearance slide repaint
- * the running screen the instant a theme is tapped.
- */
+// Colours reach the DOM as `--color-*` custom properties on a wrapper, not `dark:`
+// classes, so the appearance preview can repaint the screen live.
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 
@@ -42,8 +33,8 @@ function toVariables(colors: ColorTokens, isDark: boolean): CSSProperties {
   return variables as CSSProperties
 }
 
-/* `useSyncExternalStore` reads the snapshot during render, so the first client paint
-   agrees with the server HTML instead of correcting a frame later. */
+/* Reading the snapshot during render makes the first client paint match the server
+   HTML, instead of correcting a frame later. */
 function subscribeToSystemScheme(onChange: () => void) {
   const query = window.matchMedia(DARK_QUERY)
   query.addEventListener("change", onChange)
@@ -54,13 +45,7 @@ function getSystemScheme() {
   return window.matchMedia(DARK_QUERY).matches
 }
 
-/**
- * What the server rendered with, as `isDark`.
- *
- * Always false: the server cannot know the athlete's scheme on a first visit. Holding the
- * first client render on this value is what keeps hydration mismatch-free — once the
- * `ob-theme` cookie exists the server renders the right scheme itself and this is bypassed.
- */
+// The server cannot read the OS scheme, so it always reports light.
 function getServerScheme() {
   return false
 }
@@ -84,11 +69,7 @@ export function ThemeProvider({
   children: ReactNode
   initialScheme?: ThemeScheme
 }) {
-  /*
-   * Seeded from the stored preference rather than hardcoded to "system": a returning athlete
-   * whose theme is already dark would otherwise land on a light screen with the Dark card
-   * showing as chosen — the control claiming a selection the page is not rendering.
-   */
+  // Seeded from the stored preference, so the picker shows what the page renders.
   const [scheme, setScheme] = useState<ThemeScheme>(initialScheme)
   const systemIsDark = useSyncExternalStore(subscribeToSystemScheme, getSystemScheme, getServerScheme)
 

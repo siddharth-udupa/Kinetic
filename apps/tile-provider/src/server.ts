@@ -9,9 +9,8 @@ type ServerOptions = {
 }
 
 /**
- * Cpeak's convention for an HTTP failure is a `status` on the thrown value —
- * `throw { status: 404, message: "..." }` — so that is what a route can rely
- * on. Anything thrown as a plain `Error` has no status and is unexpected.
+ * Cpeak signals an HTTP failure with a `status` on the thrown value:
+ * `throw { status: 404 }`. A plain `Error` carries no status.
  */
 function statusOf(error: unknown): number | undefined {
   if (typeof error !== "object" || error === null) return undefined
@@ -29,12 +28,9 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * Assembles the HTTP layer around an open tileset.
- *
- * Cpeak has no plugin system, so route modules are plain functions that
- * register themselves on the app passed in. Cpeak types a route's handler as a
- * union of function types, which leaves an inline arrow untyped, so those
- * modules annotate their handlers as `Handler`.
+ * Assembles the HTTP layer around an open tileset. Cpeak has no plugins, so route
+ * modules are plain functions that register themselves on the app. Each annotates
+ * its handler `Handler` because Cpeak types one as a union.
  */
 export function buildServer({ db }: ServerOptions): Cpeak {
   const app = cpeak()
@@ -42,8 +38,7 @@ export function buildServer({ db }: ServerOptions): Cpeak {
   app.beforeEach(cors())
 
   app.handleErr((error, _request, response) => {
-    // Cpeak drops the socket before calling us once bytes are out, so there is
-    // no response left to write to.
+    // Cpeak drops the socket once bytes are out, so there is no response left.
     if (response.headersSent) return
 
     if (error instanceof ZodError) {

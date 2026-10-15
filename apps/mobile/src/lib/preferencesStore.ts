@@ -7,14 +7,10 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL!
 
 const STORAGE_KEY_PREFIX = "@strava_clone_preferences_v1:"
 
-// How long the on-device copy is trusted before we quietly re-sync.
+// How long the cached copy is trusted before re-syncing with the server.
 const RESYNC_INTERVAL_MS = 5 * 60 * 1000
 
-/**
- * Mirrors the column defaults in `@repo/db` `userPreferences`. Used only as a
- * render-time fallback before a real row exists - it is never persisted, so
- * the server remains the source of truth for actual values.
- */
+/** Render-time fallback only. Never saved - the server owns the real values. */
 export const DEFAULT_PREFERENCES: PreferencesType = {
   userId: "",
   onBoarded: false,
@@ -41,8 +37,7 @@ let state: PreferencesState = { status: "idle", userId: null, preferences: null 
 const listeners = new Set<() => void>()
 
 function setState(next: PreferencesState) {
-  // Guard on value equality so no-op updates (a sign-out that was already
-  // signed out, a re-render with the same row) don't churn subscribers.
+  // Skips no-op updates so subscribers are not churned.
   if (
     state.status === next.status &&
     state.userId === next.userId &&
@@ -67,11 +62,7 @@ function storageKey(userId: string) {
   return `${STORAGE_KEY_PREFIX}${userId}`
 }
 
-/**
- * Round-trip a preferences row through JSON. `updatedAt` is a `Date` on the
- * type but a string once serialized, so it is restored here to keep the shape
- * honest for anything that reads it off the store.
- */
+/** `updatedAt` comes back from JSON as a string, so it is turned back into a Date. */
 function normalize(raw: unknown): PreferencesType | null {
   if (!raw || typeof raw !== "object") return null
   const prefs = raw as Partial<PreferencesType>
@@ -110,32 +101,25 @@ let inFlight: { userId: string; promise: Promise<PreferencesType | null> } | nul
 let lastSyncedAt = 0
 
 /**
- * Adopt a row from the server as the new truth and mirror it to disk. This is
- * the write-through path every preference mutation funnels through, so the
- * device copy is never behind what the user just changed.
+ * Adopt a server row as the new truth. Every mutation goes through here, so the
+ * device copy never lags.
  */
 export async function applyServerPreferences(prefs: PreferencesType): Promise<void> {
   const normalized = normalize(prefs)
   if (!normalized) return
 
-  // A response that lands after a sign-out must not be published into the
-  // (now empty) snapshot, but persisting it is still correct.
+  // A response that lands after a sign-out is not published, but still saved.
   if (state.userId === normalized.userId) {
     setState({ status: "ready", userId: normalized.userId, preferences: normalized })
-    // The server just answered, so the copy is fresh as of now. Marking it
-    // here stops the very next mount from immediately re-fetching what the
-    // write-through already established.
+    // Marks the cached copy fresh, so the next mount does not re-fetch it.
     lastSyncedAt = Date.now()
   }
   await writeStoredPreferences(normalized)
 }
 
 /**
- * Re-read preferences from the server and refresh the device copy.
- *
- * Never throws: on failure the existing copy stays authoritative, so a
- * returning user keeps working offline and a dropped connection can never
- * bounce them back into onboarding.
+ * Re-read from the server. Never throws: on failure the cached copy stays authoritative,
+ * so onboarding cannot replay.
  */
 export async function refreshPreferences(
   options: { force?: boolean } = {},
@@ -161,22 +145,16 @@ export async function refreshPreferences(
 }
 
 /**
- * Make preferences available for `userId`, preferring the copy already on the
- * device.
- *
- * This is what the onboarding gate waits on. When a copy exists the answer is
- * ready as soon as disk has been read — no request. Only a device that has
- * never seen this account has to wait on the network, and that wait is exactly
- * the "first sign in" case we can't answer offline.
+ * Make preferences available for `userId`, preferring the device copy.
+ * The onboarding gate waits on this.
  */
 export async function hydratePreferences(userId: string): Promise<PreferencesType | null> {
   if (inFlight?.userId === userId) return inFlight.promise
   if (state.userId === userId && state.status === "ready") return state.preferences
 
   if (state.userId !== userId) {
-    // A different account is becoming active. Clear first, then read: dropping
-    // the snapshot before the await means no screen can render the previous
-    // account's preferences in the meantime.
+    // A different account is becoming active. Clear first, then read: no screen
+    // can render the previous account's preferences while disk is being read.
     inFlight = null
     setState({ status: "loading", userId, preferences: null })
   }
@@ -188,16 +166,15 @@ export async function hydratePreferences(userId: string): Promise<PreferencesTyp
 
     if (local) {
       setState({ status: "ready", userId, preferences: local })
-      // Keep the copy honest if it changed on another device, without ever
-      // holding up the gate on the value we just read.
+      // Catches changes made on another device, without holding up the gate.
       void refreshPreferences()
       return local
     }
 
     const remote = await refreshPreferences({ force: true })
     if (state.userId !== userId) return null
-    // `remote` is null if the network failed; we report "ready" anyway so the
-    // gate falls through to onboarding rather than spinning forever.
+    // `remote` is null if the network failed. Status is still "ready", so the gate
+    // falls through to onboarding instead of spinning forever.
     setState({ status: "ready", userId, preferences: remote })
     return remote
   })()
@@ -207,9 +184,7 @@ export async function hydratePreferences(userId: string): Promise<PreferencesTyp
 }
 
 /**
- * Drop the in-memory snapshot on sign-out. The per-user copy on disk is kept:
- * it is namespaced by user id so it is safe, and it lets a returning user skip
- * the network entirely on the next launch.
+ * Drop the in-memory snapshot on sign-out. The per-user copy on disk is kept.
  */
 export function clearPreferences(): void {
   inFlight = null
@@ -217,13 +192,8 @@ export function clearPreferences(): void {
   setState({ status: "idle", userId: null, preferences: null })
 }
 
-/**
- * Read the current user's preferences, hydrating them on mount.
- *
- * Returns `status: "ready"` once preferences are trustworthy. Consumers that
- * only need units for rendering can use `preferences ?? DEFAULT_PREFERENCES`
- * and re-render when it changes.
- */
+/** Read the user's preferences, hydrating on mount. `status: "ready"` means the values are
+ *  trustworthy; consumers needing only units can use DEFAULT_PREFERENCES. */
 export function usePreferences(): PreferencesState {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
   const { data: session } = useSession()

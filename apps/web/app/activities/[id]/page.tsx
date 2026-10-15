@@ -40,10 +40,8 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
       {data ? (
         <div className="max-w-300 mx-auto mt-10 flex gap-8 px-4">
 
-          {/* Left Sidebar Menu */}
           <div className="w-46 h-46 shrink-0 flex flex-col">
-            {/* Inactive nav sits at ink-secondary, not the mapping's literal ink — at full ink the
-                hover step would collapse into a no-op and the links lose their affordance. */}
+            {/* Inactive links use ink-secondary so the hover step to ink stays visible. */}
             <div className="flex flex-col mb-6">
               <Link
                 href={`/activities/${activityId}`}
@@ -67,7 +65,6 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
               </Link>
             </div>
 
-            {/* Bottom Actions */}
             <div className="flex border border-line rounded-sm mt-auto w-max">
               <button className="px-4 py-2 hover:bg-surface-muted-hover border-r border-line flex items-center justify-center">
                 <svg className="w-4 h-4 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -78,10 +75,8 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
             </div>
           </div>
 
-          {/* Main Activity Details */}
           <div className="flex-1 bg-surface border border-line shadow-sm mb-10">
 
-            {/* Header */}
             <div className="flex justify-between items-center bg-surface-muted-hover border-b border-line px-6 py-3">
               <h1 className="text-xl text-ink"> {data.user.name} - {data.type}</h1>
               <div className="flex items-center  text-ink-muted border border-line-strong rounded bg-surface overflow-hidden h-7">
@@ -96,15 +91,11 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
               </div>
             </div>
 
-            {/* Content Body */}
             <div className="p-6">
 
-              {/* Top Section (Info & Stats) */}
               <div className="flex flex-col md:flex-row gap-6">
 
-                {/* Left Info */}
                 <div className="flex-1 flex gap-4">
-                  {/* Avatar/Graphic */}
                   <div className="w-28 h-28 shrink-0 rounded-full overflow-hidden flex items-center justify-center border border-line">
                     <Image
                       width={112}
@@ -126,7 +117,6 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
                   </div>
                 </div>
 
-                {/* Right Stats */}
                 <div className="w-80 shrink-0">
                   <div className="flex justify-between mb-4">
                     <div>
@@ -172,10 +162,8 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
 
-              {/* Divider line */}
               <div className="border-t border-line my-6"></div>
 
-              {/* Map */}
               {
                 data.encodedPolyline &&
                 <div className="w-full h-100">
@@ -185,7 +173,6 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
 
             </div>
 
-            {/* Charts */}
             <div className="flex-1 mx-6">
               {data.streams && data.streams.length > 0 && (
                 <>

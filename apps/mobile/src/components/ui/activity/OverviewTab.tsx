@@ -104,7 +104,6 @@ export default function ActivityOverviewTab({
         </View>
       </View>
 
-      {/* Primary distance metric */}
       <View className="bg-accent rounded-[26px] p-5 mb-3 overflow-hidden">
         <View className="absolute -right-8 -top-12 w-36 h-36 rounded-full border-[18px] border-on-accent/10" />
         <View className="absolute -right-1 -bottom-16 w-40 h-40 rounded-full border-[20px] border-on-accent/10" />
@@ -126,7 +125,6 @@ export default function ActivityOverviewTab({
         </View>
       </View>
 
-      {/* Time and pace */}
       <View className="flex-row mb-4">
         <View className="flex-1 bg-activity-card border border-activity-line rounded-2xl p-4 mr-2">
           <View className="flex-row items-center mb-3">
@@ -153,7 +151,6 @@ export default function ActivityOverviewTab({
         </View>
       </View>
 
-      {/* Detailed metrics */}
       <View className="bg-activity-panel border border-activity-line rounded-2xl px-3 pt-3 mb-4">
         <View className="flex-row items-center justify-between px-1 pb-3">
           <Text className="text-activity-ink font-black text-base">Performance metrics</Text>
@@ -193,7 +190,6 @@ export default function ActivityOverviewTab({
         </View>
       </View>
 
-      {/* Session facts */}
       <View className="bg-activity-panel border border-activity-line rounded-2xl px-4">
         <View className="flex-row items-center py-4 border-b border-activity-line">
           <View className="w-8 h-8 rounded-xl bg-info-soft items-center justify-center mr-3">

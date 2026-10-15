@@ -7,10 +7,7 @@ import type { DistanceUnit, ElevationUnit, SpeedUnit } from "@repo/units"
 
 const ActivityAnalysisTab = React.lazy(() => import("./AnalysisTab"))
 
-/**
- * The boundary itself is a class, so the palette is read here and the panel is
- * handed down rather than calling the hook from `render()`.
- */
+/** The boundary is a class, so the palette is read here and handed down. */
 function ChartErrorPanel() {
   const { colors } = useTheme()
 

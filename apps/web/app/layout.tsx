@@ -27,9 +27,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  /* The browser's answer to the theme question, recorded in a cookie by the script
-     below. Without it every server component guesses light, and the page repaints dark
-     only after React hydrates. */
+  /* The browser's answer to the theme question, stored in a cookie by the script
+     below. Without it every server render guesses light. */
   const schemeHint = readSchemeHint((await cookies()).get(THEME_COOKIE)?.value);
 
   return (
@@ -38,24 +37,20 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Paints the canvas in the athlete's scheme before first paint. A stylesheet
-            rather than a script, so nothing here mutates a node React hydrates. */}
+        {/* Paints the canvas in the right scheme before first paint. A stylesheet, so
+            nothing here mutates a node React hydrates. */}
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: build-time constant, no user input */}
         <style dangerouslySetInnerHTML={{ __html: themeInitStyle() }} />
-        {/* Blocking on purpose: the job is to run before the first paint. Inlined because an
-            extra request would land after the paint this exists to prevent — the value
-            is a build-time constant, with no user input in it. */}
+        {/* Blocking on purpose: it has to run before first paint, so it cannot wait
+            on a request. */}
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: build-time constant, no user input */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript() }} />
       </head>
-    {/* `min-h-full`, not `h-full`: a definite height here makes the column clip
-        any page taller than the viewport instead of letting the document scroll.
-        Full-height pages take a viewport-based height of their own — see the
-        onboarding flow and `app/maps`. */}
+    {/* `min-h-full`, not `h-full`: a definite height clips any page taller than the
+        viewport. Full-height pages take a viewport-based height of their own. */}
     <body className="flex min-h-full flex-col">
-      {/* `AppShell` resolves the theme once for the whole column and publishes it
-          as `--color-*` custom properties, so the header and every page below it are
-          drawn from one palette instead of each surface carrying its own greys. */}
+      {/* `AppShell` resolves the theme once and publishes it as `--color-*`, so the
+          header and every page below draw from one palette. */}
       <AppShell scheme={schemeHint}>
         <Navbar />
         {children}

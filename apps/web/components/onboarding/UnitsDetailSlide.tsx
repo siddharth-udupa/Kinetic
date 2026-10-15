@@ -28,13 +28,7 @@ type Props = {
   onNext: () => void
 }
 
-/**
- * The opt-in refinement pass.
- *
- * Everything is already filled in from the previous screen, so this is a slide
- * you can walk straight past. Each unit is a small labelled control rather than
- * another full-width block, which is what made the original screen unreadable.
- */
+/** The opt-in refinement pass. Everything is already filled in. */
 export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
   const { colors } = useTheme()
   const system: UnitSystem = prefs.distanceUnit === "imperial" ? "imperial" : "metric"
@@ -69,7 +63,6 @@ export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
         subtitle="Already set from your choice. Change anything that doesn't suit you — or leave it all as it is."
       />
 
-      {/* What the previous decision produced. */}
       <div
         className="mb-6 rounded-2xl border px-4 py-3.5"
         style={{ borderColor: colors.line, backgroundColor: colors.surface }}
@@ -97,8 +90,8 @@ export default function UnitsDetailSlide({ prefs, onChange, onNext }: Props) {
         )}
       </div>
 
-      {/* `K` is pinned at each call site: left to inference it widens to the
-          union of every pref, and the row would accept any unit for any field. */}
+      {/* `K` is pinned here: left to inference it widens to the union of every
+          pref and the row would accept any unit for any field. */}
       <SettingRow<"elevationUnit">
         label={ELEVATION.label}
         icon={ELEVATION.icon}

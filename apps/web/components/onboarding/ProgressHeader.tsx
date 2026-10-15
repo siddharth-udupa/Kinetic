@@ -7,21 +7,11 @@ type Props = {
   /** 1-based. */
   step: number
   total: number
-  /**
-   * Omit to hide the skip action. The welcome and username slides pass
-   * nothing, so the row keeps its height and the layout never jumps as the
-   * user advances.
-   */
+  /** Omit to hide the skip action. The row keeps its height, so layout never jumps. */
   onSkip?: () => void
 }
 
-/**
- * Single source of "how far along am I".
- *
- * One continuous bar rather than a bar plus a dot strip: the old screen showed
- * both, which said the same thing twice. A minimum width keeps the first step
- * from reading as an empty track.
- */
+/** One continuous bar, not a bar plus a dot strip. A minimum width keeps step one from reading as empty. */
 export default function ProgressHeader({ step, total, onSkip }: Props) {
   const { colors } = useTheme()
   const ChevronForward = ICONS["chevron-forward"]

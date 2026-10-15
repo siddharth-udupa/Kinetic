@@ -25,14 +25,11 @@ import { buildChartData } from "./chartMath"
 export { buildChartData } from "./chartMath"
 export type { ChartPoint } from "./chartMath"
 
-// AnimatedTextInput lets us update displayed text entirely on the UI thread
-// via useAnimatedProps — no React re-renders, no JS-thread setState calls.
+// Reads the text on the UI thread via useAnimatedProps: no re-renders, no JS-thread setState.
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
-// Accent line, soft fill, hairline grids tuned for small mobile screens. Skia and
-// Victory take literal colours rather than classes, so these are read off the
-// shared palette per render instead of hardcoded here.
+// Victory and Skia take literal colours, not classes, so these come off the shared
+// palette per render rather than being hardcoded here.
 const CHART_HINT = "Touch and drag on the chart"
 
 function chartPalette(colors: ColorTokens) {
@@ -89,9 +86,8 @@ export default function ActivityChart({
   const distSuffix = distanceUnit === "imperial" ? "mi" : "km"
   const elevSuffix = elevationUnit === "feet" ? "ft" : "m"
 
-  // Nearest-point lookup runs on the UI thread. `data` holds plain numbers
-  // only, so capturing it in the worklet is safe; it refreshes on every
-  // render where the memoised array changes.
+  // Nearest-point lookup on the UI thread. `data` holds plain numbers only, so
+  // capturing it in the worklet is safe.
   const distText = useDerivedValue(() => {
     "worklet"
     if (!state.isActive.value || data.length === 0) return "-"
@@ -155,7 +151,7 @@ export default function ActivityChart({
 
   return (
     <View className="my-4 w-full">
-      {/* Readout card — values update on the UI thread, zero React re-renders */}
+      {/* Values update on the UI thread, zero React re-renders */}
       <View className="flex-row items-stretch rounded-xl border border-activity-line bg-activity-card px-3 py-2">
         <Stat label="DIST" animatedProps={distProps} flex />
         <Divider />
@@ -167,9 +163,8 @@ export default function ActivityChart({
         {CHART.hint}
       </Text>
 
-      {/* Explicit numeric height so Victory's onLayout fires reliably on
-          mobile — className alone won't propagate layout size into the Skia
-          canvas and the chart would render nothing. */}
+      {/* Explicit height: className alone never reaches the Skia canvas, and the
+          chart would render nothing. */}
       <View className="w-full" style={{ height: 220 }}>
         <CartesianChart
           data={data}
@@ -218,8 +213,8 @@ export default function ActivityChart({
                 connectMissingData={false}
                 animate={{ type: "timing", duration: 300 }}
               />
-              {/* Always mounted — visibility is driven by animated opacity so
-                  we never treat a SharedValue as a React boolean. */}
+              {/* Always mounted: visibility is animated opacity, so a SharedValue never
+                  becomes a React boolean. */}
               <ToolTip
                 x={state.x.position}
                 y={state.y.altitude.position}
@@ -235,7 +230,6 @@ export default function ActivityChart({
   )
 }
 
-// ── Readout stat cell ─────────────────────────────────────────────────────────
 function Stat({
   label,
   animatedProps,
@@ -271,9 +265,7 @@ function Divider() {
   return <View className="mx-2 w-px self-stretch bg-activity-line" />
 }
 
-// ── ToolTip ───────────────────────────────────────────────────────────────────
-// Receives Victory's SharedValue positions directly; show/hide runs entirely
-// on the UI thread via a derived opacity.
+// Takes Victory's SharedValue positions directly; show/hide runs on the UI thread.
 type ToolTipProps = {
   x: SharedValue<number>
   y: SharedValue<number>

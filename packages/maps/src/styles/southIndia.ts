@@ -95,7 +95,6 @@ const labelHalo = {
 }
 
 export const southIndiaLayers: VectorTileLayer[] = [
-  // Base
   {
     id: "background",
     type: "background",
@@ -105,7 +104,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Water
   {
     id: "water",
     type: "fill",
@@ -136,7 +134,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Buildings
   {
     id: "building",
     type: "fill",
@@ -157,7 +154,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Walking / cycling paths
   {
     id: "road-path",
     type: "line",
@@ -189,7 +185,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Minor roads
   {
     id: "road-minor",
     type: "line",
@@ -214,7 +209,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Major roads
   {
     id: "road-major",
     type: "line",
@@ -242,7 +236,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Major road casing
   {
     id: "road-major-casing",
     type: "line",
@@ -276,7 +269,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Road names
   {
     id: "road-labels",
     type: "symbol",
@@ -308,7 +300,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Cities
   {
     id: "city-labels",
     type: "symbol",
@@ -340,7 +331,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Towns
   {
     id: "town-labels",
     type: "symbol",
@@ -371,7 +361,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // Villages
   {
     id: "village-labels",
     type: "symbol",
@@ -401,7 +390,6 @@ export const southIndiaLayers: VectorTileLayer[] = [
     },
   },
 
-  // POIs
   {
     id: "poi-labels",
     type: "symbol",

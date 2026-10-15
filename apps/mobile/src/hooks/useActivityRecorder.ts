@@ -20,19 +20,13 @@ import {
 import type { ActivitySummary, ActivityPoint, ActivityTypes } from "@repo/types"
 import { authClient } from "../lib/auth-client"
 
-// ---------------------------------------------------------------------------
-// Expo-location (optional native module)
-// ---------------------------------------------------------------------------
 let Location: typeof import("expo-location") | null = null
 try {
   Location = require("expo-location")
 } catch {
-  // Native module unavailable — will fall back to web geolocation
+  // expo-location is an optional native module. Without it, web geolocation is used.
 }
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 export type RecorderState = "idle" | "recording" | "paused" | "finished"
 export type LocationStatus = "acquiring" | "acquired" | "disabled" | "denied"
 
@@ -61,10 +55,6 @@ const INITIAL_DATA: RecorderData = {
   isBackgroundActive: false,
   errorMsg: null,
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 /** Convert raw coords (from expo-location or web geolocation) into an ActivityPoint. */
 function coordsToPoint(coords: { latitude: number; longitude: number; altitude?: number | null; speed?: number | null; accuracy?: number | null }, timestamp: number): ActivityPoint {
@@ -103,9 +93,6 @@ const isLocationAvailable = hasExpoLocation || hasWebGeolocation
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL!
 
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
 export function useActivityRecorder(activityType: ActivityTypes) {
   const [data, setData] = useState<RecorderData>(INITIAL_DATA)
   const sessionRef = useRef<ActiveSession | null>(null)
@@ -113,13 +100,11 @@ export function useActivityRecorder(activityType: ActivityTypes) {
   const fgSubRef = useRef<{ remove: () => void } | null>(null)
   const webWatchRef = useRef<number | null>(null)
 
-  // ---- Request foreground & background location permissions on open ----
   const requestLocationPermissions = useCallback(async (): Promise<boolean> => {
     setData((prev) => ({ ...prev, locationStatus: "acquiring", errorMsg: null }))
 
     if (hasExpoLocation && Location) {
       try {
-        // Check if device location services are enabled
         const checkEnabled = (Location as any).hasServicesEnabledAsync || (Location as any).isLocationEnabledAsync
         if (typeof checkEnabled === "function") {
           const isEnabled = await checkEnabled.call(Location)
@@ -133,7 +118,6 @@ export function useActivityRecorder(activityType: ActivityTypes) {
           }
         }
 
-        // Request Foreground Permission
         const fgPerm = await Location.requestForegroundPermissionsAsync()
         if (fgPerm.status !== "granted") {
           setData((prev) => ({
@@ -144,16 +128,14 @@ export function useActivityRecorder(activityType: ActivityTypes) {
           return false
         }
 
-        // Request Background Permission
         if (typeof Location.requestBackgroundPermissionsAsync === "function") {
           try {
             await Location.requestBackgroundPermissionsAsync()
           } catch {
-            // Ignore background permission prompt rejection if foreground is granted
+            // A rejected background prompt is fine: foreground is granted.
           }
         }
 
-        // Acquire initial current position
         const initialPos = await getCurrentPosition()
         setData((prev) => ({
           ...prev,
@@ -206,12 +188,10 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     }
   }, [])
 
-  // ---- Run permission check and initial position acquisition on mount ----
   useEffect(() => {
     requestLocationPermissions()
   }, [requestLocationPermissions])
 
-  // ---- Sync all UI state from a session object ----
   const syncFromSession = useCallback((session: ActiveSession) => {
     sessionRef.current = session
     setData((prev) => ({
@@ -226,7 +206,7 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     }))
   }, [])
 
-  // ---- Hydrate from disk on mount ----
+  // The background task may have appended points while the app was closed.
   useEffect(() => {
     let mounted = true
     getActiveSession().then((session) => {
@@ -235,7 +215,6 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     return () => { mounted = false }
   }, [syncFromSession])
 
-  // ---- Re-sync when app returns to foreground ----
   useEffect(() => {
     const onAppState = async (state: AppStateStatus) => {
       if (state === "active") {
@@ -247,7 +226,6 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     return () => sub.remove()
   }, [syncFromSession])
 
-  // ---- Elapsed-time ticker (1 s) ----
   useEffect(() => {
     if (data.status !== "recording" && data.status !== "paused") {
       if (timerRef.current) clearInterval(timerRef.current)
@@ -262,7 +240,6 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [data.status])
 
-  // ---- Handle a new GPS point from any source ----
   const handleLivePoint = useCallback((point: ActivityPoint) => {
     if (!isValidLocationPoint(point)) return
 
@@ -275,7 +252,7 @@ export function useActivityRecorder(activityType: ActivityTypes) {
       maxSpeedMps: point.speed !== null && point.speed >= 0 ? Math.max(prev.maxSpeedMps, point.speed) : prev.maxSpeedMps,
     }))
 
-    // Keep session ref fresh for the timer
+    // The background task may have appended points; the ticker reads this ref.
     getActiveSession().then((session) => {
       if (session) {
         sessionRef.current = session
@@ -284,9 +261,7 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     })
   }, [])
 
-  // ---- Location subscription management ----
   useEffect(() => {
-    // Clean up watchers when not recording
     if (data.status !== "recording") {
       if (fgSubRef.current) { fgSubRef.current.remove(); fgSubRef.current = null }
       if (webWatchRef.current !== null && hasWebGeolocation) {
@@ -296,15 +271,13 @@ export function useActivityRecorder(activityType: ActivityTypes) {
       return
     }
 
-    // Always listen to background-task events for live UI
+    // The background task is what keeps the UI live while the app is backgrounded.
     const unsubBg = subscribeToLocationUpdates(handleLivePoint)
 
-    // If background tracking is active, that's all we need
     if (data.isBackgroundActive) {
       return () => unsubBg()
     }
 
-    // Foreground fallback: start a watcher
     if (Location && typeof Location.watchPositionAsync === "function") {
       Location.watchPositionAsync(
         { accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 1 },
@@ -339,28 +312,21 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     }
   }, [data.status, data.isBackgroundActive, handleLivePoint])
 
-  // ===========================================================================
-  // Actions
-  // ===========================================================================
-
   const startRecording = async () => {
     try {
       setData((prev) => ({ ...prev, errorMsg: null }))
 
-      // Verify location permissions
       const granted = await requestLocationPermissions()
       if (!granted) return
 
-      // Attempt background tracking
+      // Background tracking is best-effort: recording proceeds without it.
       let bgActive = false
       try { bgActive = await startBackgroundLocationTask() } catch { }
 
-      // Create session & start recording
       const session = await createActiveSession(activityType, bgActive)
       sessionRef.current = session
       setData((prev) => ({ ...prev, status: "recording", isBackgroundActive: bgActive }))
 
-      // Grab initial position
       const initialPoint = await getCurrentPosition()
       if (initialPoint) {
         handleLivePoint(initialPoint)
@@ -468,9 +434,6 @@ export function useActivityRecorder(activityType: ActivityTypes) {
     return saveRecordedActivity()
   }
 
-  // ===========================================================================
-  // Public API
-  // ===========================================================================
   return {
     status: data.status,
     locationStatus: data.locationStatus,

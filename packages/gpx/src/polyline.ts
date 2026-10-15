@@ -1,14 +1,6 @@
 /**
- * Encodes a sequence of coordinates into a Google Polyline string.
- *
- * Algorithm:
- * 1. Multiply each value by 1e5 and round → converts to integer
- * 2. Take the difference from the previous point (delta encoding)
- * 3. Left-shift by 1, flip bits if negative (zigzag encoding)
- * 4. Split into 5-bit chunks, set continuation bit on all but last
- * 5. Add 63 (ASCII offset) and encode as a character
- *
- * Usable in: Web (Leaflet/Mapbox decoding), React Native (react-native-maps)
+ * Encodes coordinates as a Google Polyline string: scale to 1e5 integers, delta against
+ * the previous point, zigzag, then 5-bit chunks with a continuation bit and a +63 offset.
  */
 export function encodePolyline(
   points: Array<{ lat: number; lng: number }>
@@ -32,7 +24,7 @@ export function encodePolyline(
 }
 
 function encodeValue(value: number): string {
-  // Zigzag encode: negative → odd numbers, positive → even numbers
+  // Zigzag: negatives become odd, positives become even.
   let v = value < 0 ? ~(value << 1) : value << 1
   let result = ""
 
@@ -44,10 +36,7 @@ function encodeValue(value: number): string {
   return result
 }
 
-/**
- * Decodes a Google Polyline string back into coordinates.
- * Use this in React Native / web map components to draw the route.
- */
+/** Decodes a Google Polyline string back into coordinates. */
 export function decodePolyline(
   encoded: string
 ): Array<{ lat: number; lng: number }> {

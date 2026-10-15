@@ -1,15 +1,8 @@
 import { z } from "zod"
 
 /**
- * A tile coordinate in XYZ order, i.e. the `{z}/{x}/{y}` every map client
- * asks for.
- *
- * `z.coerce.number` is deliberate: HTTP path params arrive as strings, so the
- * same schema validates route params, CLI input and already-typed rows.
- *
- * The zoom ceiling is not hardcoded here — an `.mbtiles` file declares its own
- * `minzoom`/`maxzoom` in its metadata table, and anything outside the file
- * simply has no tile.
+ * A tile coordinate in XYZ order, the `{z}/{x}/{y}` clients ask for. z is coerced so
+ * route params and CLI input validate; the file declares its own minzoom/maxzoom.
  */
 export const TileCoordSchema = z
   .object({
@@ -29,11 +22,8 @@ export function tileKey({ z, x, y }: TileCoord): string {
 }
 
 /**
- * Converts an XYZ row into the row MBTiles stores.
- *
- * MBTiles indexes tiles in TMS, which is XYZ with the Y axis reversed. From
- * the 1.3 spec: "the tile commonly referred to as 11/327/791 is inserted as
- * tile_row 1256, since 1256 is 2^11 - 1 - 791".
+ * The row MBTiles stores. MBTiles indexes in TMS, which flips Y: 11/327/791 is stored
+ * as 2^11 - 1 - 791, i.e. 1256.
  */
 export function toStorageRow(y: number, z: number): number {
   return 2 ** z - 1 - y

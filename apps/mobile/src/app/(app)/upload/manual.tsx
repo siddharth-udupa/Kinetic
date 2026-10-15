@@ -19,20 +19,15 @@ import { authClient } from "@/lib/auth-client"
 import { invalidateActivitiesCache } from "@/hooks/useActivities"
 import { useTheme } from "@/hooks/useTheme"
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const API_URL = process.env.EXPO_PUBLIC_API_URL!
 
-// Lowercase values — must match the `activity_type` pgEnum. "Other" was
-// removed: the database has no such value, so it could never be persisted.
+// Must match the `activity_type` pgEnum, which has no "other" value.
 const SPORTS: ManualActivityInput["type"][] = ["run", "ride", "swim", "walk", "hike"]
 
 const DISTANCE_UNITS: DistanceUnit[] = ["metric", "imperial"]
 const ELEVATION_UNITS: ElevationUnit[] = ["meters", "feet"]
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-// Duration sub-shape from ManualActivityInput (the object branch of the union)
+// The object branch of ManualActivityInput["duration"].
 type DurationObj = Extract<ManualActivityInput["duration"], { hr: number }>
 
 // MetaData sub-shape from ManualActivityInput
@@ -50,16 +45,14 @@ interface FormState {
   description: string
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Returns a local datetime string in "YYYY-MM-DDTHH:mm" format for the default start time. */
+/** Local "YYYY-MM-DDTHH:mm" string for the default start time. */
 function getLocalDateTimeString(): string {
   const now = new Date()
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`
 }
 
-/** Formats server-side Zod / API error responses into a readable string. */
+/** Formats a server error response into a readable string. */
 function formatErrorMessage(resData: any): string {
   if (!resData) return "An unexpected error occurred while saving."
 
@@ -91,8 +84,6 @@ function formatErrorMessage(resData: any): string {
 
   return "Failed to save activity."
 }
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
@@ -287,8 +278,7 @@ function DateTimeInput({
   )
 }
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
-
+// A manual entry carries no polyline, so the distance is typed in by hand.
 export default function ManualUploadScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
@@ -315,14 +305,11 @@ export default function ManualUploadScreen() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // ── Derived validation ─────────────────────────────────────────────────────
   // Use durationToSeconds from @repo/units to validate duration > 0
   const isTitleValid = (formState.title || "").trim().length > 0
   const isDistanceValid = parseFloat(formState.distance || "0") > 0
   const isDurationValid = durationToSeconds(formState.duration) > 0
   const isFormValid = isTitleValid && isDistanceValid && isDurationValid
-
-  // ── Update helpers ─────────────────────────────────────────────────────────
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setFormState((prev) => ({ ...prev, [key]: value }))
@@ -332,8 +319,6 @@ export default function ManualUploadScreen() {
 
   const updateDuration = (key: keyof DurationObj, value: number) =>
     setFormState((prev) => ({ ...prev, duration: { ...prev.duration, [key]: value } }))
-
-  // ── Submit ─────────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
     if (!isFormValid) {
@@ -347,8 +332,7 @@ export default function ManualUploadScreen() {
     setIsSubmitting(true)
 
     try {
-      // Build a payload that matches ManualActivityInput exactly,
-      // nested under { source: "manual", data: ... } as the web page does.
+      // The same envelope the web page posts: { source: "manual", data }.
       const payload: { source: "manual"; data: ManualActivityInput } = {
         source: "manual",
         data: {
@@ -356,7 +340,7 @@ export default function ManualUploadScreen() {
           description: (formState.description || "").trim() || undefined,
           type: formState.type,
           distance: parseFloat(formState.distance) || 0,
-          duration: formState.duration,           // { hr, min, sec } — the schema accepts this shape
+          duration: formState.duration,           // { hr, min, sec } — accepted as-is
           elevationGain: parseFloat(formState.elevationGain) || 0,
           elevationLoss: parseFloat(formState.elevationLoss) || 0,
           startTime: formState.startTime || undefined,
@@ -395,8 +379,6 @@ export default function ManualUploadScreen() {
     }
   }
 
-  // ── Go Back ────────────────────────────────────────────────────────────────
-
   const handleGoBack = () => {
     if (router.canGoBack()) {
       router.back()
@@ -405,13 +387,10 @@ export default function ManualUploadScreen() {
     }
   }
 
-  // ─── Render ────────────────────────────────────────────────────────────────
-
   return (
     <View className="flex-1 bg-page">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
 
-      {/* ── Header ── */}
       <View
         style={{ paddingTop: Math.max(insets.top, 40) }}
         className="bg-surface border-b border-line px-4 pb-3"
@@ -435,7 +414,6 @@ export default function ManualUploadScreen() {
         </View>
       </View>
 
-      {/* ── Scrollable Form ── */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -444,7 +422,6 @@ export default function ManualUploadScreen() {
       >
         <View className="pt-4">
 
-          {/* ── Section: Distance & Duration ── */}
           <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Activity Stats
           </Text>
@@ -469,12 +446,10 @@ export default function ManualUploadScreen() {
 
             <View className="h-px bg-line-muted my-4" />
 
-            {/* durationToSeconds from @repo/units is used for validation above */}
             <FieldLabel label="Duration" required />
             <DurationInput value={formState.duration} onChange={updateDuration} />
           </SectionCard>
 
-          {/* ── Section: Elevation ── */}
           <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Elevation
           </Text>
@@ -512,7 +487,6 @@ export default function ManualUploadScreen() {
             </View>
           </SectionCard>
 
-          {/* ── Section: Sport Type ── */}
           <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Sport
           </Text>
@@ -522,7 +496,6 @@ export default function ManualUploadScreen() {
             <SportSelector value={formState.type} onChange={(v) => updateField("type", v)} />
           </SectionCard>
 
-          {/* ── Section: Timing ── */}
           <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Timing
           </Text>
@@ -545,7 +518,6 @@ export default function ManualUploadScreen() {
             />
           </SectionCard>
 
-          {/* ── Section: Details ── */}
           <Text className="px-4 pb-1.5 text-[10px] font-bold text-ink-disabled uppercase tracking-widest">
             Details
           </Text>
@@ -591,7 +563,6 @@ export default function ManualUploadScreen() {
         </View>
       </ScrollView>
 
-      {/* ── Sticky Submit Button ── */}
       <View
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3"

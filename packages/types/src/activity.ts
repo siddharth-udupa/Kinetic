@@ -35,9 +35,8 @@ export type ActivitySummary = {
   points: ActivityPoint[]
 }
 
-// Derived from the drizzle pgEnum (type-only import, so nothing pulls `pg` into
-// the client bundles) so the TS union can never drift from the `activity_type`
-// enum in Postgres. Only these exact lowercase values can be persisted.
+// Derived from the drizzle pgEnum, a type-only import so nothing pulls `pg` into
+// client bundles. Keeps the union from drifting from the Postgres enum.
 export type ActivityTypes = (typeof ActivityType.enumValues)[number]
 
 /** Runtime-safe list mirroring {@link ActivityTypes}, for validation schemas. */

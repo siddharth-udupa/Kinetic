@@ -68,11 +68,9 @@ export default function SaveActivityScreen() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
 
-  // Modals state
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false)
   const [isDiscardModalVisible, setIsDiscardModalVisible] = useState(false)
 
-  // Load session from disk on mount
   useEffect(() => {
     let isMounted = true
     getActiveSession().then((sess) => {
@@ -93,7 +91,6 @@ export default function SaveActivityScreen() {
     }
   }, [])
 
-  // When sport selection changes, update title if user hasn't heavily customized it
   const handleSelectSport = (type: ActivityTypes) => {
     setSportType(type)
     setTitle(getDefaultTitle(type, session?.startedAt))
@@ -149,7 +146,6 @@ export default function SaveActivityScreen() {
     <View className="flex-1 bg-page">
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.surface} />
 
-      {/* White Clean Navigation Bar without buttons */}
       <View
         style={{ paddingTop: Math.max(insets.top, 35) }}
         className="bg-surface border-b border-line px-4 pb-3 justify-center items-center"
@@ -165,7 +161,6 @@ export default function SaveActivityScreen() {
         className="flex-1"
       >
         <View className="pt-3">
-          {/* 1. TITLE BOX */}
           <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Title <Text className="text-accent">*</Text>
@@ -183,7 +178,6 @@ export default function SaveActivityScreen() {
             </View>
           </View>
 
-          {/* 2. DESCRIPTION */}
           <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Description
@@ -209,7 +203,6 @@ export default function SaveActivityScreen() {
             )}
           </View>
 
-          {/* 3. TYPE (SPORT TYPE SELECTOR) */}
           <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-2">
               Sport Type
@@ -246,7 +239,6 @@ export default function SaveActivityScreen() {
             </View>
           </View>
 
-          {/* 4. OVERVIEW */}
           <View className="bg-surface rounded-2xl mx-4 mb-3 p-4 border border-line-muted shadow-xs">
             <Text className="text-xs font-bold text-ink-disabled uppercase tracking-widest mb-3">
               Overview
@@ -293,7 +285,6 @@ export default function SaveActivityScreen() {
             )}
           </View>
 
-          {/* 5. MAP */}
           <View className="mx-4 mb-3 rounded-2xl overflow-hidden bg-ink border border-line shadow-xs h-48 relative">
             <MapView isStatic={true} livePoints={points} />
             <View className="absolute bottom-2 left-2 bg-ink/80 px-2.5 py-1 rounded-md border border-line-strong/50 flex-row items-center">
@@ -304,7 +295,6 @@ export default function SaveActivityScreen() {
             </View>
           </View>
 
-          {/* 6. DISCARD BUTTON */}
           <View className="mx-4 mb-4">
             <TouchableOpacity
               onPress={() => setIsDiscardModalVisible(true)}
@@ -320,7 +310,7 @@ export default function SaveActivityScreen() {
         </View>
       </ScrollView>
 
-      {/* 7. SAVE ACTIVITY BUTTON — elevated higher to avoid overlapping device menu/nav bar */}
+      {/* Sits high so it clears the device nav bar. */}
       <View
         style={{ paddingBottom: Math.max(insets.bottom + 16, 28) }}
         className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line px-4 pt-3 shadow-xl"
@@ -370,7 +360,6 @@ export default function SaveActivityScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* SUCCESS ACTION MODAL */}
       <ActionModal
         visible={isSuccessModalVisible}
         title="Activity Saved!"
@@ -385,7 +374,6 @@ export default function SaveActivityScreen() {
         closeOnBackdropPress={false}
       />
 
-      {/* DISCARD CONFIRMATION ACTION MODAL */}
       <ActionModal
         visible={isDiscardModalVisible}
         title="Discard Activity?"

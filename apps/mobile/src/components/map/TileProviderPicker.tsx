@@ -21,7 +21,6 @@ export default function TileProviderPicker({
 
   return (
     <>
-      {/* Floating Trigger Button */}
       <TouchableOpacity
         onPress={() => setIsPickerOpen(true)}
         style={triggerStyle}
@@ -34,7 +33,6 @@ export default function TileProviderPicker({
         <Ionicons name="chevron-down" size={12} color={colors.inkMuted} style={{ marginLeft: 4 }} />
       </TouchableOpacity>
 
-      {/* Tile Provider Picker Sheet Modal */}
       <Modal
         visible={isPickerOpen}
         animationType="slide"

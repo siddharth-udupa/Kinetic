@@ -17,7 +17,6 @@ export default function MapScreen({ insets, encodedPolyline }: MapScreenProps) {
 
   return (
     <View className="flex-1 bg-page relative" style={{ paddingBottom }}>
-      {/* Pure Map Renderer */}
       <MapView
         encodedPolyline={encodedPolyline}
         isStatic={false}
@@ -25,7 +24,6 @@ export default function MapScreen({ insets, encodedPolyline }: MapScreenProps) {
         style={{ width: "100%", height: "100%", flex: 1 }}
       />
 
-      {/* Changeable Tile Provider UI Module */}
       <TileProviderPicker
         currentProviderId={providerId}
         onSelectProvider={setProviderId}

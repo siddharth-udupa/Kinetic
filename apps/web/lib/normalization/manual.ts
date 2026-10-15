@@ -9,13 +9,8 @@ import {
   type NormalizedActivityData,
 } from "./shared"
 
-/**
- * Normalises a hand-entered activity.
- *
- * `ManualActivitySchema` already lowercases and validates `type`, so it can be
- * handed to the `activity_type` pgEnum untouched. There is no track, so no
- * polyline, no streams and no derived speed.
- */
+/** Normalises a hand-entered activity. No track means no polyline, no streams
+ *  and no speed. `ManualActivitySchema` lowercases `type` already. */
 export function normalizeManualActivity(data: unknown): NormalizedActivityData {
   const parsed = ManualActivitySchema.parse(data)
 
@@ -32,8 +27,8 @@ export function normalizeManualActivity(data: unknown): NormalizedActivityData {
   const elevationGain = elevationToMeters(parsed.elevationGain, elevUnitGain)
   const elevationLoss = elevationToMeters(parsed.elevationLoss, elevUnitLoss)
 
-  // A manual entry is being logged right now, so "now" is a correct fallback
-  // for a missing start time. The end time stays null unless supplied.
+  // The entry is being logged now, so a missing start time falls back to now.
+  // An end time before the start is dropped.
   const startTime = toValidDate(parsed.startTime) ?? new Date()
   const parsedEndTime = toValidDate(parsed.endTime)
   const endTime =

@@ -7,8 +7,8 @@ export default function AppLayout() {
   const { data: session, isPending } = useSession()
   const { colors } = useTheme()
 
-  // Gating here rather than per-screen means protected screens never mount
-  // unauthenticated, so their data effects don't fire doomed requests.
+  // Gated here rather than per screen, so a protected screen never mounts
+  // unauthenticated and never fires a doomed request.
   if (isPending) {
     return (
       <View className="flex-1 items-center justify-center bg-page">

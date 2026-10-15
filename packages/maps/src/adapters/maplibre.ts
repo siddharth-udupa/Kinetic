@@ -46,10 +46,8 @@ export function getTileSource(provider: TileProvider): MapLibreSource {
     maxzoom: provider.maxZoom ?? 14,
   }
 
-  // Only raster sources take a tile size, and it has to be an own property:
-  // MapLibre copies the key onto its vector source and throws
-  // "vector tile sources must have a tileSize of 512" when it finds one that
-  // is not 512, which aborts the style halfway through loading.
+  // A tileSize on a vector source makes MapLibre throw mid-load, so it stays
+  // raster-only and only when the provider sets it.
   if (provider.type === "raster") source.tileSize = provider.tileSize ?? 256
 
   return source
@@ -67,9 +65,8 @@ function rasterLayers(provider: RasterTileProvider): VectorTileLayer[] {
 }
 
 /**
- * A complete MapLibre style for a provider: one source plus the layers that
- * render it. Raster providers are a single raster layer; vector providers carry
- * their own layer list (see `styles/`).
+ * A complete MapLibre style: one source plus the layers that render it. Vector
+ * providers carry their own layer list (see `styles/`).
  */
 export function getMapLibreStyle(
   id: TileProviderId = DEFAULT_TILE_PROVIDER

@@ -25,14 +25,9 @@ const THEMES: { value: OnboardingPrefs["theme"]; icon: IconName }[] = [
   { value: "dark", icon: "moon-outline" },
 ]
 
-/**
- * Theme and time format, with the theme applied to the running screen.
- *
- * Choosing a look is a visual decision, so tapping a card repaints the flow
- * immediately — including this one. `onChange("theme", …)` resolves through the
- * same scheme context everything else reads from, so there is no separate
- * "preview mode" to get out of sync.
- */
+// Theme and time format, with the theme applied to the running screen. Tapping a
+// card repaints this flow through the same scheme context, so there is no
+// separate preview mode to fall out of sync.
 export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
   const { colors } = useTheme()
   const Clock = ICONS["time-outline"]
@@ -61,7 +56,6 @@ export default function AppearanceSlide({ prefs, onChange, onNext }: Props) {
         subtitle="Pick a look and the app changes as you tap — so you can see it before you commit."
       />
 
-      {/* Theme */}
       <h3
         className="mb-3 text-xs font-semibold tracking-widest uppercase"
         style={{ color: colors.inkMuted }}

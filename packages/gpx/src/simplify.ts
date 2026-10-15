@@ -1,10 +1,5 @@
 import { RawTrackpoint } from "./parser"
 
-/**
- * Perpendicular distance from point P to the line segment AB.
- * Used internally by Douglas-Peucker.
- */
-
 function perpendicularDistance(
   p: { lat: number; lng: number },
   a: { lat: number; lng: number },
@@ -12,17 +7,16 @@ function perpendicularDistance(
 ): number {
   const dx = b.lng - a.lng
   const dy = b.lat - a.lat
-  // Line length squared
   const lineLenSq = dx * dx + dy * dy
 
   if (lineLenSq === 0) {
-    // a and b are the same point — return distance to a
+    // Degenerate segment: return the distance to a and skip the division.
     const ex = p.lng - a.lng
     const ey = p.lat - a.lat
     return Math.sqrt(ex * ex + ey * ey)
   }
 
-  // Project point onto line, clamped to segment [0,1]
+  // Projection onto the line, clamped to the segment.
   const t = Math.max(0, Math.min(1, ((p.lng - a.lng) * dx + (p.lat - a.lat) * dy) / lineLenSq))
   const closestLng = a.lng + t * dx
   const closestLat = a.lat + t * dy
@@ -34,14 +28,8 @@ function perpendicularDistance(
 
 
 /**
- * Recursive Douglas-Peucker path simplification.
- *
- * epsilon: tolerance in degrees. 
- *   - 0.00001 ≈ ~1 metre → very high detail
- *   - 0.0001  ≈ ~10 metres → good for route preview maps  ← recommended default
- *   - 0.001   ≈ ~100 metres → thumbnail/overview maps
- *
- * Usable in: Web, React Native (simplify for different zoom levels)
+ * Douglas-Peucker simplification. Epsilon is in degrees: 0.0001 ≈ 10m for previews,
+ * 0.001 ≈ 100m for thumbnails, 0.00001 keeps every point.
  */
 export function douglasPeucker(
   points: RawTrackpoint[],
@@ -49,7 +37,6 @@ export function douglasPeucker(
 ): RawTrackpoint[] {
   if (points.length <= 2) return points
 
-  // Find the point with the maximum distance from the line start→end
   let maxDist = 0
   let maxIndex = 0
   const start = points[0]
@@ -63,14 +50,12 @@ export function douglasPeucker(
     }
   }
 
-  // If the max deviation is above epsilon, recursively simplify both halves
   if (maxDist > epsilon) {
     const left = douglasPeucker(points.slice(0, maxIndex + 1), epsilon)
     const right = douglasPeucker(points.slice(maxIndex), epsilon)
-    // Merge: remove the duplicate point at the junction
+    // Both halves end and start on the same point. Drop the duplicate.
     return [...left.slice(0, -1), ...right]
   }
-  // All intermediate points are within tolerance — keep only endpoints
   
   return [start, end]
 }
