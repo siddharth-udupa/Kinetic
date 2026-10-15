@@ -41,7 +41,7 @@ export function readSchemeHint(cookieValue: string | undefined): ThemeScheme {
  * load. A media query reaches the same pre-paint result while leaving the DOM alone.
  *
  * The literal values are inlined because this runs before the shell has published
- * `--ob-*`, and it is the only thing on the page at that moment.
+ * `--color-*`, and it is the only thing on the page at that moment.
  */
 export function themeInitStyle(): string {
   const { page: light } = getColors("light")

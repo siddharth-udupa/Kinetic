@@ -10,18 +10,18 @@ A colour used to have three names and only one of them was short:
 card  →  --ob-card  /  --color-card  →  bg-surface
 ```
 
-They are now one word in three spellings — the token is camelCase, the class and
-the CSS variable are its kebab-case form:
+They are now one word — the token is camelCase, the class and the CSS variable
+are its kebab-case form:
 
 ```
-surface  →  --ob-surface  /  --color-surface  →  bg-surface
+surface  →  --color-surface  →  bg-surface
 ```
 
-`colors.surface`, `bg-surface` and `--ob-surface` are the same colour. No value
+`colors.surface`, `bg-surface` and `--color-surface` are the same colour. No value
 moved, no class name changed, no visual difference.
 
-The 19 renames, applied to `LIGHT_COLORS`, `DARK_COLORS`, `COLOR_UTILITIES` and
-every `colors.<name>` call site across both apps:
+The 19 renames, applied to `LIGHT_COLORS`, `DARK_COLORS`,
+`packages/shared/theme.css` and every `colors.<name>` call site across both apps:
 
 | Was | Now | Class (unchanged) |
 | --- | --- | --- |
@@ -59,23 +59,19 @@ Searching for the bare token name is how this goes wrong quietly.
 aliases it to `p`, so `p.card` and `p.border` need rewriting by hand. `tsc` is
 what catches that class of miss, so run it.
 
-## COLOR_UTILITIES stayed
+## COLOR_UTILITIES is gone
 
-It is now the identity map, so it carries no information and could be deleted,
-with `tailwind.config.ts` deriving its colour block from `Object.keys(COLORS.light)`
-and `check-color-utilities.mjs` comparing token keys against the `--color-*` lines
-directly.
-
-It was kept. It is one file of ceremony, it keeps `satisfies Record<ColorToken, string>`
-as a compile-time guarantee that a new token cannot ship without a class, and it
-leaves room for the next token that wants a different class name. Worth revisiting
-if a second rename is ever proposed.
+It became the identity map, carried no information, and existed only to keep a
+generator and a checker script in step. `packages/shared/theme.css` is now the
+palette, imported directly by both apps, so there is nothing to generate and
+nothing to check. `scripts/generate-mobile-theme.mjs`,
+`scripts/check-color-utilities.mjs` and the `pnpm theme:mobile` / `pnpm
+check:colors` commands went with it.
 
 ## Verify
 
 ```
-pnpm check:colors                      # globals.css against COLOR_UTILITIES
-pnpm lint                              # biome
+pnpm lint
 pnpm --filter web exec tsc --noEmit
 pnpm --filter mobile exec tsc --noEmit
 pnpm --filter web build

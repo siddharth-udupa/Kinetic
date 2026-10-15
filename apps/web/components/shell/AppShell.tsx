@@ -35,13 +35,13 @@ export function AppShell({
 }
 
 /**
- * Applies the resolved palette as `--ob-*` custom properties for everything
+ * Applies the resolved palette as `--color-*` custom properties for everything
  * inside the shell.
  *
  * The vars land on this wrapper rather than on `<body>`: `<body>` is rendered by
  * the server, so a client component cannot attach the inline style to it. Any
- * descendant can then read `var(--ob-accent)` in a plain Tailwind class, which is
- * what keeps the nav's markup free of inline colour styling.
+ * descendant can then read `var(--color-accent)` in a plain Tailwind class, which
+ * is what keeps the nav's markup free of inline colour styling.
  */
 function ThemedShell({ children }: { children: ReactNode }) {
   const { colors, vars } = useTheme()

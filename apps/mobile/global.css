@@ -4,12 +4,10 @@
  * The four imports are split rather than `@import "tailwindcss"` because utilities
  * must stay unlayered: a single import puts them below React Native Web's defaults
  * in the cascade, and web overrides win over the class you wrote.
- *
- * `theme.css` is generated from the shared palette — see its header.
  */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
-@import "./theme.css";
+@import "@repo/shared/theme.css";

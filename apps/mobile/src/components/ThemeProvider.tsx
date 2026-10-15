@@ -6,32 +6,23 @@ import { VariableContextProvider } from "nativewind"
 /**
  * The app-wide theme, as runtime CSS variables.
  *
- * Nativewind v5 compiles `@theme` values into the stylesheet, so a token would
- * keep whatever `theme.css` declares regardless of the theme. The Metro config
- * excludes every token from inlining, which leaves the stylesheet holding
- * references; this provider fills those references in for the active scheme.
+ * `packages/shared/theme.css` declares every token, and its `prefers-color-scheme`
+ * block follows the system. This provider exists for the one thing that block
+ * cannot do: an explicit Light or Dark choice, which on native is `Appearance`
+ * and on React Native Web — which implements no setter at all — is a value
+ * override, filled in here for the resolved scheme.
  *
- * That is what lets one class name follow the resolved scheme — `bg-surface`
- * means light or dark without a `dark:` variant at every call site — and it is why
- * the values here are the same ones the web app reads from `@repo/shared`.
- *
- * v4 did this by swapping a `.dark` class on the root and redefining the custom
- * properties under it. v5 rejects that selector on native, so the swap happens
- * through React context instead.
+ * v4 did this by swapping a `.dark` class on the root. v5 rejects that selector
+ * on native, so the swap happens through React context instead.
  */
 
-/** `#FC4C02` and friends, in the `--color-*` form the stylesheet references. */
+/** `#FC4C02` and friends, in the form `packages/shared/theme.css` declares. */
 function toVariables(tokens: ColorTokens): Record<string, string> {
   const variables: Record<string, string> = {}
 
   for (const [token, value] of Object.entries(tokens)) {
-    variables[`--color-${kebab(token)}`] = value
+    variables[token === "cardShadow" ? "--shadow-card" : `--color-${kebab(token)}`] = value
   }
-
-  // The one token that is a box-shadow rather than a colour. It points at its own
-  // variable rather than carrying the value, so the geometry and its alpha stay
-  // swappable at runtime like every colour above.
-  variables["--shadow-card-value"] = tokens.cardShadow
 
   return variables
 }

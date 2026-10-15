@@ -54,7 +54,7 @@ export default async function RootLayout({
         onboarding flow and `app/maps`. */}
     <body className="flex min-h-full flex-col">
       {/* `AppShell` resolves the theme once for the whole column and publishes it
-          as `--ob-*` custom properties, so the header and every page below it are
+          as `--color-*` custom properties, so the header and every page below it are
           drawn from one palette instead of each surface carrying its own greys. */}
       <AppShell scheme={schemeHint}>
         <Navbar />

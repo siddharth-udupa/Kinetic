@@ -26,7 +26,7 @@ export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & st
  * is unusable without a mouse.
  */
 const FOCUS =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--ob-accent)]"
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]"
 
 /* ── Layout ────────────────────────────────────────────────────────────── */
 

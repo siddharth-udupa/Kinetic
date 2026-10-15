@@ -1,0 +1,194 @@
+/*
+ * The palette. Both apps `@import` this file directly — there is no generator and
+ * no second copy.
+ *
+ * One name per colour: the token, the variable and the class you write are the
+ * same word, so `surface` is `--color-surface` and `bg-surface`.
+ *
+ * `@theme` registers the utilities and carries the light values. The dark half
+ * overrides the same variables under `prefers-color-scheme`, which is the only
+ * dark-mode mechanism Nativewind v5 supports on native; web additionally swaps
+ * them at runtime so an explicit Light or Dark choice can override the system.
+ */
+
+@theme {
+  /* Surfaces */
+  --color-page: #f9fafb;
+  --color-surface: #ffffff;
+  --color-surface-hover: #fafafa;
+  --color-surface-pressed: #f3f4f6;
+  --color-surface-muted: #f3f4f6;
+  --color-surface-muted-hover: #eceef1;
+  --color-surface-muted-pressed: #e5e7eb;
+  --color-raised: #ffffff;
+  --color-raised-hover: #f9fafb;
+  --color-raised-pressed: #f3f4f6;
+  --color-raised-border: #e5e7eb;
+  --color-disabled: #f3f4f6;
+
+  /* Activity detail */
+  --color-activity-page: #f3f4f6;
+  --color-activity-panel: #ffffff;
+  --color-activity-card: #fafafa;
+  --color-activity-line: #e5e7eb;
+  --color-activity-handle: #d1d5db;
+
+  /* Borders */
+  --color-line: #e5e7eb;
+  --color-line-strong: #d1d5db;
+  --color-line-muted: #edeff2;
+
+  /* Text */
+  --color-ink: #111827;
+  --color-ink-secondary: #4b5563;
+  --color-ink-muted: #6b7280;
+  --color-ink-disabled: #9ca3af;
+  --color-ink-inverse: #ffffff;
+  --color-activity-ink: #111827;
+  --color-activity-ink-secondary: #4b5563;
+  --color-activity-ink-muted: #6b7280;
+
+  /* Accent */
+  --color-accent: #fc4c02;
+  --color-accent-hover: #e84802;
+  --color-accent-pressed: #cf3e02;
+  --color-accent-text: #b23a0b;
+  --color-accent-soft: rgb(252 76 2 / 0.07);
+  --color-on-accent: #ffffff;
+
+  /* Status */
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-danger-pressed: #991b1b;
+  --color-danger-text: #b91c1c;
+  --color-danger-soft: rgb(220 38 38 / 0.08);
+  --color-success: #16a34a;
+  --color-success-hover: #15803d;
+  --color-success-pressed: #166534;
+  --color-success-text: #116430;
+  --color-success-soft: rgb(22 163 74 / 0.09);
+  --color-warning: #b45309;
+  --color-warning-hover: #92400e;
+  --color-warning-pressed: #78350f;
+  --color-warning-text: #92400e;
+  --color-warning-soft: rgb(180 83 9 / 0.09);
+  --color-info: #2563eb;
+  --color-info-hover: #1d4ed8;
+  --color-info-pressed: #1e40af;
+  --color-info-text: #1d4ed8;
+  --color-info-soft: rgb(37 99 235 / 0.09);
+  --color-purple-text: #6d28d9;
+  --color-purple-soft: rgb(124 58 237 / 0.08);
+
+  /* Interaction */
+  --color-track-hover: rgb(255 255 255 / 0.75);
+  --color-track-pressed: rgb(255 255 255 / 0.55);
+  --color-focus-ring: rgb(252 76 2 / 0.35);
+  --color-overlay: rgb(17 24 39 / 0.45);
+
+  /* Charts */
+  --color-chart-line: #fc4c02;
+  --color-chart-fill: rgb(252 76 2 / 0.16);
+  --color-chart-grid: #e5e7eb;
+  --color-chart-axis: #d1d5db;
+  --color-chart-label: #6b7280;
+  --color-chart-crosshair: #9ca3af;
+}
+
+:root {
+  --shadow-card: 0 10px 35px -18px rgb(15 23 42 / 0.28);
+}
+
+/* A shadow, not a colour, so it cannot live in the `--color-*` namespace — and a
+   literal in `@theme` would be compiled into `shadow-card` and frozen there. */
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces */
+    --color-page: #020617;
+    --color-surface: #0f172a;
+    --color-surface-hover: #16213c;
+    --color-surface-pressed: #1e293b;
+    --color-surface-muted: #1e293b;
+    --color-surface-muted-hover: #273549;
+    --color-surface-muted-pressed: #334155;
+    --color-raised: #334155;
+    --color-raised-hover: #3b4a61;
+    --color-raised-pressed: #475569;
+    --color-raised-border: #475569;
+    --color-disabled: #1e293b;
+
+    /* Activity detail */
+    --color-activity-page: #0b1220;
+    --color-activity-panel: #0f1929;
+    --color-activity-card: #111c2d;
+    --color-activity-line: #223149;
+    --color-activity-handle: #43536b;
+
+    /* Borders */
+    --color-line: #1e293b;
+    --color-line-strong: #334155;
+    --color-line-muted: #17263b;
+
+    /* Text */
+    --color-ink: #f8fafc;
+    --color-ink-secondary: #94a3b8;
+    --color-ink-muted: #748399;
+    --color-ink-disabled: #64748b;
+    --color-ink-inverse: #0f172a;
+    --color-activity-ink: #d5dde8;
+    --color-activity-ink-secondary: #b8c3d3;
+    --color-activity-ink-muted: #8a9ab2;
+
+    /* Accent */
+    --color-accent: #fc4c02;
+    --color-accent-hover: #ff6b35;
+    --color-accent-pressed: #ff8a5c;
+    --color-accent-text: #ff9a6e;
+    --color-accent-soft: rgb(252 76 2 / 0.16);
+    --color-on-accent: #ffffff;
+
+    /* Status */
+    --color-danger: #f87171;
+    --color-danger-hover: #fca5a5;
+    --color-danger-pressed: #fecaca;
+    --color-danger-text: #fca5a5;
+    --color-danger-soft: rgb(248 113 113 / 0.12);
+    --color-success: #22c55e;
+    --color-success-hover: #4ade80;
+    --color-success-pressed: #86efac;
+    --color-success-text: #4ade80;
+    --color-success-soft: rgb(34 197 94 / 0.12);
+    --color-warning: #fbbf24;
+    --color-warning-hover: #fcd34d;
+    --color-warning-pressed: #fde68a;
+    --color-warning-text: #fcd34d;
+    --color-warning-soft: rgb(251 191 36 / 0.12);
+    --color-info: #60a5fa;
+    --color-info-hover: #93c5fd;
+    --color-info-pressed: #bfdbfe;
+    --color-info-text: #93c5fd;
+    --color-info-soft: rgb(96 165 250 / 0.12);
+    --color-purple-text: #c4b5fd;
+    --color-purple-soft: rgb(167 139 250 / 0.14);
+
+    /* Interaction */
+    --color-track-hover: rgb(51 65 85 / 0.55);
+    --color-track-pressed: rgb(51 65 85 / 0.8);
+    --color-focus-ring: rgb(255 154 110 / 0.45);
+    --color-overlay: rgb(2 6 23 / 0.65);
+
+    /* Charts */
+    --color-chart-line: #fc4c02;
+    --color-chart-fill: rgb(252 76 2 / 0.2);
+    --color-chart-grid: #1e293b;
+    --color-chart-axis: #334155;
+    --color-chart-label: #94a3b8;
+    --color-chart-crosshair: #64748b;
+
+    --shadow-card: 0 16px 40px -24px rgb(0 0 0 / 0.8);
+  }
+}

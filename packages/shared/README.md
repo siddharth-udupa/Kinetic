@@ -1,68 +1,61 @@
 # `@repo/shared`
 
-Cross-app constants. Ships raw TypeScript, like every other package here — there
-is no build step (see `ARCHITECTURE.md`).
+Cross-app constants and the palette. Ships raw TypeScript, like every other
+package here — there is no build step (see `ARCHITECTURE.md`).
 
-| Module | What it holds |
+| File | What it holds |
 | --- | --- |
-| `src/colors.ts` | The palette. Every colour in the product, per theme. |
-| `src/color-utilities.ts` | The class name each token is exposed as. |
+| `theme.css` | The palette. Every colour, light and dark, as Tailwind v4 tokens. |
+| `src/colors.ts` | The same tokens as values, for the places a class cannot reach. |
 | `src/brand.ts` | Product name, tagline, mark. |
-
-Run `pnpm theme:mobile` from the repo root after changing the palette. It
-regenerates `apps/mobile/theme.css`, which `pnpm check:colors` then holds to the
-values here.
 
 ## Colours
 
-`colors.ts` is the single source of truth for colour on both platforms. Change a
-value there and every surface that reads it moves — web and mobile together.
+`theme.css` is the single source of truth for colour on both platforms. Both apps
+`@import` it directly — `apps/web/app/globals.css` and `apps/mobile/global.css` —
+so there is nothing to generate and nothing to keep in sync.
 
-Two themes ship as complete, identically-keyed objects: `COLORS.light` and
-`COLORS.dark`. `DARK_COLORS` is annotated `ColorTokens`, so a token added to one
-theme and forgotten in the other is a compile error, not a colour that silently
-falls back to light in dark mode.
+```css
+@import "@repo/shared/theme.css";
+```
+
+`@theme` registers the utilities and carries the light values, so `bg-surface`
+compiles to `var(--color-surface)`. The dark half is a
+`@media (prefers-color-scheme: dark)` block overriding the same variables, which
+is the only dark-mode mechanism Nativewind v5 accepts on native.
+
+A token is one word in three places: the variable `--color-surface`, the class
+`bg-surface`, and the camelCase key `colors.surface`.
+
+### Reading a token as data
+
+`src/colors.ts` is the same list as TypeScript. Use it where a `var()` string will
+not do — an SVG attribute, a Recharts prop, a MapLibre paint property, an
+Ionicons colour.
 
 ```ts
 import { getColors } from "@repo/shared"
 
 const colors = getColors(isDark ? "dark" : "light")
-<div style={{ backgroundColor: colors.surface }} />
+<Ionicons name="flash" color={colors.accent} />
 ```
 
-A token has three names: the key here (`surface`), the CSS variable
-(`--ob-surface` on web, `--color-surface` on mobile), and the class you write
-(`bg-surface`). `color-utilities.ts` owns the second one, so the two apps cannot
-disagree about it.
+Two schemes ship as complete, identically-keyed objects, `COLORS.light` and
+`COLORS.dark`. `DARK_COLORS` is annotated `ColorTokens`, so a token added to one
+and forgotten in the other fails to compile rather than silently falling back to
+light in dark mode.
 
-On the web, `colorsToCssVars(colors, isDark)` flattens a palette into the
-`--ob-*` custom properties the shell wrapper carries, which is what lets a plain
-Tailwind class like `bg-surface` resolve to the active theme. On mobile, the same
-class name resolves through `--color-*` custom properties, filled in at runtime by
-`ThemeProvider` from `getColors()`.
-
-CSS cannot import TypeScript, so the two stylesheets are derived rather than
-imported:
-
-| Target | Produced by | Dark values |
-| --- | --- | --- |
-| `apps/web/app/globals.css` | hand-written `@theme inline`, checked by `pnpm check:colors` | `--ob-*` swapped by the shell wrapper |
-| `apps/mobile/theme.css` | `pnpm theme:mobile` | supplied at runtime by `ThemeProvider` |
-
-`pnpm check:colors` compares all three — the utility map, the web stylesheet and
-the generated mobile theme — against the palette here, and fails on any
-disagreement.
+The two files hold the same values twice on purpose: CSS cannot import
+TypeScript, and a native component cannot resolve a CSS variable into a colour
+prop. Change a colour in both.
 
 ### Rules
 
 - Name tokens `role` first, then state: `surfacePressed`, not `pressedGrey`. A
   token named after its role survives a rebrand; one named after its hue does
   not.
-- Adding a token means adding it to **both** themes, with a comment on any value
-  whose choice is not obvious — contrast ratios, why it differs from its
-  siblings.
-- Translucent tokens derive from their opaque base via `withAlpha`, so a rebrand
-  only has to change `BRAND_COLOR`. Never hand-type an `rgba()` of a base colour
-  that exists elsewhere in the file.
+- Adding a token means adding it to both files, and to both schemes of
+  `colors.ts`, with a comment on any value whose choice is not obvious — contrast
+  ratios, why it differs from its siblings.
 - `packages/maps/src/styles/southIndia.ts` is deliberately excluded: those
   colours encode geography, not brand.

@@ -1,6 +1,6 @@
 "use client"
 
-import { colorsToCssVars, getColors, type ThemeScheme } from "@repo/shared"
+import { type ColorTokens, getColors, type ThemeScheme } from "@repo/shared"
 import {
   createContext,
   useContext,
@@ -14,17 +14,33 @@ import {
 /**
  * The app-wide theme: which scheme is active, and the palette it resolves to.
  *
- * The values themselves live in `@repo/shared` — this module owns only the React
- * plumbing. Mobile resolves the same tokens through `src/hooks/useTheme.ts`, so a
- * colour changed in `packages/shared/src/colors.ts` moves on both platforms at once.
- * Do not add a colour here.
+ * The colour classes come from `packages/shared/theme.css`; the values here are
+ * the same tokens, read as data for the places a class cannot reach. This module
+ * owns only the React plumbing.
  *
- * Colours reach the DOM as `--ob-*` custom properties on a wrapper rather than as
- * `dark:` classes, which is what lets the onboarding appearance slide repaint the
- * running screen the instant a theme is tapped.
+ * Colours reach the DOM as `--color-*` custom properties on a wrapper rather than
+ * as `dark:` classes, which is what lets the onboarding appearance slide repaint
+ * the running screen the instant a theme is tapped.
  */
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
+
+function kebab(token: string): string {
+  return token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)
+}
+
+/** The same tokens, as the custom properties `packages/shared/theme.css` declares. */
+function toVariables(colors: ColorTokens, isDark: boolean): CSSProperties {
+  const variables: Record<string, string> = {}
+
+  for (const [token, value] of Object.entries(colors)) {
+    variables[token === "cardShadow" ? "--shadow-card" : `--color-${kebab(token)}`] = value
+  }
+
+  variables.colorScheme = isDark ? "dark" : "light"
+
+  return variables as CSSProperties
+}
 
 /* `useSyncExternalStore` reads the snapshot during render, so the first client paint
    agrees with the server HTML instead of correcting a frame later. */
@@ -55,7 +71,7 @@ type ThemeContextValue = {
   /** The live override driving the preview, not the value being edited. */
   scheme: ThemeScheme
   setScheme: (scheme: ThemeScheme) => void
-  /** The same palette as `--ob-*` custom properties, for a `style` prop. */
+  /** The same palette as `--color-*` custom properties, for a `style` prop. */
   vars: CSSProperties
 }
 
@@ -85,7 +101,7 @@ export function ThemeProvider({
       colors,
       scheme,
       setScheme,
-      vars: colorsToCssVars(colors, isDark) as CSSProperties,
+      vars: toVariables(colors, isDark),
     }),
     [isDark, colors, scheme],
   )

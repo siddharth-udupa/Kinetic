@@ -12,7 +12,7 @@ import { useTheme } from "@/hooks/useTheme"
  * focus treatment matches on the header and on the slides behind it.
  */
 export const FOCUS =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ob-accent)"
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
 
 /**
  * The mark and wordmark lockup.

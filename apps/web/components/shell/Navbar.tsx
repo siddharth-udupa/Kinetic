@@ -37,7 +37,7 @@ type OpenPanel = "feed" | "training" | "create" | "account" | "search" | null
  * The app header.
  *
  * Draws from the onboarding theme's tokens — `AppShell` publishes them as
- * `--ob-*` on the shell wrapper above — so it is the same object in light and
+ * `--color-*` on the shell wrapper above — so it is the same object in light and
  * dark, and visually continuous with the onboarding and auth screens it links
  * into.
  */
