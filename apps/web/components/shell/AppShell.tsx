@@ -5,15 +5,16 @@ import type { ReactNode } from "react"
 import { ThemeProvider, useTheme } from "@/hooks/useTheme"
 
 // App-wide theme surface, so the nav uses the same palette as the pages it links
-// into. Onboarding and auth keep their own provider: the appearance slide
-// previews a theme, and a nested provider scopes that preview to the flow.
+// into. One provider for the whole app: auth and onboarding used to nest their
+// own, which scoped a theme change to the subtree below it and left the header
+// painted from the server's scheme.
 export function AppShell({
   children,
   scheme = "system",
 }: {
   children: ReactNode
-  /** The scheme the server already committed to, read from the cookie the
-   *  pre-paint script writes. */
+  /** An explicit choice the visitor made, read from the cookie. Absent means the
+   *  scheme follows the OS, which the server cannot know and need not guess. */
   scheme?: ThemeScheme
 }) {
   return (
@@ -23,14 +24,17 @@ export function AppShell({
   )
 }
 
-/** Publishes the resolved palette as `--color-*`. `<body>` is server-rendered, so the vars land here instead. */
+/** Publishes the palette as `--color-*`. `<body>` is server-rendered, so the vars
+ *  land here instead — and only for a scheme the visitor picked, since `vars` is
+ *  empty while following the system. An inline page colour to match would have the
+ *  same effect, so it is left to the stylesheet too. */
 function ThemedShell({ children }: { children: ReactNode }) {
   const { colors, vars } = useTheme()
 
   return (
     <div
       className="flex min-h-full flex-1 flex-col"
-      style={{ ...vars, backgroundColor: colors.page }}
+      style={{ ...vars, backgroundColor: vars.colorScheme ? colors.page : undefined }}
     >
       {children}
     </div>

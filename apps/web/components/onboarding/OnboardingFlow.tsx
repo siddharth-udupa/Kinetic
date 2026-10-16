@@ -1,9 +1,9 @@
 "use client"
 
-import { type ThemeScheme } from "@repo/shared"
+import type { ThemeScheme } from "@repo/shared"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ThemeProvider, useTheme } from "@/hooks/useTheme"
+import { useTheme } from "@/hooks/useTheme"
 import type { OnboardingPrefs } from "./prefs"
 import ProgressHeader from "./ProgressHeader"
 import WelcomeSlide from "./WelcomeSlide"
@@ -37,16 +37,11 @@ type Props = {
 }
 
 export default function OnboardingFlow({ userName, initialPrefs }: Props) {
-  return (
-    <ThemeProvider initialScheme={initialPrefs.theme}>
-      <OnboardingSurface userName={userName} initialPrefs={initialPrefs} />
-    </ThemeProvider>
-  )
-}
-
-function OnboardingSurface({ userName, initialPrefs }: Props) {
   const router = useRouter()
-  const { colors, vars, setScheme } = useTheme()
+  const { colors, vars, scheme, setScheme } = useTheme()
+  // Empty while following the system: the stylesheet's `prefers-color-scheme` block
+  // is already right, and an inline page colour here would outrank it.
+  const surfaceBackground = vars.colorScheme ? colors.page : undefined
 
   const [currentSlide, setCurrentSlide] = useState<number>(SLIDE.welcome)
   const [username, setUsername] = useState("")
@@ -56,16 +51,27 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
   const [isFinishing, setIsFinishing] = useState(false)
   const [finishError, setFinishError] = useState<string | null>(null)
 
-  // Live theme preview: tapping a theme repaints the running flow, as
-  // `setColorScheme` does on mobile, scoped to this provider. A ref, not state:
-  // it is read in an unmount cleanup, so a state flag would re-run the effect.
+  // The saved theme is what this page edits, so the app is put on it before the
+  // picker is drawn. Refs, not state: both are read in the unmount cleanup, where
+  // a state flag would re-run the effect.
   const didCommit = useRef(false)
+  const didSeed = useRef(false)
+  const didPreview = useRef(false)
 
+  useEffect(() => {
+    if (didSeed.current) return
+    didSeed.current = true
+    if (scheme !== initialPrefs.theme) setScheme(initialPrefs.theme)
+  }, [scheme, initialPrefs.theme, setScheme])
+
+  /* The preview is a draft of the app's scheme, not a private one: leaving the
+     flow without finishing puts the saved theme back, rather than leaving a
+     half-committed choice in the cookie. */
   useEffect(
     () => () => {
-      if (!didCommit.current) setScheme("system")
+      if (!didCommit.current && didPreview.current) setScheme(initialPrefs.theme)
     },
-    [setScheme],
+    [setScheme, initialPrefs.theme],
   )
 
   // A plain generic function rather than a `useCallback`: hoisting the generic
@@ -163,7 +169,9 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
   }
 
   async function handleSkip() {
-    const err = await savePreferences({ onBoarded: true })
+    // Whatever the earlier slides already collected is kept: skipping the rest is
+    // not undoing them. Dropping the theme here is how a chosen look was lost.
+    const err = await savePreferences({ ...prefs, onBoarded: true })
     if (err) {
       goTo(SLIDE.review)
       return
@@ -179,7 +187,7 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
       className="flex flex-col"
       style={{
         ...vars,
-        backgroundColor: colors.page,
+        backgroundColor: surfaceBackground,
         // Claims the viewport below the shell header. A definite height lets the
         // column hand its free space to the slide; `dvh` tracks the mobile URL bar.
         height: "calc(100dvh - var(--shell-header-h))",
@@ -229,8 +237,10 @@ function OnboardingSurface({ userName, initialPrefs }: Props) {
             prefs={prefs}
             onChange={(key, value) => {
               updatePref(key, value)
-              // Repaint immediately so the choice is seen, not described.
+              // Repaint immediately so the choice is seen, not described. The nav
+              // repaints with it, being the same provider.
               if (key === "theme") {
+                didPreview.current = true
                 setScheme(value as ThemeScheme)
               }
             }}

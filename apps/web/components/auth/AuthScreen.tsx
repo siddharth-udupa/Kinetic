@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { signIn, signUp } from "@/lib/auth-client"
 import { ICONS, type IconName } from "@/components/onboarding/icons"
 import { Banner, IconBadge, PrimaryButton, Segmented } from "@/components/onboarding/primitives"
-import { ThemeProvider, useTheme } from "@/hooks/useTheme"
+import { useTheme } from "@/hooks/useTheme"
 
 type Mode = "signin" | "signup"
 
@@ -114,17 +114,12 @@ function Field({ id, label, icon, trailing, className, ...inputProps }: FieldPro
 }
 
 export default function AuthScreen() {
-  return (
-    <ThemeProvider>
-      <AuthSurface />
-    </ThemeProvider>
-  )
-}
-
-function AuthSurface() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { colors, vars } = useTheme()
+  // Empty while following the system: the stylesheet's `prefers-color-scheme` block
+  // is already right, and an inline page colour here would outrank it.
+  const surfaceBackground = vars.colorScheme ? colors.page : undefined
 
   const [mode, setMode] = useState<Mode>("signin")
   const [name, setName] = useState("")
@@ -209,7 +204,7 @@ function AuthSurface() {
       className="flex flex-col"
       style={{
         ...vars,
-        backgroundColor: colors.page,
+        backgroundColor: surfaceBackground,
         // Claims the viewport below the shell header so the action stays pinned.
         height: "calc(100dvh - var(--shell-header-h))",
       }}

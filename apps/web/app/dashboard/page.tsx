@@ -25,12 +25,6 @@ export default async function Dashboard() {
 
   return (
     <div className="bg-page">
-      <div className="flex justify-end">
-        <Link
-          href={"/upload"}
-          className="m-4 px-6 py-4 bg-accent text-on-accent text-xl rounded-xl"
-        >Upload Activitiy</Link>
-      </div>
       {initialActivities ? <ActivityFeed initialActivities={initialActivities} userPreferences={userPreferences} userId={userId} userName={userName} /> : <div className="p-4 text-center text-sm font-medium text-ink-muted">Something went wrong. Try again later</div>}
     </div>
   )

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shell/Navbar";
 import { AppShell } from "@/components/shell/AppShell";
-import { readSchemeHint, THEME_COOKIE, themeInitScript, themeInitStyle } from "@/lib/theme-init";
+import { readSchemeHint, THEME_COOKIE, themeInitStyle } from "@/lib/theme-init";
 import { APP_NAME, APP_TAGLINE } from "@repo/shared";
 import { cookies } from "next/headers";
 
@@ -27,8 +27,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  /* The browser's answer to the theme question, stored in a cookie by the script
-     below. Without it every server render guesses light. */
+  /* An explicit Light or Dark choice, from the cookie the app writes when the
+     visitor picks one. Nothing else: without a choice the server renders light
+     and the stylesheet's `prefers-color-scheme` block corrects it before paint. */
   const schemeHint = readSchemeHint((await cookies()).get(THEME_COOKIE)?.value);
 
   return (
@@ -41,10 +42,6 @@ export default async function RootLayout({
             nothing here mutates a node React hydrates. */}
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: build-time constant, no user input */}
         <style dangerouslySetInnerHTML={{ __html: themeInitStyle() }} />
-        {/* Blocking on purpose: it has to run before first paint, so it cannot wait
-            on a request. */}
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: build-time constant, no user input */}
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript() }} />
       </head>
     {/* `min-h-full`, not `h-full`: a definite height clips any page taller than the
         viewport. Full-height pages take a viewport-based height of their own. */}

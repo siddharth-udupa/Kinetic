@@ -3,6 +3,7 @@
 import { type ColorTokens, getColors, type ThemeScheme } from "@repo/shared"
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -10,9 +11,12 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react"
+import { writeSchemeHint } from "@/lib/theme-init"
 
 // Colours reach the DOM as `--color-*` custom properties on a wrapper, not `dark:`
-// classes, so the appearance preview can repaint the screen live.
+// classes, so the appearance preview can repaint the screen live. One provider
+// owns the scheme for the whole app: a second one, nested, would repaint only the
+// subtree below it and leave the header on the scheme the server painted.
 
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 
@@ -20,8 +24,18 @@ function kebab(token: string): string {
   return token.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)
 }
 
-/** The same tokens, as the custom properties `packages/shared/theme.css` declares. */
-function toVariables(colors: ColorTokens, isDark: boolean): CSSProperties {
+/** Shared so an unchanged scheme keeps the same object and React does not rewrite
+ *  the style attribute on every render. */
+const NO_VARIABLES: CSSProperties = {}
+
+/* The same tokens, as the custom properties `packages/shared/theme.css` declares.
+   Empty for a scheme the visitor did not pick: `theme.css` already darkens
+   `:root` under `prefers-color-scheme`, so publishing the server's guess would
+   outrank a stylesheet that is right — and freeze the page to whatever the OS
+   was when the request was made. Only an explicit choice needs an override. */
+function toVariables(colors: ColorTokens, isDark: boolean, scheme: ThemeScheme): CSSProperties {
+  if (scheme === "system") return NO_VARIABLES
+
   const variables: Record<string, string> = {}
 
   for (const [token, value] of Object.entries(colors)) {
@@ -56,7 +70,8 @@ type ThemeContextValue = {
   /** The live override driving the preview, not the value being edited. */
   scheme: ThemeScheme
   setScheme: (scheme: ThemeScheme) => void
-  /** The same palette as `--color-*` custom properties, for a `style` prop. */
+  /** The palette as `--color-*` custom properties, for a `style` prop. Empty while
+   *  following the system — see `toVariables`. */
   vars: CSSProperties
 }
 
@@ -69,12 +84,20 @@ export function ThemeProvider({
   children: ReactNode
   initialScheme?: ThemeScheme
 }) {
-  // Seeded from the stored preference, so the picker shows what the page renders.
-  const [scheme, setScheme] = useState<ThemeScheme>(initialScheme)
+  // Seeded from the stored choice, so the picker shows what the page renders.
+  const [scheme, setStoredScheme] = useState<ThemeScheme>(initialScheme)
   const systemIsDark = useSyncExternalStore(subscribeToSystemScheme, getSystemScheme, getServerScheme)
 
   const isDark = scheme === "dark" || (scheme === "system" && systemIsDark)
   const colors = getColors(isDark ? "dark" : "light")
+
+  /* A choice has to outlive the page. Left only in memory it is gone on the next
+     request, and the server paints the scheme the visitor no longer wants — the
+     header snapping back a reload after a change. */
+  const setScheme = useCallback((next: ThemeScheme) => {
+    setStoredScheme(next)
+    writeSchemeHint(next)
+  }, [])
 
   const value = useMemo<ThemeContextValue>(
     () => ({
@@ -82,9 +105,9 @@ export function ThemeProvider({
       colors,
       scheme,
       setScheme,
-      vars: toVariables(colors, isDark),
+      vars: toVariables(colors, isDark, scheme),
     }),
-    [isDark, colors, scheme],
+    [isDark, colors, scheme, setScheme],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
