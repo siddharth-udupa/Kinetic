@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { decodePolyline } from "@repo/gpx"
-import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
+import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
 import { useTheme } from "@/hooks/useTheme"
 
 let MapLibreModule: typeof import("@maplibre/maplibre-react-native") | null = null
@@ -105,11 +105,24 @@ export default function MapView({
     return [minLng, minLat, maxLng, maxLat] as import("@maplibre/maplibre-react-native").LngLatBounds
   }, [routeGeoJSON, points])
 
-  const defaultCenter: [number, number] = useMemo(() => (
-    userLocation
-      ? [userLocation.longitude, userLocation.latitude]
-      : [-0.09, 51.505]
-  ), [userLocation])
+  const defaultView = useMemo(() => {
+    if (userLocation) {
+      return {
+        center: [userLocation.longitude, userLocation.latitude] as [number, number],
+        zoom: 15,
+      }
+    }
+
+    // A provider with its own coverage (the South India tiles) carries the view
+    // it should open on; unrestricted providers keep the world default.
+    const providerView = getTileProviderView(providerId)
+    return providerView.center
+      ? {
+          center: [providerView.center[0], providerView.center[1]] as [number, number],
+          zoom: providerView.center[2],
+        }
+      : { center: [-0.09, 51.505] as [number, number], zoom: 15 }
+  }, [providerId, userLocation])
 
   const mapStyle = useMemo(
     () => getMapLibreStyle(providerId),
@@ -186,7 +199,7 @@ export default function MapView({
                 bounds: cameraBounds,
                 padding: boundsPadding || { top: 24, bottom: 24, left: 24, right: 24 },
               }
-            : { center: defaultCenter, zoom: 15 })}
+            : { center: defaultView.center, zoom: defaultView.zoom })}
         />
 
         {routeGeoJSON && (

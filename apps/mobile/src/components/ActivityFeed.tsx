@@ -50,7 +50,6 @@ export default function ActivityFeed({
           user={user}
         />
       )}
-      ListHeaderComponent={ListHeaderComponent}
       ListEmptyComponent={
         error ? (
           <View className="p-8 items-center justify-center">
@@ -72,33 +71,5 @@ export default function ActivityFeed({
       refreshing={refreshing}
       onRefresh={onRefresh}
     />
-  )
-}
-
-function ListHeaderComponent() {
-  const { colors } = useTheme()
-
-  return (
-    <View>
-      <View className="bg-surface p-4 mb-2 border-b border-line flex-row items-center justify-between">
-        <View>
-          <Text className="text-ink-muted text-xs uppercase font-semibold">
-            Weekly Goal
-          </Text>
-          <Text className="text-ink text-lg font-bold mt-0.5">
-            24.6 / 35.0 km
-          </Text>
-          <View className="w-48 h-2 bg-surface-muted rounded-full mt-2 overflow-hidden">
-            <View className="w-3/4 h-full bg-accent rounded-full" />
-          </View>
-        </View>
-        <TouchableOpacity className="bg-surface-muted px-3 py-2 rounded-lg flex-row items-center border border-line-strong">
-          <Ionicons name="trophy-outline" size={16} color={colors.accent} />
-          <Text className="text-ink text-xs font-semibold ml-1.5">
-            View Goals
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
   )
 }

@@ -5,7 +5,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
-import { getMapLibreStyle, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
+import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
 import { useTheme } from '@/hooks/useTheme'
 
 type MapClientProps = {
@@ -55,8 +55,18 @@ export default function MapClient({
     ]
   }, [points])
 
+  // The default provider has bounded coverage, so open on the view it declares
+  // rather than a world city whose tiles it does not contain.
+  const providerView = getTileProviderView(DEFAULT_TILE_PROVIDER)
+
   const defaultCenter: [number, number] =
-    points.length > 0 ? [points[0]!.lng, points[0]!.lat] : [-0.09, 51.505]
+    points.length > 0
+      ? [points[0]!.lng, points[0]!.lat]
+      : providerView.center
+        ? [providerView.center[0], providerView.center[1]]
+        : [-0.09, 51.505]
+
+  const defaultZoom = providerView.center?.[2] ?? 13
 
   const updateRouteLayer = (map: maplibregl.Map) => {
     if (!routeGeoJSON) return
@@ -96,7 +106,7 @@ export default function MapClient({
       container: mapContainerRef.current,
       style: initialStyle,
       center: defaultCenter,
-      zoom: 13,
+      zoom: defaultZoom,
       interactive: !isStatic,
       attributionControl: !isStatic ? undefined : false,
     })

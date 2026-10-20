@@ -36,7 +36,9 @@ export const tileProviders = {
     minZoom: 4,
     maxZoom: 12,
     bounds: [73.193, 7.812, 81.638, 16.479],
-    center: [77.4155, 12.1455, 8],
+    // Bangalore: the region tiles are most useful around, rather than the
+    // geometric centre of the bounding box.
+    center: [77.5946, 12.9716, 10],
     layers: southIndiaLayers,
   },
 } satisfies Record<string, TileProvider>

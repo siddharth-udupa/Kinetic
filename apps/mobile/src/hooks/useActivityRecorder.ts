@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { AppState, type AppStateStatus } from "react-native"
 import {
+  getCurrentPosition,
   isValidLocationPoint,
   subscribeToLocationUpdates,
   startBackgroundLocationTask,
@@ -66,25 +67,6 @@ function coordsToPoint(coords: { latitude: number; longitude: number; altitude?:
     accuracy: coords.accuracy ?? null,
     timestamp,
   }
-}
-
-/** Get the current position using expo-location or web geolocation. */
-function getCurrentPosition(): Promise<ActivityPoint | null> {
-  return new Promise((resolve) => {
-    if (Location && typeof Location.getCurrentPositionAsync === "function") {
-      Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
-        .then((loc) => resolve(loc?.coords ? coordsToPoint(loc.coords, loc.timestamp) : null))
-        .catch(() => resolve(null))
-    } else if (typeof navigator !== "undefined" && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve(coordsToPoint(pos.coords, pos.timestamp)),
-        () => resolve(null),
-        { enableHighAccuracy: true },
-      )
-    } else {
-      resolve(null)
-    }
-  })
 }
 
 const hasExpoLocation = Boolean(Location && typeof Location.requestForegroundPermissionsAsync === "function")

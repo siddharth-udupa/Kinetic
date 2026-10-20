@@ -167,8 +167,13 @@ export function TabBar({ activeTab, onSelect, onRecord }: TabBarProps) {
             className="flex-1 items-center justify-center py-1"
           >
             <View
-              className="h-8 w-14 items-center justify-center rounded-full"
-              style={{ backgroundColor: isActive ? colors.accentSoft : "transparent" }}
+              className="h-8 w-14 items-center justify-center"
+              style={{
+                // Half the 32px plate height, so the active background is a pill
+                // instead of a rounded rectangle.
+                borderRadius: 16,
+                backgroundColor: isActive ? colors.accentSoft : "transparent",
+              }}
             >
               <Ionicons
                 name={isActive ? tab.iconActive : tab.icon}

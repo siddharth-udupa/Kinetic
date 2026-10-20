@@ -24,7 +24,7 @@ export default function TileProviderPicker({
       <TouchableOpacity
         onPress={() => setIsPickerOpen(true)}
         style={triggerStyle}
-        className="absolute top-3 right-3 z-10 bg-surface/90 border border-line-strong px-3 py-1.5 rounded-full shadow-md flex-row items-center active:opacity-80"
+        className="absolute top-3 right-3 z-10 bg-surface border border-line-strong px-3 py-1.5 rounded-full shadow-md flex-row items-center active:opacity-80"
       >
         <Ionicons name="layers" size={16} color={colors.accent} />
         <Text className="text-ink text-xs font-semibold ml-1.5" numberOfLines={1}>

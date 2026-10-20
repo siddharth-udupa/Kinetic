@@ -40,6 +40,60 @@ function coordsToPoint(coords: any, timestamp: number): ActivityPoint {
   }
 }
 
+/** Read the device's current position using expo-location or web geolocation. */
+export function getCurrentPosition(): Promise<ActivityPoint | null> {
+  return new Promise((resolve) => {
+    if (Location && typeof Location.getCurrentPositionAsync === "function") {
+      Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
+        .then((loc) => resolve(loc?.coords ? coordsToPoint(loc.coords, loc.timestamp) : null))
+        .catch(() => resolve(null))
+    } else if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve(coordsToPoint(pos.coords, pos.timestamp)),
+        () => resolve(null),
+        { enableHighAccuracy: true },
+      )
+    } else {
+      resolve(null)
+    }
+  })
+}
+
+/** Current position only when permission has already been granted. Never prompts,
+ *  so screens that merely want to follow the athlete can call it safely. */
+export async function getCurrentPositionIfPermitted(): Promise<ActivityPoint | null> {
+  if (Platform.OS !== "web") {
+    if (!Location || typeof Location.getForegroundPermissionsAsync !== "function") return null
+
+    try {
+      const permission = await Location.getForegroundPermissionsAsync()
+      if (permission.status !== "granted") return null
+      return await getCurrentPosition()
+    } catch {
+      return null
+    }
+  }
+
+  if (typeof navigator === "undefined" || !navigator.geolocation) return null
+
+  // `getCurrentPosition` prompts while the state is undetermined, so read the
+  // Permissions API first and keep the caller's default when it is not granted.
+  try {
+    const permission = await navigator.permissions?.query({ name: "geolocation" })
+    if (permission?.state !== "granted") return null
+  } catch {
+    return null
+  }
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve(coordsToPoint(pos.coords, pos.timestamp)),
+      () => resolve(null),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
+    )
+  })
+}
+
 /** Stop any stale/orphaned background location task on startup. */
 export async function cleanupStaleLocationTasks(): Promise<void> {
   if (!Location?.hasStartedLocationUpdatesAsync) return
