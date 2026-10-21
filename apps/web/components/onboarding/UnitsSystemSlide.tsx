@@ -2,9 +2,8 @@
 
 import { ICONS } from "./icons"
 import { ChoiceCard, PrimaryButton, SlideHeading, SlideShell } from "./primitives"
+import { SYSTEMS, type OnboardingPrefs, type UnitSystem } from "@repo/units"
 import { useTheme } from "@/hooks/useTheme"
-import { SYSTEMS, type UnitSystem } from "./prefs"
-import type { OnboardingPrefs } from "./prefs"
 
 type Props = {
   prefs: OnboardingPrefs

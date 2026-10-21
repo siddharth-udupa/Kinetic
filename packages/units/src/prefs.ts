@@ -1,16 +1,35 @@
-import type { IconName, PrefValue } from "./primitives"
+import type { DistanceUnit, ElevationUnit, PaceUnit, SpeedUnit } from "./types"
 
+/**
+ * The preference fields onboarding writes. The unit fields reuse the conversion
+ * types so a new unit cannot be added to one side and missed by the other.
+ */
 export type OnboardingPrefs = {
   theme: "system" | "dark" | "light"
-  distanceUnit: "metric" | "imperial"
-  elevationUnit: "meters" | "feet"
-  paceUnit: "min/km" | "min/mi"
-  speedUnit: "km/h" | "mph" | "m/s"
+  distanceUnit: DistanceUnit
+  elevationUnit: ElevationUnit
+  paceUnit: PaceUnit
+  speedUnit: SpeedUnit
   weightUnit: "kg" | "lb"
   timeFormat: "12h" | "24h"
 }
 
-export type UnitSystem = "metric" | "imperial"
+export type UnitSystem = DistanceUnit
+
+/** A pref value narrowed to a string, so the generic setting rows can constrain on it. */
+export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & string
+
+/**
+ * The Ionicons names used by the unit settings. Each app maps these onto its own
+ * renderer — Ionicons on mobile, lucide on web — rather than this package owning
+ * a component library.
+ */
+export type UnitIconName =
+  | "speedometer-outline"
+  | "flag-outline"
+  | "trending-up-outline"
+  | "timer-outline"
+  | "barbell-outline"
 
 /** Everything a single system choice implies, so one tap fills the rest in. */
 export const SYSTEM_DEFAULTS: Record<
@@ -39,7 +58,7 @@ export const SYSTEM_DEFAULTS: Record<
 export const SYSTEMS: {
   value: UnitSystem
   label: string
-  icon: IconName
+  icon: UnitIconName
   summary: string
   chips: string[]
 }[] = [
@@ -62,7 +81,7 @@ export const SYSTEMS: {
 type Setting<K extends keyof OnboardingPrefs> = {
   key: K
   label: string
-  icon: IconName
+  icon: UnitIconName
   options: { label: string; value: PrefValue<K> }[]
 }
 

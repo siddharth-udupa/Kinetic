@@ -2,15 +2,10 @@ import type { ReactNode } from "react"
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { COLORS, getColors } from "@repo/shared"
+import type { OnboardingPrefs, PrefValue } from "@repo/units"
 import { useTheme } from "@/hooks/useTheme"
-import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
 export type IconName = keyof typeof Ionicons.glyphMap
-
-/**
- * A preference value narrowed to a string, so the generic components below can constrain on it.
- */
-export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & string
 
 /** The frame every slide shares: a scrolling body and an optional pinned footer. `flexGrow` lets a
  *  short slide breathe instead of stretching its contents. */

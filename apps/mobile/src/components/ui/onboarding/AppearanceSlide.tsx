@@ -9,9 +9,8 @@ import {
   ThemePreview,
   type IconName,
 } from "./primitives"
+import { THEME_LABELS, TIME_LABELS, type OnboardingPrefs } from "@repo/units"
 import { useTheme } from "@/hooks/useTheme"
-import { THEME_LABELS, TIME_LABELS } from "./prefs"
-import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
 type Props = {
   prefs: OnboardingPrefs

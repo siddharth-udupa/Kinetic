@@ -2,16 +2,13 @@
 
 import type { ReactNode } from "react"
 import { COLORS, getColors } from "@repo/shared"
+import type { OnboardingPrefs, PrefValue } from "@repo/units"
 import { ICONS, type IconName } from "./icons"
 import { useTheme } from "@/hooks/useTheme"
-import type { OnboardingPrefs } from "./prefs"
 
 export type { IconName }
 
 const ChevronForward = ICONS["chevron-forward"]
-
-/** A pref value narrowed to a string. TypeScript cannot prove the union for an unresolved `K`. */
-export type PrefValue<K extends keyof OnboardingPrefs> = OnboardingPrefs[K] & string
 
 /** Focus ring for every control. Mobile draws its own; a browser needs an explicit one. */
 const FOCUS =

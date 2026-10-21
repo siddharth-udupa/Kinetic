@@ -7,7 +7,6 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
-import { useTheme } from "@/hooks/useTheme"
 import {
   ELEVATION_LABELS,
   PACE_LABELS,
@@ -16,8 +15,9 @@ import {
   THEME_LABELS,
   TIME_LABELS,
   WEIGHT_LABELS,
-} from "./prefs"
-import type { OnboardingPrefs } from "@/hooks/useOnboarding"
+  type OnboardingPrefs,
+} from "@repo/units"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   prefs: OnboardingPrefs

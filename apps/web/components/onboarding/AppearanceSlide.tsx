@@ -9,9 +9,8 @@ import {
   SlideShell,
   ThemePreview,
 } from "./primitives"
+import { THEME_LABELS, TIME_LABELS, type OnboardingPrefs } from "@repo/units"
 import { useTheme } from "@/hooks/useTheme"
-import { THEME_LABELS, TIME_LABELS } from "./prefs"
-import type { OnboardingPrefs } from "./prefs"
 
 type Props = {
   prefs: OnboardingPrefs

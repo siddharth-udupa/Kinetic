@@ -1,10 +1,10 @@
 "use client"
 
 import type { ThemeScheme } from "@repo/shared"
+import type { OnboardingPrefs } from "@repo/units"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "@/hooks/useTheme"
-import type { OnboardingPrefs } from "./prefs"
 import ProgressHeader from "./ProgressHeader"
 import WelcomeSlide from "./WelcomeSlide"
 import UsernameSlide from "./UsernameSlide"

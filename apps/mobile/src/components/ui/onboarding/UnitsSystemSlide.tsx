@@ -6,9 +6,8 @@ import {
   SlideHeading,
   SlideShell,
 } from "./primitives"
+import { SYSTEMS, type OnboardingPrefs, type UnitSystem } from "@repo/units"
 import { useTheme } from "@/hooks/useTheme"
-import { SYSTEMS, type UnitSystem } from "./prefs"
-import type { OnboardingPrefs } from "@/hooks/useOnboarding"
 
 type Props = {
   prefs: OnboardingPrefs

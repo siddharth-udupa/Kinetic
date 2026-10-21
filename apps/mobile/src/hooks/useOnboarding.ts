@@ -1,19 +1,12 @@
 import { useState } from "react"
 import type { PreferencesType } from "@repo/types"
+import type { OnboardingPrefs } from "@repo/units"
 import { authClient } from "@/lib/auth-client"
 import { DEFAULT_PREFERENCES, applyServerPreferences } from "@/lib/preferencesStore"
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL!
 
-export type OnboardingPrefs = {
-  theme: "system" | "dark" | "light"
-  distanceUnit: "metric" | "imperial"
-  elevationUnit: "meters" | "feet"
-  paceUnit: "min/km" | "min/mi"
-  speedUnit: "km/h" | "mph" | "m/s"
-  weightUnit: "kg" | "lb"
-  timeFormat: "12h" | "24h"
-}
+export type { OnboardingPrefs }
 
 /** Derived from the column defaults so the two can't drift apart. */
 export const DEFAULT_PREFS: OnboardingPrefs = {

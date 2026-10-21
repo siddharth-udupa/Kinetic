@@ -8,7 +8,6 @@ import {
   SlideShell,
   TextAction,
 } from "./primitives"
-import { useTheme } from "@/hooks/useTheme"
 import {
   ELEVATION,
   PACE,
@@ -17,9 +16,10 @@ import {
   SYSTEM_LABELS,
   WEIGHT,
   systemChips,
+  type OnboardingPrefs,
   type UnitSystem,
-} from "./prefs"
-import type { OnboardingPrefs } from "@/hooks/useOnboarding"
+} from "@repo/units"
+import { useTheme } from "@/hooks/useTheme"
 
 type Props = {
   prefs: OnboardingPrefs
