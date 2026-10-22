@@ -5,11 +5,12 @@ import type { ActivityCardType, PreferencesType } from "@repo/types"
 
 const ActivityCard = lazy(() => import("./ActivityCard"))
 
-export default function ActivityFeed({ initialActivities, userPreferences, userId, userName }: {
+export default function ActivityFeed({ initialActivities, userPreferences, userId, userName, userImage }: {
   initialActivities: ActivityCardType[],
   userPreferences: PreferencesType,
   userId: string,
-  userName: string
+  userName: string,
+  userImage?: string | null
 }) {
 
   const [activities, setActivities] = useState(initialActivities)
@@ -56,7 +57,7 @@ export default function ActivityFeed({ initialActivities, userPreferences, userI
     <div className="bg-page">
       {activities.map((a) => (
         <Suspense key={a.activityId} fallback={<div className="my-6 p-4 md:p-5 mx-auto w-full max-w-xl bg-surface-muted/70 border border-line rounded-xl h-96 animate-pulse" />}>
-          <ActivityCard activities={a} userPreferences={userPreferences} userName={userName} />
+          <ActivityCard activities={a} userPreferences={userPreferences} userName={userName} userImage={userImage} />
         </Suspense>
       ))}
 

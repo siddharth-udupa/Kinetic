@@ -7,6 +7,7 @@ import { headers } from "next/headers"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect, notFound } from "next/navigation"
+import { User } from "lucide-react"
 
 
 export default async function Activity({ params }: { params: Promise<{ id: string }> }) {
@@ -96,14 +97,18 @@ export default async function Activity({ params }: { params: Promise<{ id: strin
               <div className="flex flex-col md:flex-row gap-6">
 
                 <div className="flex-1 flex gap-4">
-                  <div className="w-28 h-28 shrink-0 rounded-full overflow-hidden flex items-center justify-center border border-line">
-                    <Image
-                      width={112}
-                      height={112}
-                      loading={"eager"}
-                      src="/temphoto.png"
-                      alt="Profile"
-                    />
+                  <div className="w-28 h-28 shrink-0 rounded-full overflow-hidden flex items-center justify-center border border-line bg-surface-muted">
+                    {session.user.image ? (
+                      <Image
+                        width={112}
+                        height={112}
+                        loading={"eager"}
+                        src={session.user.image}
+                        alt="Profile"
+                      />
+                    ) : (
+                      <User className="size-12 text-ink-muted" aria-hidden="true" />
+                    )}
                   </div>
 
                   <div>

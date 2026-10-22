@@ -21,6 +21,7 @@ import {
 	Route,
 	ThumbsUp,
 	Timer,
+	User,
 	Waves,
 } from "lucide-react";
 import Image from "next/image";
@@ -34,6 +35,7 @@ type ActivityProp = {
 	activities: ActivityCardType;
 	userPreferences: PreferencesType;
 	userName: string;
+	userImage?: string | null;
 	isVisible?: boolean;
 };
 
@@ -62,6 +64,7 @@ export default function ActivityCard({
 	activities,
 	userPreferences,
 	userName,
+	userImage,
 	isVisible: explicitIsVisible,
 }: ActivityProp) {
 	const router = useRouter();
@@ -171,14 +174,19 @@ export default function ActivityCard({
 						className="relative shrink-0 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 						aria-label={`View activities by ${userName || "user"}`}
 					>
-						<Image
-							width={48}
-							height={48}
-							src="/temphoto.png"
-							alt={userName || "User Profile"}
-							className="size-12 rounded-full object-cover ring-2 ring-surface transition-transform duration-200 hover:scale-105 sm:size-13"
-						/>
-						<span className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full border-2 border-surface bg-success" />
+						{userImage ? (
+							<Image
+								width={48}
+								height={48}
+								src={userImage}
+								alt={userName || "User Profile"}
+								className="size-12 rounded-full object-cover ring-2 ring-surface transition-transform duration-200 hover:scale-105 sm:size-13"
+							/>
+						) : (
+							<span className="flex size-12 items-center justify-center rounded-full bg-surface-muted text-ink-muted ring-2 ring-surface sm:size-13">
+								<User className="size-6" aria-hidden="true" />
+							</span>
+						)}
 					</button>
 
 					<div className="min-w-0">

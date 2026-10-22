@@ -14,7 +14,7 @@ export default async function Dashboard() {
     redirect("/auth")
   }
 
-  const { id: userId , name: userName} = session.user
+  const { id: userId , name: userName, image: userImage } = session.user
 
   const initialActivities = await getActivitiesByUser(session?.user.id, 5, 0)
   let userPreferences = await getUserPreferences(session?.user.id)
@@ -25,7 +25,7 @@ export default async function Dashboard() {
 
   return (
     <div className="bg-page">
-      {initialActivities ? <ActivityFeed initialActivities={initialActivities} userPreferences={userPreferences} userId={userId} userName={userName} /> : <div className="p-4 text-center text-sm font-medium text-ink-muted">Something went wrong. Try again later</div>}
+      {initialActivities ? <ActivityFeed initialActivities={initialActivities} userPreferences={userPreferences} userId={userId} userName={userName} userImage={userImage} /> : <div className="p-4 text-center text-sm font-medium text-ink-muted">Something went wrong. Try again later</div>}
     </div>
   )
 }
