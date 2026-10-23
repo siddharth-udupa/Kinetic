@@ -9,8 +9,7 @@ allowBuilds:
   # Native binary for the Tailwind v4 oxide engine.
   '@tailwindcss/oxide': true
   lightningcss: true
-# The RC pairs must be exact. Nativewind delegates CSS parsing to lightningcss, and
-# the install guide pins it because newer builds fail to deserialize global.css.
+  '@shopify/react-native-skia': true
 overrides:
   lightningcss: 1.30.1
 minimumReleaseAgeExclude:
