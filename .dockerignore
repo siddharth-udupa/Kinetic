@@ -4,3 +4,17 @@
 **/*.md
 **/.env*
 **/drizzle
+
+# Generated/native build output — not needed to run the three servers.
+**/.expo
+**/android
+**/ios
+**/*.tsbuildinfo
+
+# The tileset is mounted into the tile-provider at runtime from
+# apps/tile-provider/data (see compose.yaml), not baked into the image.
+**/*.mbtiles
+**/*.mbtiles-*
+**/*.osm.pbf
+**/*.pmtiles
+**/*.pbf

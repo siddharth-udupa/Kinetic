@@ -21,7 +21,7 @@ pnpm tiles
 | --------------- | --------------------- | ------------------------------------------- |
 | `PORT`          | `4000`                | Port to listen on                           |
 | `HOST`          | `0.0.0.0`             | Address to bind                             |
-| `TILES_DB_PATH` | `./data/tiles.mbtiles` | The `.mbtiles` file to serve (read-only)    |
+| `TILES_DB_PATH` | `./data/south-india.mbtiles` | The `.mbtiles` file to serve (read-only)    |
 
 Boot fails with a plain message if the file is missing, is not an MBTiles file,
 or the port is taken, rather than starting a server that 404s everything.

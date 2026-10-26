@@ -9,6 +9,8 @@
     "app": "pnpm --filter mobile dev",
     "app:android": "pnpm --filter mobile android",
     "tiles": "pnpm --filter tile_provider dev",
+    "compose:up": "docker compose up --build",
+    "compose:down": "docker compose down",
     "lint": "biome lint",
     "dbg": "pnpm --filter db dbg",
     "dbm": "pnpm --filter db dbm",

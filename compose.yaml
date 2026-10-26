@@ -1,0 +1,101 @@
+name: kinetic
+
+# Runs the three local servers:
+#   web     — Next.js app + API + Better Auth (:3000)
+#   tiles   — Cpeak vector-tile server (:4000), serving apps/tile-provider/data
+#   mobile  — Expo/Metro bundler + web preview (:8081)
+#
+# The web/mobile runtimes read apps/web/.env and apps/mobile/.env if they exist
+# (both are optional and gitignored). Edit those files to change runtime values.
+# Shell variables override the build args, e.g.:
+#   NEXT_PUBLIC_TILE_SERVER_URL=http://192.168.1.20:4000 docker compose build web
+
+services:
+  tiles:
+    build:
+      context: .
+      target: tiles
+    image: kinetic-tiles
+    ports:
+      - "4000:4000"
+    volumes:
+      # Read-only: the .mbtiles is a finished artefact. Keeping it out of the
+      # image avoids a 400 MB build layer and lets you swap tilesets by editing
+      # this path / TILES_DB_PATH.
+      - ./apps/tile-provider/data:/app/data:ro
+    environment:
+      TILES_DB_PATH: /app/data/south-india.mbtiles
+      PORT: 4000
+      HOST: 0.0.0.0
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        # Only used while Next collects page data. The runtime DATABASE_URL
+        # comes from apps/web/.env (or the shell) below.
+        DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:5432/kinetic}
+        # Inlined into the browser bundle, so it must be set at build time.
+        NEXT_PUBLIC_TILE_SERVER_URL: ${NEXT_PUBLIC_TILE_SERVER_URL:-http://localhost:4000}
+    image: kinetic-web
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: apps/web/.env
+        required: false
+    # The host's resolver (the router at 192.168.31.1 here) can REFUSE Neon
+    # hostnames, which surfaces inside the container as getaddrinfo EAI_AGAIN.
+    # Pin public resolvers so the DB/OAuth lookups do not depend on the LAN
+    # router. Override with DOCKER_DNS / DOCKER_DNS_FALLBACK if your network
+    # blocks public DNS.
+    dns:
+      - ${DOCKER_DNS:-1.1.1.1}
+      - ${DOCKER_DNS_FALLBACK:-8.8.8.8}
+    environment:
+      # Kept out of the image; the build can run without it.
+      NODE_ENV: production
+      PORT: 3000
+    depends_on:
+      tiles:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  mobile:
+    build:
+      context: .
+      target: mobile
+    image: kinetic-mobile
+    ports:
+      - "8081:8081"
+    env_file:
+      - path: apps/mobile/.env
+        required: false
+    environment:
+      # EXPO_PUBLIC_API_URL and EXPO_PUBLIC_TILE_SERVER_URL come from
+      # apps/mobile/.env (or the shell). They are inlined when Metro bundles,
+      # so restart the service after changing them. For a physical phone use
+      # your LAN IP, not localhost, and set REACT_NATIVE_PACKAGER_HOSTNAME to
+      # that same IP so the QR code / bundle URL is reachable.
+      REACT_NATIVE_PACKAGER_HOSTNAME: ${REACT_NATIVE_PACKAGER_HOSTNAME:-localhost}
+      BROWSER: none
+    depends_on:
+      web:
+        condition: service_started
+      tiles:
+        condition: service_started
+    # Expo's CLI is interactive when it starts. Keep stdin open so it behaves
+    # like a normal dev server rather than exiting in CI mode.
+    stdin_open: true
+    tty: true

@@ -13,5 +13,5 @@ export const env = {
   host: process.env.HOST ?? "0.0.0.0",
   port: num(process.env.PORT, 4000),
   /** The read-only .mbtiles file to serve. */
-  dbPath: process.env.TILES_DB_PATH ?? path.resolve("data/tiles.mbtiles"),
+  dbPath: process.env.TILES_DB_PATH ?? path.resolve("data/south-india.mbtiles"),
 }

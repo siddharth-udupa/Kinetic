@@ -126,7 +126,7 @@ Strava-clone/
 | `tsconfig` inheritance | `tsconfig.base.json` (strict) → `tsconfig.node.json` (NodeNext) for packages & mobile-adjacent, → `tsconfig.react.json` (Bundler, ES2017) for web. `packages/maps` is the odd one out: it uses `base` + `moduleResolution: "bundler"` because it is browser-targeted. |
 | Linting | **Biome is the real linter** (`pnpm lint` → `biome lint`, tab indent). `apps/web` additionally has an unused `eslint.config.mjs` + `eslint` script. Two formatters, hence mixed indentation on disk. |
 | Tests | **There are none.** `pnpm test` deliberately exits 1. |
-| Build/Docker | Only `apps/web` is built (`next build` → `.next/standalone`). Mobile and tile-provider are run from source (`expo start`, `tsx src/index.ts`). |
+| Build/Docker | `apps/web` is built (`next build` → `.next/standalone`) for the `web` target. The `tiles` target ships a `pnpm deploy` of the tile-provider and runs it through `tsx`. The `mobile` target runs Metro (`expo start --web`). `compose.yaml` starts all three. |
 
 ### TypeScript config chain
 
@@ -1297,7 +1297,7 @@ top). The spec's own example, quoted in the code: z=11, y=791 → `2^11 - 1 - 79
 |---|---|---|
 | `PORT` | `4000` | A malformed value **silently** falls back to 4000 (no Zod validation) |
 | `HOST` | `0.0.0.0` | |
-| `TILES_DB_PATH` | `data/tiles.mbtiles` | ⚠️ **the default is wrong in practice** — the committed file is `data/south-india.mbtiles`, so booting without a `.env` exits with the "No tileset at …" error |
+| `TILES_DB_PATH` | `data/south-india.mbtiles` | The `.mbtiles` file served (read-only) |
 
 > [!danger] Secrets hygiene
 > `apps/web/.env` on disk contains a live Postgres password, a live `BETTER_AUTH_SECRET`, and a live
@@ -1346,34 +1346,57 @@ npx biome check --write .                  # format + autofix
 
 ## 19. Deployment
 
-`Dockerfile` — 3 stages, `node:22-alpine`:
+`Dockerfile` is a multi-target build on `node:22-alpine`:
 
 ```mermaid
 flowchart LR
-  S1["Stage 1: deps<br/>copy manifests only<br/>pnpm install --frozen-lockfile"] --> S2
-  S2["Stage 2: builder<br/>COPY . .<br/>ARG DATABASE_URL<br/>pnpm --filter web build"] --> S3
-  S3["Stage 3: runner<br/>NODE_ENV=production PORT=3000<br/>.next/standalone → /app<br/>CMD node apps/web/server.js"]
+  B["base<br/>build tools + pnpm"] --> D["deps<br/>all workspace manifests<br/>pnpm install --frozen-lockfile"]
+  D --> S["source<br/>COPY . ."]
+  S --> WB["web-build<br/>ARG DATABASE_URL<br/>ARG NEXT_PUBLIC_TILE_SERVER_URL<br/>pnpm --filter web build"]
+  WB --> W["web<br/>.next/standalone → /app<br/>CMD node apps/web/server.js"]
+  S --> TB["tiles-build<br/>pnpm deploy --prod<br/>tile-provider"]
+  TB --> T["tiles<br/>tsx src/index.ts<br/>TILES_DB_PATH=/app/data/south-india.mbtiles"]
+  S --> M["mobile<br/>expo start --web --port 8081"]
 ```
 
-- `output: "standalone"` in `next.config.ts` is what makes stage 3's 2-line `COPY` possible.
-- `DATABASE_URL` is passed as a build `ARG` — the only env var Next needs at build time.
+- `output: "standalone"` in `next.config.ts` is what makes the web target's 2-line `COPY` possible.
+- The deps stage now copies **every** workspace manifest, so pnpm installs the whole workspace. The old
+  three-manifest list left `@repo/gpx`, `@repo/maps`, `@repo/units`, `@repo/types`, `@repo/tiles`,
+  `apps/mobile` and `apps/tile-provider` without `node_modules` symlinks.
+- `DATABASE_URL` is a build `ARG` only because the DB module is imported while Next collects page data;
+  the runtime value comes from the environment. `NEXT_PUBLIC_TILE_SERVER_URL` is a build arg because
+  Next inlines `NEXT_PUBLIC_*` into the browser bundle.
+- The tile target runs `pnpm deploy --prod --legacy` to get a self-contained copy of the tile-provider,
+  its workspace packages and production dependencies. `tsx` stays a devDependency, so the runtime
+  installs it globally.
+- The mobile target runs `pnpm deploy --legacy` for just the mobile workspace, then the Expo/Metro dev
+  server. It is not a production mobile build; native binaries still ship through EAS (`f2e55542-…`,
+  owner `redstonenights-team`). `metro.config.js` reads `packages/shared/theme.css` through a relative
+  path, so the deploy copies that one file to `/packages/shared/`.
 
-> [!warning] Stage 1 only copies **3** of the 12 workspace manifests
-> ```dockerfile
-> COPY apps/web/package.json        ./apps/web/
-> COPY packages/db/package.json     ./packages/db/
-> COPY packages/validation/package.json ./packages/validation/
-> ```
-> `pnpm-workspace.yaml` globs `apps/*` and `packages/*`, so at install time pnpm sees only those
-> three — `@repo/gpx`, `@repo/maps`, `@repo/units`, `@repo/types`, `@repo/tiles` and the whole
-> `apps/mobile` + `apps/tile-provider` trees are absent, and their `node_modules` symlinks are never
-> created. Stage 2's `COPY . .` restores the *source* but not the *install*. **Verify the Docker
-> build actually runs** before trusting it; adding manifests is cheap and harmless.
->
-> Also note `.dockerignore` excludes `**/drizzle`, so **migrations never reach the image** — they are
-> run out-of-band with `pnpm dbm` against `DATABASE_URL_DIRECT`.
+### `compose.yaml`
 
-Only `apps/web` is containerised. `apps/mobile` ships via EAS (`f2e55542-…`, owner `redstonenights-team`); `apps/tile-provider` has no deployment story yet.
+`pnpm compose:up` (or `docker compose up --build`) starts:
+
+| Service | Port | Notes |
+| --- | --- | --- |
+| `web` | 3000 | Next.js app + API + Better Auth. Reads `apps/web/.env` if present. |
+| `tiles` | 4000 | Read-only bind mount of `apps/tile-provider/data`; `TILES_DB_PATH=/app/data/south-india.mbtiles`. |
+| `mobile` | 8081 | Expo/Metro bundler and web preview. Reads `apps/mobile/.env` if present. |
+
+The `.mbtiles` is deliberately **not** baked into the image. `.dockerignore` excludes `**/*.mbtiles` and
+`**/*.osm.pbf` (they are hundreds of MB), and Compose mounts the data directory into the tile container
+read-only. To swap tilesets, point the volume / `TILES_DB_PATH` at another file.
+
+`env_file` uses `required: false`, so the stack still starts without a local `.env`; copy the example
+files for auth / database / mobile URLs. For a physical phone set `REACT_NATIVE_PACKAGER_HOSTNAME` and
+the `EXPO_PUBLIC_*` URLs to your LAN IP. Restart `mobile` after changing `EXPO_PUBLIC_*` because Metro
+inlines them.
+
+> [!note] Migrations still run out-of-band
+> `.dockerignore` excludes `**/drizzle`, so migrations never reach the image. Run `pnpm dbm` against
+> `DATABASE_URL_DIRECT`.
+
 
 ---
 
@@ -1429,7 +1452,6 @@ Only `apps/web` is containerised. `apps/mobile` ships via EAS (`f2e55542-…`, o
 | **`altitudeData` plots missing elevation at 0** | `packages/gpx/src/streams.ts` | `p.ele ?? 0`, while `computeElevation` correctly *skips* nulls. Inconsistent. |
 | **Un-timestamped GPX produces a nonsense time axis** | `packages/gpx/src/streams.ts` | `timeData[i] = i` (the index) when a point has no timestamp, mixed into an array otherwise measured in seconds. |
 | **Route zoom mismatch** | `providers.ts` vs `data/config.json` | The provider declares `maxZoom: 12` but the tileset contains z13–14 detail (buildings, POIs, paths). MapLibre never requests it. |
-| **Default `TILES_DB_PATH` is wrong** | `apps/tile-provider/src/env.ts` | Defaults to `data/tiles.mbtiles`; the committed file is `data/south-india.mbtiles`. |
 | **Migration 0004 not backfill-safe** | `drizzle/0004_*.sql` | The `text → enum` cast aborts if any row has a `type` outside the five labels. |
 
 ### 🟡 Dead code & drift
