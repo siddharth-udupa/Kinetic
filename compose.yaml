@@ -99,3 +99,30 @@ services:
     # like a normal dev server rather than exiting in CI mode.
     stdin_open: true
     tty: true
+
+  # Valhalla routing graph. Built offline by services/valhalla/build.sh, then
+  # served from here. Not part of `pnpm compose:up`; opt in with:
+  #   docker compose --profile routing up -d valhalla
+  valhalla:
+    profiles: ["routing"]
+    image: ${VALHALLA_IMAGE:-ghcr.io/valhalla/valhalla-scripted:latest}
+    ports:
+      # Loopback only. The engine reaches this over the compose network.
+      - "127.0.0.1:8002:8002"
+    volumes:
+      # Graph + elevation + config, ~8-12 GB. Gitignored.
+      - ./services/valhalla/custom_files:/custom_files
+    environment:
+      # Serve the prebuilt tar; never rebuild on boot.
+      use_tiles_ignore_pbf: "True"
+      serve_tiles: "True"
+      build_tar: "True"
+      build_elevation: "False"
+      server_threads: "2"
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -fsS http://127.0.0.1:8002/status >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s

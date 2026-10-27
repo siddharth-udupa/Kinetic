@@ -16,3 +16,6 @@ node_modules
 
 # Personal Notes
 PersonalNotes.md
+
+# Valhalla graph, elevation tiles and build logs (see services/valhalla)
+services/valhalla/custom_files/
