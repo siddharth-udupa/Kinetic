@@ -32,6 +32,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/mobile/package.json ./apps/mobile/
 COPY apps/tile-provider/package.json ./apps/tile-provider/
+COPY apps/route-engine/package.json ./apps/route-engine/
 COPY packages/db/package.json ./packages/db/
 COPY packages/gpx/package.json ./packages/gpx/
 COPY packages/maps/package.json ./packages/maps/
