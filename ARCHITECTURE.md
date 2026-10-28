@@ -123,7 +123,7 @@ Strava-clone/
 | Editing a package | Change is hot — no rebuild, no restart |
 | `transpilePackages` | `apps/web/next.config.ts` lists `@repo/db`, `@repo/gpx`, `@repo/types`, `@repo/validation`, `@repo/units`. **`@repo/maps` is missing** and only works because `pnpm web` runs `next dev --webpack`. |
 | Path aliases | `apps/web/tsconfig.json` aliases only `@repo/db` and `@repo/validation`. Everything else resolves through pnpm's `node_modules` symlinks. |
-| `tsconfig` inheritance | `tsconfig.base.json` (strict) → `tsconfig.node.json` (NodeNext) for packages & mobile-adjacent, → `tsconfig.react.json` (Bundler, ES2017) for web. `packages/maps` is the odd one out: it uses `base` + `moduleResolution: "bundler"` because it is browser-targeted. |
+| `tsconfig` inheritance | `tsconfig.base.json` (strict) → `tsconfig.package.json` (Bundler) for packages, → `tsconfig.node.json` (NodeNext) for the Node services, → `tsconfig.react.json` (Bundler, ES2017) for web. Packages use Bundler because they ship raw TS into Next and Metro, where extensionless relative imports are the norm. |
 | Linting | **Biome is the real linter** (`pnpm lint` → `biome lint`, tab indent). `apps/web` additionally has an unused `eslint.config.mjs` + `eslint` script. Two formatters, hence mixed indentation on disk. |
 | Tests | **There are none.** `pnpm test` deliberately exits 1. |
 | Build/Docker | `apps/web` is built (`next build` → `.next/standalone`) for the `web` target. The `tiles` target ships a `pnpm deploy` of the tile-provider and runs it through `tsx`. The `mobile` target runs Metro (`expo start --web`). `compose.yaml` starts all three. |
@@ -134,14 +134,17 @@ Strava-clone/
 graph TD
   B["tsconfig.base.json<br/>strict, skipLibCheck, isolatedModules"]
   N["tsconfig.node.json<br/>target ES2022, module NodeNext"]
+  P["tsconfig.package.json<br/>target ES2022, Bundler"]
   R["tsconfig.react.json<br/>target ES2017, moduleResolution Bundler"]
   P1["packages/{db,gpx,units,validation,types,tiles}<br/>outDir dist, declaration true"]
-  P2["packages/maps<br/>base only, bundler resolution, no outDir"]
+  P2["packages/maps<br/>no outDir"]
+  N1["apps/tile-provider<br/>apps/route-engine<br/>NodeNext + Bundler override"]
   W["apps/web<br/>extends react, noEmit, incremental"]
   M["apps/mobile<br/>extends expo/tsconfig.base"]
-  B --> N --> P1
+  B --> N --> N1
+  B --> P --> P1
+  B --> P --> P2
   B --> R --> W
-  B --> P2
   M
 ```
 

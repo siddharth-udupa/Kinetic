@@ -2,7 +2,11 @@
   "extends": "../../tsconfig.node.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    /* The shared packages ship raw TypeScript with extensionless internal
+       imports, and tsx resolves the tile provider the same way a bundler would. */
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
   },
   "include": ["src/**/*"]
 }
