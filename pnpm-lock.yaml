@@ -345,6 +345,12 @@ importers:
 
   apps/route-engine:
     dependencies:
+      '@repo/gpx':
+        specifier: workspace:*
+        version: link:../../packages/gpx
+      '@repo/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2

@@ -4,6 +4,7 @@ import {
   FileUp,
   MapPin,
   PenSquare,
+  Route,
   Trophy,
   type LucideIcon,
 } from "lucide-react"
@@ -47,6 +48,12 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/maps",
         detail: "Draw and explore your lines",
         icon: MapPin,
+      },
+      {
+        label: "Loop builder",
+        href: "/maps/route",
+        detail: "Generate a route from preferences",
+        icon: Route,
       },
     ],
   },

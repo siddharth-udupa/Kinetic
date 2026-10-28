@@ -4,6 +4,8 @@ import express, {
   type Request,
   type Response,
 } from "express"
+import { LoopRequestSchema, ZodError } from "@repo/validation"
+import { generateLoop, LoopError } from "./loop.js"
 import { ValhallaError, getStatus } from "./valhalla.js"
 
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/
@@ -55,6 +57,32 @@ export function buildServer() {
     }
   })
 
+  app.post("/loop", async (request, response) => {
+    const requestId = response.locals.requestId as string
+    const parsed = LoopRequestSchema.safeParse(request.body)
+
+    if (!parsed.success) {
+      return response.status(400).json({
+        error: "Invalid loop request",
+        issues: parsed.error.issues,
+      })
+    }
+
+    const result = await generateLoop(parsed.data, { requestId })
+
+    // The engine logs a one-line summary; the web BFF logs the full response
+    // with its polyline. Keeping the payload out of this log makes `pnpm engine`
+    // readable while the endpoint is being exercised by hand.
+    console.log(
+      `[loop] ${requestId} ${result.profile} ${result.distanceMeters}m ` +
+        `(target ${result.requestedDistanceMeters}m, accuracy ${(
+          result.accuracy * 100
+        ).toFixed(1)}%, ${result.warnings.length} warning(s))`
+    )
+
+    response.json(result)
+  })
+
   app.use((_request, response) => {
     response.status(404).json({ error: "Not found" })
   })
@@ -67,6 +95,25 @@ export function buildServer() {
       _next: NextFunction
     ) => {
       if (response.headersSent) return
+
+      if (error instanceof ZodError) {
+        return response.status(400).json({
+          error: "Invalid loop request",
+          issues: error.issues,
+        })
+      }
+
+      if (error instanceof LoopError) {
+        console.error(
+          `[route-engine] ${response.locals.requestId as string} ${error.code}: ${error.message}`
+        )
+        response.status(422).json({
+          error: error.message,
+          code: error.code,
+          requestId: response.locals.requestId as string,
+        })
+        return
+      }
 
       if (error instanceof ValhallaError) {
         console.error(

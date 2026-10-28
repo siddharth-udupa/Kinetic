@@ -13,6 +13,8 @@ export type ValhallaLocation = {
   type?: ValhallaLocationType
   /** Snap search radius in metres. */
   radius?: number
+  /** Give up rather than snap further than this, in metres. */
+  search_cutoff?: number
   heading?: number
   heading_tolerance?: number
   minimum_reachability?: number
@@ -44,6 +46,8 @@ export type ValhallaRouteRequest = {
   elevation_interval?: number
   costing_options?: CostingOptions
   language?: string
+  /** Free-form identifier echoed in Valhalla's logs. */
+  id?: string
 }
 
 export type ValhallaLeg = {
@@ -170,7 +174,12 @@ async function requestJson<T>(
   options: CallOptions
 ): Promise<{ data: T; requestId: string; durationMs: number }> {
   const requestId = options.requestId ?? randomUUID()
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
+  const requestedTimeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
+  // Node's AbortSignal.timeout rejects fractional delays. The loop budget is
+  // measured in floating-point milliseconds, so round down here, once.
+  const timeoutMs = Number.isFinite(requestedTimeoutMs)
+    ? Math.max(1, Math.floor(requestedTimeoutMs))
+    : DEFAULT_TIMEOUT_MS
   const startedAt = performance.now()
 
   let response: Response
@@ -185,6 +194,11 @@ async function requestJson<T>(
       signal: AbortSignal.timeout(timeoutMs),
     })
   } catch (error) {
+    console.error(
+      `[valhalla] ${requestId} request failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    )
     throw transportError(error, requestId, timeoutMs)
   }
 

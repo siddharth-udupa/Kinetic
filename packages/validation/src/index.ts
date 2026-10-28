@@ -1,3 +1,4 @@
+export * from "./route"
 export * from "./zodSchema"
 
 // Re-exported so consumers can branch on validation failures without depending

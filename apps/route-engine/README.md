@@ -1,8 +1,7 @@
 # Route engine
 
-Express 5 service that owns loop generation. Step 2 is the skeleton only: a
-health endpoint, a typed Valhalla client and the geometry primitives the
-algorithm will use. There is no `/loop` endpoint yet.
+Express 5 service that owns loop generation: a health endpoint, a typed Valhalla
+client, the geometry primitives and `POST /loop`.
 
 Valhalla is the routing graph in `services/valhalla`. This service is the only
 thing that calls it; web and mobile reach it through the BFF, never Valhalla
@@ -38,6 +37,7 @@ engine gets a compose entry, `VALHALLA_URL` is `http://valhalla:8002`.
 | Method | Path | Notes |
 | --- | --- | --- |
 | `GET` | `/health` | Proxies Valhalla `/status`; `200` when reachable, `503` when not |
+| `POST` | `/loop` | Builds a loop; `400` invalid body, `422` no candidate, `502` Valhalla failure |
 
 ```bash
 curl -s localhost:8003/health | jq
@@ -60,6 +60,49 @@ Every response carries an `x-request-id`. An incoming `x-request-id` is reused
 when it is 128 characters or fewer of `[A-Za-z0-9._:-]`, otherwise a UUID is
 generated. The same id is sent to Valhalla and appears in the engine's
 `[valhalla]` log line.
+
+### `POST /loop`
+
+```bash
+curl -s localhost:8003/loop \
+  -H 'content-type: application/json' \
+  -d '{
+    "origin": { "lat": 12.9716, "lon": 77.5946 },
+    "distanceMeters": 10000,
+    "profile": "bike",
+    "seed": 48213
+  }' | jq
+```
+
+```json
+{
+  "seed": 48213,
+  "profile": "bike",
+  "requestedDistanceMeters": 10000,
+  "distanceMeters": 10340,
+  "durationSeconds": 2188,
+  "elevationGainMeters": 45,
+  "accuracy": 0.034,
+  "loopiness": 0.345,
+  "polyline": "{odnA}erxM…",
+  "warnings": []
+}
+```
+
+`distanceMeters` is clamped to 1–80 km. `profile` is `bike` or `foot`. `seed`
+is an optional 32-bit integer; omit it and the engine picks one, echoes it back
+and the same preferences rebuild the same loop.
+
+The engine starts from a seeded bearing, routes four triangles rotated by 90°,
+sorts them by distance error and loop shape, then corrects the two best by
+scaling the triangle radius. Corrections stop at 8% distance error, ten
+Valhalla calls, or 2.5 s. If the budget runs out the best candidate so far is
+returned with a warning.
+
+Candidates are discarded when they cross a ferry, when a through-via snaps more
+than 150 m from where it was requested, or when the route is less than half the
+target distance. If nothing survives, the endpoint returns `422` with
+`code: "no_candidate"`.
 
 ## The triangle check
 
@@ -96,6 +139,7 @@ a cheap shape score for candidate loops and needs no extra routing calls.
 | `src/server.ts` | Express app, request ids, error handling |
 | `src/valhalla.ts` | Typed `/route` and `/status` client |
 | `src/geo.ts` | `destination`, `decodePolyline6`, `distanceToShape`, `shapeLength`, `shoelaceArea` |
+| `src/loop.ts` | Candidate generation, scoring, distance correction and the time budget |
 | `src/scripts/triangle.ts` | End-to-end check against a live Valhalla |
 
 ### Three details worth knowing
@@ -113,5 +157,7 @@ a cheap shape score for candidate loops and needs no extra routing calls.
 
 ## Next
 
-Step 3 adds the triangle generator and distance correction on top of these
-primitives. It is intentionally not in this change.
+The web UI at `/maps/route` posts to the BFF, which logs the whole route for
+now. The next step is drawing that polyline on the map and letting the user pick
+a start point. The engine already accepts any `origin`, so the latter is a UI
+change rather than an algorithm one.
