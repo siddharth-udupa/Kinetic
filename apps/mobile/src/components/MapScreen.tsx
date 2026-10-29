@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
-import { View } from "react-native"
+import { Pressable, Text, View } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import { DEFAULT_TILE_PROVIDER, type TileProviderId } from "@repo/maps"
 import { getCurrentPositionIfPermitted } from "@/lib/locationTask"
+import { useTheme } from "@/hooks/useTheme"
 import MapView from "./map/Map"
+import RoutePlannerSheet from "./map/RoutePlannerSheet"
 import TileProviderPicker from "./map/TileProviderPicker"
 
 export type MapScreenProps = {
@@ -10,8 +13,10 @@ export type MapScreenProps = {
 }
 
 export default function MapScreen({ encodedPolyline }: MapScreenProps) {
+  const { colors } = useTheme()
   const [providerId, setProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null)
+  const [isRoutePlannerOpen, setIsRoutePlannerOpen] = useState(false)
 
   // Follow the athlete when permission is already granted. This deliberately
   // never prompts: the map stays on its default view if permission is missing.
@@ -40,6 +45,25 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
       <TileProviderPicker
         currentProviderId={providerId}
         onSelectProvider={setProviderId}
+      />
+
+      <Pressable
+        onPress={() => setIsRoutePlannerOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Plan a loop"
+        className="absolute bottom-3 left-3 z-10 flex-row items-center gap-2 rounded-xl border border-line bg-surface/95 px-3.5 py-2.5 shadow-md active:opacity-80"
+      >
+        <Ionicons
+          name="git-network-outline"
+          size={16}
+          color={colors.accentText}
+        />
+        <Text className="text-[12px] font-semibold text-ink">Plan a loop</Text>
+      </Pressable>
+
+      <RoutePlannerSheet
+        visible={isRoutePlannerOpen}
+        onClose={() => setIsRoutePlannerOpen(false)}
       />
     </View>
   )
