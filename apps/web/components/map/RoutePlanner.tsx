@@ -11,12 +11,12 @@ import {
   Footprints,
   Layers,
   Loader2,
+  Map as MapIcon,
   MapPin,
   Mountain,
   Route,
   SlidersHorizontal,
   Sparkles,
-  Terminal,
   Trees,
   Waves,
   type LucideIcon,
@@ -86,7 +86,12 @@ function errorOf(payload: unknown): string | undefined {
   return typeof payload.error === "string" ? payload.error : undefined
 }
 
-export default function RoutePlanner() {
+type RoutePlannerProps = {
+  /** The new loop, or null while a request is in flight. */
+  onRouteChange?: (route: LoopResponse | null) => void
+}
+
+export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
   const [distanceKm, setDistanceKm] = useState(10)
   const [profile, setProfile] = useState<RouteProfile>("bike")
   const [seed, setSeed] = useState("")
@@ -120,6 +125,7 @@ export default function RoutePlanner() {
     ) {
       setStatus("error")
       setResult(null)
+      onRouteChange?.(null)
       setError({
         message: `Seed must be a whole number between 0 and ${MAX_SEED.toLocaleString()}.`,
         needsSignIn: false,
@@ -137,6 +143,7 @@ export default function RoutePlanner() {
     setStatus("loading")
     setResult(null)
     setError(null)
+    onRouteChange?.(null)
 
     try {
       const response = await fetch("/api/routes/loop", {
@@ -157,9 +164,10 @@ export default function RoutePlanner() {
         return
       }
 
-      setResult(body as LoopResponse)
+      const route = body as LoopResponse
+      setResult(route)
       setStatus("success")
-      console.log("[route] generated loop", body)
+      onRouteChange?.(route)
     } catch {
       setStatus("error")
       setError({
@@ -172,7 +180,7 @@ export default function RoutePlanner() {
 
   return (
     <aside
-      className="absolute inset-x-3 bottom-3 z-10 max-h-[68%] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface/95 p-5 shadow-card backdrop-blur-md sm:inset-y-4 sm:right-auto sm:left-4 sm:max-h-none sm:w-[390px] sm:p-6"
+      className="absolute inset-x-3 bottom-3 z-10 max-h-[68%] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface/95 p-5 shadow-card backdrop-blur-md sm:inset-y-4 sm:right-auto sm:left-4 sm:max-h-none sm:w-97.5 sm:p-6"
       aria-label="Loop preferences"
     >
       <header>
@@ -260,7 +268,7 @@ export default function RoutePlanner() {
               return (
                 <label
                   key={option.value}
-                  className={`flex cursor-pointer flex-col items-start gap-2 rounded-xl border p-3 text-left transition active:opacity-80 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent ${
+                  className={`flex cursor-pointer flex-col items-start gap-2 rounded-xl border p-3 text-left transition active:opacity-80 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${
                     selected
                       ? "border-accent bg-accent-soft"
                       : "border-line bg-surface hover:bg-surface-muted"
@@ -371,8 +379,7 @@ export default function RoutePlanner() {
               </p>
               <p className="mt-1 text-[11px] leading-4 text-ink-muted">
                 Seed {result.seed} ·{" "}
-                {(result.accuracy * 100).toFixed(1)}% from target. Full route
-                logged to the server console.
+                {(result.accuracy * 100).toFixed(1)}% from target.
               </p>
               {result.warnings.length > 0 ? (
                 <ul className="mt-2 space-y-1">
@@ -492,15 +499,15 @@ export default function RoutePlanner() {
       </fieldset>
 
       <div className="mt-4 flex items-start gap-2 border-t border-line pt-3">
-        <Terminal
+        <MapIcon
           size={13}
           strokeWidth={2}
           className="mt-0.5 shrink-0 text-ink-muted"
           aria-hidden
         />
         <p className="text-[11px] leading-4 text-ink-muted">
-          Nothing is saved yet. The generated route is logged to the Next.js
-          server console; the map preview comes next.
+          Nothing is saved yet. The generated loop is drawn on the map as a
+          preview.
         </p>
       </div>
     </aside>

@@ -1,5 +1,4 @@
-import MapView from "@/components/map/Map"
-import RoutePlanner from "@/components/map/RoutePlanner"
+import RoutePlannerScreen from "@/components/map/RoutePlannerScreen"
 import { APP_NAME } from "@repo/shared"
 
 export const metadata = {
@@ -11,8 +10,7 @@ export default function RoutePlannerPage() {
      and the preference panel floats over it. */
   return (
     <main className="relative h-[calc(100dvh-var(--shell-header-h))] w-full">
-      <MapView isChangeable={true} />
-      <RoutePlanner />
+      <RoutePlannerScreen />
     </main>
   )
 }

@@ -128,17 +128,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Deliberately the whole route, including the polyline: the UI does not draw
-  // it yet, and this is the hand-off point for the map preview in the next step.
-  console.log(
-    `[POST /api/routes/loop] ${requestId} request`,
-    parsedRequest.data
-  )
-  console.log(
-    `[POST /api/routes/loop] ${requestId} route`,
-    JSON.stringify(parsedResponse.data, null, 2)
-  )
-
   return NextResponse.json(parsedResponse.data, {
     headers: { "x-request-id": requestId },
   })

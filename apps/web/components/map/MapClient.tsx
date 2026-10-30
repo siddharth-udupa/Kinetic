@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import type { Feature, LineString } from 'geojson'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
@@ -14,6 +15,45 @@ type MapClientProps = {
   isChangeable: boolean
 }
 
+function syncRouteLayer(
+  map: maplibregl.Map,
+  route: Feature<LineString> | null,
+  color: string
+) {
+  const source = map.getSource('route') as maplibregl.GeoJSONSource | undefined
+
+  if (!route) {
+    if (map.getLayer('routeLine')) map.removeLayer('routeLine')
+    if (source) map.removeSource('route')
+    return
+  }
+
+  if (source) {
+    source.setData(route)
+    return
+  }
+
+  map.addSource('route', {
+    type: 'geojson',
+    data: route,
+  })
+
+  map.addLayer({
+    id: 'routeLine',
+    type: 'line',
+    source: 'route',
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round',
+    },
+    paint: {
+      'line-color': color,
+      'line-width': 4,
+      'line-opacity': 0.9,
+    },
+  })
+}
+
 export default function MapClient({
   encodedPolyline,
   isStatic = false,
@@ -21,6 +61,7 @@ export default function MapClient({
 }: MapClientProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
+  const fittedPolylineRef = useRef<string | null>(null)
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   // MapLibre paints from a literal, not a class, so read the route colour off the palette.
   const { colors } = useTheme()
@@ -29,7 +70,7 @@ export default function MapClient({
     return encodedPolyline ? decodePolyline(encodedPolyline) : []
   }, [encodedPolyline])
 
-  const routeGeoJSON = useMemo(() => {
+  const routeGeoJSON = useMemo<Feature<LineString> | null>(() => {
     if (points.length < 2) return null
     return {
       type: 'Feature' as const,
@@ -68,35 +109,6 @@ export default function MapClient({
 
   const defaultZoom = providerView.center?.[2] ?? 13
 
-  const updateRouteLayer = (map: maplibregl.Map) => {
-    if (!routeGeoJSON) return
-
-    if (map.getSource('route')) {
-      const source = map.getSource('route') as maplibregl.GeoJSONSource
-      source.setData(routeGeoJSON)
-    } else {
-      map.addSource('route', {
-        type: 'geojson',
-        data: routeGeoJSON,
-      })
-
-      map.addLayer({
-        id: 'routeLine',
-        type: 'line',
-        source: 'route',
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round',
-        },
-        paint: {
-          'line-color': colors.accent,
-          'line-width': 4,
-          'line-opacity': 0.9,
-        },
-      })
-    }
-  }
-
   useEffect(() => {
     if (!mapContainerRef.current) return
 
@@ -115,17 +127,6 @@ export default function MapClient({
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left')
     }
 
-    map.on('load', () => {
-      updateRouteLayer(map)
-      if (cameraBounds) {
-        map.fitBounds(cameraBounds, {
-          padding: 40,
-          maxZoom: 16,
-          animate: false,
-        })
-      }
-    })
-
     mapRef.current = map
 
     return () => {
@@ -133,6 +134,42 @@ export default function MapClient({
       mapRef.current = null
     }
   }, [isStatic])
+
+  /* Draws the route once the map is ready, and again whenever a new loop
+     replaces the old one. Kept out of the map-building effect so a new route
+     does not recreate the map and reset the camera. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+
+    const drawRoute = () => {
+      syncRouteLayer(map, routeGeoJSON, colors.accent)
+
+      if (!routeGeoJSON) {
+        fittedPolylineRef.current = null
+        return
+      }
+
+      if (!cameraBounds || fittedPolylineRef.current === encodedPolyline) return
+
+      map.fitBounds(cameraBounds, {
+        padding: 40,
+        maxZoom: 16,
+        animate: false,
+      })
+      fittedPolylineRef.current = encodedPolyline ?? null
+    }
+
+    if (map.isStyleLoaded()) {
+      drawRoute()
+    } else {
+      map.once('style.load', drawRoute)
+    }
+
+    return () => {
+      map.off('style.load', drawRoute)
+    }
+  }, [routeGeoJSON, cameraBounds, encodedPolyline, colors.accent])
 
   /* Repaints the route on a theme switch. Not a dep of the map-building effect
      above: that would tear down and re-create the map, losing the camera. */
@@ -152,7 +189,7 @@ export default function MapClient({
     map.setStyle(newStyle)
 
     map.once('style.load', () => {
-      updateRouteLayer(map)
+      syncRouteLayer(map, routeGeoJSON, colors.accent)
     })
   }
 
