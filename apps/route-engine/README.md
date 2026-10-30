@@ -93,10 +93,11 @@ curl -s localhost:8003/loop \
 is an optional 32-bit integer; omit it and the engine picks one, echoes it back
 and the same preferences rebuild the same loop.
 
-The engine starts from a seeded bearing, routes four triangles rotated by 90°,
-sorts them by distance error and loop shape, then corrects the two best by
-scaling the triangle radius. Corrections stop at 8% distance error, ten
-Valhalla calls, or 2.5 s. If the budget runs out the best candidate so far is
+The engine starts from a seeded bearing and routes four triangles rotated by
+90° in parallel, sorts them by distance error and loop shape, then corrects the
+most promising one by scaling its radius. It stops as soon as the best shape is
+inside the 8% band, falls back to the runner-up only when needed, and stops at
+ten Valhalla calls or 2.5 s. If the budget runs out the best candidate so far is
 returned with a warning.
 
 Candidates are discarded when they cross a ferry, when a through-via snaps more
@@ -136,10 +137,11 @@ a cheap shape score for candidate loops and needs no extra routing calls.
 | File | Purpose |
 | --- | --- |
 | `src/index.ts` | Boots the HTTP server |
-| `src/server.ts` | Express app, request ids, error handling |
-| `src/valhalla.ts` | Typed `/route` and `/status` client |
-| `src/geo.ts` | `destination`, `decodePolyline6`, `distanceToShape`, `shapeLength`, `shoelaceArea` |
-| `src/loop.ts` | Candidate generation, scoring, distance correction and the time budget |
+| `src/env.ts` | Environment parsing |
+| `src/server/` | Express app, request ids, routes and error handling |
+| `src/valhalla/` | Typed `/route` and `/status` client |
+| `src/geo/` | `destination`, `decodePolyline6` and shape metrics |
+| `src/loop/` | Candidate generation, scoring, distance correction and the time budget |
 | `src/scripts/triangle.ts` | End-to-end check against a live Valhalla |
 
 ### Three details worth knowing

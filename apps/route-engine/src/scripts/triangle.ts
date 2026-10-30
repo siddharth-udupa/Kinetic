@@ -3,10 +3,11 @@ import {
   destination,
   distanceBetween,
   distanceToShape,
+  loopiness,
   shapeLength,
   shoelaceArea,
-} from "../geo.js"
-import { route, type ValhallaRouteRequest } from "../valhalla.js"
+} from "../geo/index.js"
+import { route, type ValhallaRouteRequest } from "../valhalla/index.js"
 
 // The triangle that was used to prove the two-via mechanic against Valhalla.
 // Origin is MG Road; both vias are `through` so the trip stays one leg.
@@ -57,10 +58,7 @@ async function main() {
 
   const area = shoelaceArea(shape)
   // Polsby-Popper compactness: 1 is a circle, 0 is an out-and-back.
-  const loopiness =
-    measuredLength === 0
-      ? 0
-      : (4 * Math.PI * area) / (measuredLength * measuredLength)
+  const shapeLoopiness = loopiness(area, measuredLength)
 
   const viaDistances = vias.map((via) =>
     distanceToShape({ lat: via.lat, lng: via.lng }, shape)
@@ -95,7 +93,7 @@ async function main() {
   )
   console.log(
     `  area          ${(area / 1_000_000).toFixed(2)} km² · ` +
-      `loopiness ${loopiness.toFixed(3)} (1 = circle, 0 = out-and-back)`
+      `loopiness ${shapeLoopiness.toFixed(3)} (1 = circle, 0 = out-and-back)`
   )
   console.log(
     `  destination   1500 m at 0° lands ${formatDistance(
