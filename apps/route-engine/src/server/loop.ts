@@ -20,9 +20,9 @@ export async function loop(
 
   const result = await generateLoop(parsed.data, { requestId })
 
-  // The engine logs a one-line summary; the web BFF logs the full response
-  // with its polyline. Keeping the payload out of this log makes `pnpm engine`
-  // readable while the endpoint is being exercised by hand.
+  // The engine logs a one-line summary and leaves the response to clients to
+  // render. Keeping the payload out of this log makes `pnpm engine` readable
+  // while the endpoint is being exercised by hand.
   console.log(
     `[loop] ${requestId} ${result.profile} ${result.distanceMeters}m ` +
       `(target ${result.requestedDistanceMeters}m, accuracy ${(

@@ -159,6 +159,7 @@ a cheap shape score for candidate loops and needs no extra routing calls.
 
 ## Next
 
-The web UI at `/maps/route` posts to the BFF and draws the returned polyline.
-The next step is letting the user pick a start point. The engine already accepts
-any `origin`, so that is a UI change rather than an algorithm one.
+The web UI at `/maps/route` and the mobile map screen post to the BFF and draw
+the returned polyline. The next step is letting the user pick a start point. The
+engine already accepts any `origin`, so that is a UI change rather than an
+algorithm one.

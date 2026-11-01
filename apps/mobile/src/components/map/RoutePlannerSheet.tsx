@@ -84,11 +84,14 @@ function readError(error: unknown): string {
 export type RoutePlannerSheetProps = {
   visible: boolean
   onClose: () => void
+  /** The new loop, or null while a request is in flight. */
+  onRouteChange?: (route: LoopResponse | null) => void
 }
 
 export default function RoutePlannerSheet({
   visible,
   onClose,
+  onRouteChange,
 }: RoutePlannerSheetProps) {
   const insets = useSafeAreaInsets()
   const { colors } = useTheme()
@@ -119,6 +122,7 @@ export default function RoutePlannerSheet({
     ) {
       setStatus("error")
       setResult(null)
+      onRouteChange?.(null)
       setError(
         `Seed must be a whole number between 0 and ${MAX_SEED.toLocaleString()}.`,
       )
@@ -135,6 +139,7 @@ export default function RoutePlannerSheet({
     setStatus("loading")
     setResult(null)
     setError(null)
+    onRouteChange?.(null)
 
     try {
       // The web BFF owns auth, validation and the route-engine URL. The app
@@ -162,7 +167,7 @@ export default function RoutePlannerSheet({
 
       setResult(res.data)
       setStatus("success")
-      console.log("[route] generated loop", res.data)
+      onRouteChange?.(res.data)
     } catch (err) {
       setStatus("error")
       setError(readError(err))
@@ -448,8 +453,7 @@ export default function RoutePlannerSheet({
                   </Text>
                   <Text className="mt-1 text-[11px] leading-4 text-ink-muted">
                     Seed {result.seed} ·{" "}
-                    {(result.accuracy * 100).toFixed(1)}% from target. Full route
-                    logged to the server console.
+                    {(result.accuracy * 100).toFixed(1)}% from target.
                   </Text>
 
                   {result.warnings.length > 0 ? (
@@ -464,6 +468,22 @@ export default function RoutePlannerSheet({
                       ))}
                     </View>
                   ) : null}
+
+                  <Pressable
+                    onPress={onClose}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show loop on the map"
+                    className="mt-3 h-9 flex-row items-center justify-center gap-1.5 rounded-lg border border-success/40 bg-surface active:opacity-70"
+                  >
+                    <Ionicons
+                      name="map-outline"
+                      size={14}
+                      color={colors.successText}
+                    />
+                    <Text className="text-[12px] font-semibold text-success-text">
+                      Show on map
+                    </Text>
+                  </Pressable>
                 </View>
               ) : null}
 
@@ -550,14 +570,14 @@ export default function RoutePlannerSheet({
 
               <View className="mt-4 flex-row items-start gap-2 border-t border-line pt-3">
                 <Ionicons
-                  name="terminal-outline"
+                  name="map-outline"
                   size={13}
                   color={colors.inkMuted}
                   style={{ marginTop: 1 }}
                 />
                 <Text className="flex-1 text-[11px] leading-4 text-ink-muted">
-                  Nothing is saved yet. The generated route is logged to the
-                  Next.js server console; the map preview comes next.
+                  Nothing is saved yet. The generated loop is drawn on the map as
+                  a preview.
                 </Text>
               </View>
             </ScrollView>

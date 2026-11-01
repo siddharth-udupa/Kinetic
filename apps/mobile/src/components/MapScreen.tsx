@@ -17,6 +17,8 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
   const [providerId, setProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null)
   const [isRoutePlannerOpen, setIsRoutePlannerOpen] = useState(false)
+  // The loop the planner generated, drawn on the map underneath the sheet.
+  const [plannedPolyline, setPlannedPolyline] = useState<string>()
 
   // Follow the athlete when permission is already granted. This deliberately
   // never prompts: the map stays on its default view if permission is missing.
@@ -35,7 +37,7 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
   return (
     <View className="flex-1 bg-page relative">
       <MapView
-        encodedPolyline={encodedPolyline}
+        encodedPolyline={plannedPolyline ?? encodedPolyline}
         isStatic={false}
         providerId={providerId}
         userLocation={userLocation}
@@ -64,6 +66,7 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
       <RoutePlannerSheet
         visible={isRoutePlannerOpen}
         onClose={() => setIsRoutePlannerOpen(false)}
+        onRouteChange={(route) => setPlannedPolyline(route?.polyline)}
       />
     </View>
   )

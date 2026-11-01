@@ -1,6 +1,7 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import type { LngLatBounds } from "@maplibre/maplibre-react-native"
 import { decodePolyline } from "@repo/gpx"
 import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, tileProviders, type TileProviderId } from "@repo/maps"
 import { useTheme } from "@/hooks/useTheme"
@@ -102,8 +103,18 @@ export default function MapView({
       maxLat = midLat + MIN_DELTA / 2
     }
 
-    return [minLng, minLat, maxLng, maxLat] as import("@maplibre/maplibre-react-native").LngLatBounds
+    return [minLng, minLat, maxLng, maxLat] as LngLatBounds
   }, [routeGeoJSON, points])
+
+  /* The Camera is declarative, so a cleared route would snap back to the
+     provider default while the next loop is being built. Hold the last route
+     bounds and only replace them when a new route arrives. */
+  const lastBoundsRef = useRef<LngLatBounds | null>(null)
+  useEffect(() => {
+    if (cameraBounds) lastBoundsRef.current = cameraBounds
+  }, [cameraBounds])
+
+  const viewBounds = cameraBounds ?? lastBoundsRef.current
 
   const defaultView = useMemo(() => {
     if (userLocation) {
@@ -194,9 +205,9 @@ export default function MapView({
           duration={recenterTrigger ? 500 : 0}
           {...(recenterTrigger && userLocation
             ? { center: [userLocation.longitude, userLocation.latitude], zoom: 16 }
-            : cameraBounds
+            : viewBounds
             ? {
-                bounds: cameraBounds,
+                bounds: viewBounds,
                 padding: boundsPadding || { top: 24, bottom: 24, left: 24, right: 24 },
               }
             : { center: defaultView.center, zoom: defaultView.zoom })}
