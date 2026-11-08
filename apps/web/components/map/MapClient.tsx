@@ -3,16 +3,18 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import type { Feature, LineString } from 'geojson'
+import type { Feature, LineString, Point } from 'geojson'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
 import { useTheme } from '@/hooks/useTheme'
+import type { UserLocation } from '@/hooks/useUserLocation'
 
 type MapClientProps = {
   encodedPolyline?: string
   isStatic?: boolean
   isChangeable: boolean
+  userLocation?: UserLocation | null
 }
 
 function syncRouteLayer(
@@ -54,14 +56,83 @@ function syncRouteLayer(
   })
 }
 
+/* The athlete's position is the same two-circle mark the native map uses:
+   a soft accent halo under a solid accent dot with an `on-accent` ring. */
+function syncUserLocationLayer(
+  map: maplibregl.Map,
+  location: UserLocation | null,
+  dotColor: string,
+  ringColor: string
+) {
+  const source = map.getSource('userLocation') as maplibregl.GeoJSONSource | undefined
+
+  if (!location) {
+    if (map.getLayer('userLocationDot')) map.removeLayer('userLocationDot')
+    if (map.getLayer('userLocationHalo')) map.removeLayer('userLocationHalo')
+    if (source) map.removeSource('userLocation')
+    return
+  }
+
+  const data: Feature<Point> = {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [location.lng, location.lat],
+    },
+    properties: {},
+  }
+
+  if (source) {
+    source.setData(data)
+    map.setPaintProperty('userLocationHalo', 'circle-color', dotColor)
+    map.setPaintProperty('userLocationDot', 'circle-color', dotColor)
+    map.setPaintProperty('userLocationDot', 'circle-stroke-color', ringColor)
+    return
+  }
+
+  map.addSource('userLocation', {
+    type: 'geojson',
+    data,
+  })
+
+  map.addLayer({
+    id: 'userLocationHalo',
+    type: 'circle',
+    source: 'userLocation',
+    paint: {
+      'circle-radius': 14,
+      'circle-color': dotColor,
+      'circle-opacity': 0.25,
+    },
+  })
+
+  map.addLayer({
+    id: 'userLocationDot',
+    type: 'circle',
+    source: 'userLocation',
+    paint: {
+      'circle-radius': 7,
+      'circle-color': dotColor,
+      'circle-stroke-width': 2.5,
+      'circle-stroke-color': ringColor,
+    },
+  })
+}
+
 export default function MapClient({
   encodedPolyline,
   isStatic = false,
   isChangeable,
+  userLocation,
 }: MapClientProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const fittedPolylineRef = useRef<string | null>(null)
+  const centeredOnUserRef = useRef(false)
+  /* `style.load` fires once per style, before the source tiles finish. Track it
+     explicitly: `isStyleLoaded()` can still be false afterwards when a source is
+     unreachable, and a listener added that late would never fire. */
+  const styleReadyRef = useRef(false)
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   // MapLibre paints from a literal, not a class, so read the route colour off the palette.
   const { colors } = useTheme()
@@ -112,6 +183,7 @@ export default function MapClient({
   useEffect(() => {
     if (!mapContainerRef.current) return
 
+    styleReadyRef.current = false
     const initialStyle = getMapLibreStyle(currentProviderId) as maplibregl.StyleSpecification
 
     const map = new maplibregl.Map({
@@ -123,6 +195,11 @@ export default function MapClient({
       attributionControl: !isStatic ? undefined : false,
     })
 
+    const handleStyleLoad = () => {
+      styleReadyRef.current = true
+    }
+    map.on('style.load', handleStyleLoad)
+
     if (!isStatic) {
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left')
     }
@@ -130,6 +207,7 @@ export default function MapClient({
     mapRef.current = map
 
     return () => {
+      map.off('style.load', handleStyleLoad)
       map.remove()
       mapRef.current = null
     }
@@ -171,6 +249,43 @@ export default function MapClient({
     }
   }, [routeGeoJSON, cameraBounds, encodedPolyline, colors.accent])
 
+  /* The fix arrives after the permission prompt, so the dot is painted on a
+     later render too and re-applied after a tile-provider style swap. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+
+    const drawUserLocation = () => {
+      syncUserLocationLayer(map, userLocation ?? null, colors.accent, colors.onAccent)
+    }
+
+    if (styleReadyRef.current || map.isStyleLoaded()) {
+      drawUserLocation()
+    } else {
+      map.once('style.load', drawUserLocation)
+    }
+
+    return () => {
+      map.off('style.load', drawUserLocation)
+    }
+  }, [userLocation, colors.accent, colors.onAccent])
+
+  /* An accepted permission should put the athlete in the middle of the screen.
+     Only once: panning afterwards is the visitor's choice, and a loop fitted
+     from a route request must not be pulled back to the start point. The camera
+     does not need the style, so move it now rather than waiting for `style.load`. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !userLocation || encodedPolyline || centeredOnUserRef.current) return
+
+    map.flyTo({
+      center: [userLocation.lng, userLocation.lat],
+      zoom: 15,
+      duration: 900,
+    })
+    centeredOnUserRef.current = true
+  }, [userLocation, encodedPolyline])
+
   /* Repaints the route on a theme switch. Not a dep of the map-building effect
      above: that would tear down and re-create the map, losing the camera. */
   useEffect(() => {
@@ -186,10 +301,13 @@ export default function MapClient({
     if (!map) return
 
     const newStyle = getMapLibreStyle(newProviderId) as maplibregl.StyleSpecification
+    styleReadyRef.current = false
     map.setStyle(newStyle)
 
     map.once('style.load', () => {
+      styleReadyRef.current = true
       syncRouteLayer(map, routeGeoJSON, colors.accent)
+      syncUserLocationLayer(map, userLocation ?? null, colors.accent, colors.onAccent)
     })
   }
 

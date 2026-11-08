@@ -1,5 +1,19 @@
 import { env } from "./env.js"
 import { buildServer } from "./server/index.js"
+import { getStatus } from "./valhalla/index.js"
+
+// Prefer the configured instance. If it is down and a fallback exists, switch
+// once at boot rather than making every route request try the dead endpoint.
+if (env.valhallaFallbackUrl) {
+  try {
+    await getStatus()
+  } catch {
+    console.warn(
+      `Valhalla at ${env.valhallaUrl} is unreachable; using ${env.valhallaFallbackUrl}`
+    )
+    env.valhallaUrl = env.valhallaFallbackUrl
+  }
+}
 
 const app = buildServer()
 

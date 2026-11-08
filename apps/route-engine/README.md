@@ -9,10 +9,14 @@ directly.
 
 ## Run
 
-Start Valhalla first, then the engine:
+From the repo root, `pnpm dev` starts all four workspace apps, including this
+engine. Valhalla is a separate service: start one on `:8002`, or set
+`VALHALLA_FALLBACK_URL` so the engine can use a public instance when the local
+one is not running.
+
+To run the engine on its own:
 
 ```bash
-docker compose --profile routing up -d valhalla
 pnpm engine
 ```
 
@@ -28,9 +32,10 @@ pnpm --filter route-engine start
 | `PORT` | `8003` | Port to listen on |
 | `HOST` | `127.0.0.1` | Loopback by default; the engine is not public |
 | `VALHALLA_URL` | `http://localhost:8002` | Valhalla base URL |
+| `VALHALLA_FALLBACK_URL` | unset | Alternate instance used once at boot when `VALHALLA_URL` is unreachable |
 
-Copy `.env.example` to `.env` only if you need to change a value. When the
-engine gets a compose entry, `VALHALLA_URL` is `http://valhalla:8002`.
+Copy `.env.example` to `.env` to use the public fallback or change a value.
+Remove `VALHALLA_FALLBACK_URL` when coordinates must stay on the machine.
 
 ## Endpoints
 

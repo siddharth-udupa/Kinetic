@@ -101,7 +101,7 @@ services:
     tty: true
 
   # Valhalla routing graph. Built offline by services/valhalla/build.sh, then
-  # served from here. Not part of `pnpm compose:up`; opt in with:
+  # served from here. Not part of `pnpm compose:up` or `pnpm dev`; opt in with:
   #   docker compose --profile routing up -d valhalla
   valhalla:
     profiles: ["routing"]

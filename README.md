@@ -1,10 +1,16 @@
-Run
+## Local development
 
-```
-  pnpm --filter web dev
+```bash
+pnpm dev
 ```
 
-from the root to run the website.
+from the root. This starts all four workspace apps — web (`:3000`),
+mobile/Metro (`:8081`), tile provider (`:4000`) and route engine (`:8003`) — in
+parallel.
+
+The route engine needs Valhalla. If you do not run one locally, set
+`VALHALLA_FALLBACK_URL` in `apps/route-engine/.env`; the example points at a
+public FOSSGIS instance and is only used when `VALHALLA_URL` is unreachable.
 
 ## Docker
 

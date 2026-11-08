@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import {
   AlertCircle,
+  AlertTriangle,
   Bike,
   CheckCircle2,
   Compass,
@@ -26,10 +27,7 @@ import type {
   LoopResponse,
   RouteProfile,
 } from "@repo/validation"
-
-/** The first version always starts at MG Road. Start-point picking is next. */
-const ORIGIN = { lat: 12.9716, lon: 77.5946 }
-const ORIGIN_LABEL = "MG Road, Bengaluru"
+import type { LocationStatus, UserLocation } from "@/hooks/useUserLocation"
 
 const MIN_DISTANCE_KM = 2
 const MAX_DISTANCE_KM = 50
@@ -86,24 +84,77 @@ function errorOf(payload: unknown): string | undefined {
   return typeof payload.error === "string" ? payload.error : undefined
 }
 
+function locationNotice(status: LocationStatus): {
+  hint: string
+  warning?: string
+} {
+  switch (status) {
+    case "requesting":
+      return { hint: "Getting a precise fix…" }
+    case "denied":
+      return {
+        hint: "Location access is blocked.",
+        warning:
+          "Allow location access for this site in your browser settings, then retry. A loop must start from your exact position.",
+      }
+    case "timeout":
+      return {
+        hint: "Your location is taking too long.",
+        warning:
+          "No precise fix arrived in time. Check your signal and retry before building a loop.",
+      }
+    case "unavailable":
+      return {
+        hint: "Your location is unavailable.",
+        warning:
+          "Turn on location services, then retry. A loop must start from your exact position.",
+      }
+    case "unsupported":
+      return {
+        hint: "This browser cannot share your location.",
+        warning:
+          "Location support is required to build a loop. Try a browser or device that can share your position.",
+      }
+    case "granted":
+      return { hint: "Reading your position…" }
+    case "idle":
+      return {
+        hint: "Location access is needed to choose the start point.",
+      }
+  }
+}
+
 type RoutePlannerProps = {
+  /** The precise fix the browser returned, or null until it has one. */
+  userLocation: UserLocation | null
+  locationStatus: LocationStatus
+  /** Prompts for permission, or retries after a refusal. */
+  onRequestLocation: () => Promise<UserLocation | null>
   /** The new loop, or null while a request is in flight. */
   onRouteChange?: (route: LoopResponse | null) => void
 }
 
-export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
+export default function RoutePlanner({
+  userLocation,
+  locationStatus,
+  onRequestLocation,
+  onRouteChange,
+}: RoutePlannerProps) {
   const [distanceKm, setDistanceKm] = useState(10)
   const [profile, setProfile] = useState<RouteProfile>("bike")
   const [seed, setSeed] = useState("")
 
   const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
+    "idle" | "locating" | "loading" | "success" | "error"
   >("idle")
   const [result, setResult] = useState<LoopResponse | null>(null)
   const [error, setError] = useState<{
     message: string
     needsSignIn: boolean
+    needsLocation?: boolean
   } | null>(null)
+
+  const notice = locationNotice(locationStatus)
 
   function randomizeSeed() {
     setSeed(String(Math.floor(Math.random() * (MAX_SEED + 1))))
@@ -111,7 +162,7 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (status === "loading") return
+    if (status === "loading" || status === "locating") return
 
     const trimmedSeed = seed.trim()
     const seedValue =
@@ -133,8 +184,31 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
       return
     }
 
+    /* The loop is anchored to the athlete, so a request without a fix waits
+       for the permission prompt instead of falling back to a fixed city. */
+    let origin = userLocation
+
+    if (!origin) {
+      setStatus("locating")
+      setError(null)
+      origin = await onRequestLocation()
+
+      if (!origin) {
+        setStatus("error")
+        setResult(null)
+        onRouteChange?.(null)
+        setError({
+          message:
+            "Location access is required to build a loop. Allow this site to use your precise location, then try again.",
+          needsSignIn: false,
+          needsLocation: true,
+        })
+        return
+      }
+    }
+
     const payload: LoopRequest = {
-      origin: ORIGIN,
+      origin: { lat: origin.lat, lon: origin.lng },
       distanceMeters: distanceKm * 1_000,
       profile,
       ...(seedValue === undefined ? {} : { seed: seedValue }),
@@ -178,6 +252,16 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
     }
   }
 
+  /** A retry after a refusal should clear the stale location error, not stack
+   *  another one on top of it. Other errors belong to their own attempt. */
+  async function retryLocation() {
+    if (error?.needsLocation) {
+      setError(null)
+      setStatus("idle")
+    }
+    await onRequestLocation()
+  }
+
   return (
     <aside
       className="absolute inset-x-3 bottom-3 z-10 max-h-[68%] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface/95 p-5 shadow-card backdrop-blur-md sm:inset-y-4 sm:right-auto sm:left-4 sm:max-h-none sm:w-97.5 sm:p-6"
@@ -191,21 +275,59 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
           Plan a loop
         </h1>
         <p className="mt-1.5 text-[12px] leading-5 text-ink-secondary">
-          Pick a distance and an activity. The engine finds a route that starts
-          and finishes at the same point.
+          Pick a distance and an activity. The loop starts and finishes at your
+          current location.
         </p>
       </header>
 
-      <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-line bg-surface-muted px-3 py-2.5">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface text-accent-text">
-          <MapPin size={15} strokeWidth={2} aria-hidden />
-        </span>
-        <div className="min-w-0">
-          <p className="text-[12px] font-semibold text-ink">{ORIGIN_LABEL}</p>
-          <p className="text-[11px] text-ink-muted">
-            Fixed start for this first version
-          </p>
+      <div className="mt-4 rounded-xl border border-line bg-surface-muted px-3 py-2.5">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface text-accent-text">
+            <MapPin size={15} strokeWidth={2} aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[12px] font-semibold text-ink">
+              {userLocation
+                ? "Starting at your precise location"
+                : "Start point needs location"}
+            </p>
+            <p className="text-[11px] text-ink-muted tabular-nums">
+              {userLocation
+                ? `${userLocation.lat.toFixed(5)}, ${userLocation.lng.toFixed(5)}${
+                    userLocation.accuracy !== null
+                      ? ` · ±${Math.round(userLocation.accuracy)} m`
+                      : ""
+                  }`
+                : notice.hint}
+            </p>
+          </div>
+          {!userLocation && locationStatus !== "requesting" ? (
+            <button
+              type="button"
+              onClick={() => void retryLocation()}
+              className={`shrink-0 cursor-pointer rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[11px] font-semibold text-accent-text transition hover:bg-surface-muted active:opacity-80 ${FOCUS}`}
+            >
+              {locationStatus === "denied" ? "Retry" : "Allow"}
+            </button>
+          ) : null}
         </div>
+
+        {notice.warning ? (
+          <div
+            role="alert"
+            className="mt-2 flex items-start gap-1.5 rounded-lg border border-warning/30 bg-warning-soft px-2.5 py-2"
+          >
+            <AlertTriangle
+              size={13}
+              strokeWidth={2.4}
+              className="mt-0.5 shrink-0 text-warning"
+              aria-hidden
+            />
+            <p className="text-[11px] leading-4 text-warning-text">
+              {notice.warning}
+            </p>
+          </div>
+        ) : null}
       </div>
 
       <form onSubmit={handleSubmit} className="mt-5">
@@ -346,16 +468,22 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
 
         <button
           type="submit"
-          disabled={status === "loading"}
-          aria-busy={status === "loading" || undefined}
+          disabled={status === "loading" || status === "locating"}
+          aria-busy={
+            status === "loading" || status === "locating" || undefined
+          }
           className={`mt-5 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent text-[14px] font-semibold text-on-accent transition hover:bg-accent-hover active:bg-accent-pressed disabled:cursor-not-allowed disabled:opacity-60 ${FOCUS}`}
         >
-          {status === "loading" ? (
+          {status === "loading" || status === "locating" ? (
             <Loader2 size={17} strokeWidth={2.4} className="animate-spin" aria-hidden />
           ) : (
             <Sparkles size={17} strokeWidth={2.4} aria-hidden />
           )}
-          {status === "loading" ? "Building your loop…" : "Generate loop"}
+          {status === "locating"
+            ? "Finding your location…"
+            : status === "loading"
+              ? "Building your loop…"
+              : "Generate loop"}
         </button>
 
         <div aria-live="polite">
@@ -410,11 +538,22 @@ export default function RoutePlanner({ onRouteChange }: RoutePlannerProps) {
                 />
                 <div className="min-w-0">
                   <p className="text-[12px] font-semibold text-danger-text">
-                    Could not build the loop
+                    {error.needsLocation
+                      ? "Location required"
+                      : "Could not build the loop"}
                   </p>
                   <p className="mt-0.5 text-[11px] leading-4 text-ink-secondary">
                     {error.message}
                   </p>
+                  {error.needsLocation ? (
+                    <button
+                      type="button"
+                      onClick={() => void retryLocation()}
+                      className="mt-1.5 inline-block cursor-pointer text-[11px] font-semibold text-accent-text hover:underline"
+                    >
+                      Try location again
+                    </button>
+                  ) : null}
                   {error.needsSignIn ? (
                     <Link
                       href="/auth?callbackUrl=/maps/route"

@@ -1,7 +1,8 @@
 # Valhalla — local routing graph
 
 The routing engine behind loop generation. Opt-in: it is not started by
-`pnpm compose:up`, and it is only useful once the graph has been built.
+`pnpm compose:up` or `pnpm dev`, and it is only useful once the graph has been
+built.
 
 The graph is built from the **same** `south-india.osm.pbf` the vector tiles are
 built from, so routing and rendering agree at the edges of the region.

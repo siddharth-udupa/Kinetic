@@ -1316,26 +1316,21 @@ top). The spec's own example, quoted in the code: z=11, y=791 → `2^11 - 1 - 79
 
 | Command | Runs |
 |---|---|
-| `pnpm dev` | web + mobile + tile-provider **in parallel** |
+| `pnpm dev` | web + mobile + tile-provider + route-engine **in parallel** |
 | `pnpm web` | `pnpm --filter web dev` → `next dev --webpack` |
 | `pnpm app` | `pnpm --filter mobile dev` → `expo start` |
 | `pnpm app:android` | `pnpm --filter mobile android` → prebuild + `run:android` (dev client) |
-| `pnpm tiles` | `pnpm --filter tile_provider dev` → `tsx watch src/index.ts` |
+| `pnpm tiles` | `pnpm --filter tile-provider dev` → `tsx watch src/index.ts` |
+| `pnpm engine` | `pnpm --filter route-engine dev` → `tsx watch src/index.ts` |
 | `pnpm lint` | `biome lint` (the only real linter) |
 | `pnpm dbg` / `dbm` / `dbp` | `drizzle-kit generate` / `migrate` / `push` |
 | `pnpm test` | deliberately exits 1 — **no tests exist** |
 
-> [!note] Naming inconsistency
-> The directory and package are `apps/tile-provider` / `tile-provider`, but the filter is
-> `tile_provider` and `packages/maps` refers to it as `@repo/tile_provider` in a comment.
-> pnpm matches the underscore form, so `pnpm tiles` works — but don't be surprised.
-
 ### Local dev order
 
 1. `pnpm dbm` (or `dbp`) — apply migrations to Postgres
-2. `pnpm tiles` — the map needs a tile server on `:4000`
-3. `pnpm web` — API + web on `:3000`
-4. `pnpm app:android` — the mobile app needs `EXPO_PUBLIC_API_URL` pointing at your **LAN** IP, not `localhost`
+2. `pnpm dev` — all four workspace apps; Valhalla is a separate service
+3. `pnpm app:android` — the mobile app needs `EXPO_PUBLIC_API_URL` pointing at your **LAN** IP, not `localhost`
 
 ### Linting
 
