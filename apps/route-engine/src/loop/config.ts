@@ -3,9 +3,9 @@ export const MAX_DISTANCE_METERS = 80_000
 export const MIN_ROUTE_LENGTH_RATIO = 0.5
 
 /** Hard ceiling from the plan: a loop may not spend more than this long. */
-export const LOOP_BUDGET_MS = 2_500
+export const LOOP_BUDGET_MS = 10_000
 export const MAX_VALHALLA_CALLS = 10
-export const DEFAULT_ATTEMPT_TIMEOUT_MS = 2_000
+export const DEFAULT_ATTEMPT_TIMEOUT_MS = 10_000
 /** Under this much remaining time there is no useful route left to start. */
 export const MIN_ATTEMPT_TIMEOUT_MS = 250
 

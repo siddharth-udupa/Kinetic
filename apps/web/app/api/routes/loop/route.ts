@@ -7,9 +7,7 @@ const ROUTE_ENGINE_URL = (
   process.env.ROUTE_ENGINE_URL ?? "http://localhost:8003"
 ).replace(/\/+$/, "")
 
-// The engine spends at most 2.5 s on a loop. Give the hop a little headroom so
-// its own 422/502 still reaches the client instead of becoming a 504 here.
-const ENGINE_TIMEOUT_MS = 3_000
+const ENGINE_TIMEOUT_MS = 10_000
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null

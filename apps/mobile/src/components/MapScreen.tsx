@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { DEFAULT_TILE_PROVIDER, type TileProviderId } from "@repo/maps"
-import { getCurrentPositionIfPermitted } from "@/lib/locationTask"
 import { useTheme } from "@/hooks/useTheme"
+import { useUserLocation } from "@/hooks/useUserLocation"
 import MapView from "./map/Map"
 import RoutePlannerSheet from "./map/RoutePlannerSheet"
 import TileProviderPicker from "./map/TileProviderPicker"
@@ -15,24 +15,14 @@ export type MapScreenProps = {
 export default function MapScreen({ encodedPolyline }: MapScreenProps) {
   const { colors } = useTheme()
   const [providerId, setProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null)
   const [isRoutePlannerOpen, setIsRoutePlannerOpen] = useState(false)
   // The loop the planner generated, drawn on the map underneath the sheet.
   const [plannedPolyline, setPlannedPolyline] = useState<string>()
 
-  // Follow the athlete when permission is already granted. This deliberately
-  // never prompts: the map stays on its default view if permission is missing.
-  useEffect(() => {
-    let cancelled = false
-
-    getCurrentPositionIfPermitted().then((point) => {
-      if (!cancelled && point) {
-        setUserLocation({ latitude: point.latitude, longitude: point.longitude })
-      }
-    })
-
-    return () => { cancelled = true }
-  }, [])
+  // The maps tab asks for a precise fix on open. A refusal simply leaves the
+  // provider view and the layer controls as they were; the planner below asks
+  // again before it will build a loop.
+  const { location, status, request } = useUserLocation({ requestOnMount: true })
 
   return (
     <View className="flex-1 bg-page relative">
@@ -40,7 +30,7 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
         encodedPolyline={plannedPolyline ?? encodedPolyline}
         isStatic={false}
         providerId={providerId}
-        userLocation={userLocation}
+        userLocation={location}
         style={{ width: "100%", height: "100%", flex: 1 }}
       />
 
@@ -66,6 +56,9 @@ export default function MapScreen({ encodedPolyline }: MapScreenProps) {
       <RoutePlannerSheet
         visible={isRoutePlannerOpen}
         onClose={() => setIsRoutePlannerOpen(false)}
+        userLocation={location}
+        locationStatus={status}
+        onRequestLocation={request}
         onRouteChange={(route) => setPlannedPolyline(route?.polyline)}
       />
     </View>

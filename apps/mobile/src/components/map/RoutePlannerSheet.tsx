@@ -15,14 +15,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import type { LoopRequest, LoopResponse, RouteProfile } from "@repo/validation"
 import { authClient } from "@/lib/auth-client"
 import { useTheme } from "@/hooks/useTheme"
+import type { LocationStatus, UserLocation } from "@/hooks/useUserLocation"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? ""
-
-/** The first version always starts at MG Road. Start-point picking is next. */
-const ORIGIN = { lat: 12.9716, lon: 77.5946 }
-const ORIGIN_LABEL = "MG Road, Bengaluru"
 
 const MIN_DISTANCE_KM = 2
 const MAX_DISTANCE_KM = 50
@@ -81,9 +78,55 @@ function readError(error: unknown): string {
   return "Could not reach the route engine. Check that it is running, then try again."
 }
 
+function locationNotice(status: LocationStatus): {
+  hint: string
+  warning?: string
+} {
+  const settings = Platform.OS === "web" ? "browser settings" : "device settings"
+
+  switch (status) {
+    case "requesting":
+      return { hint: "Getting a precise fix…" }
+    case "denied":
+      return {
+        hint: "Location access is blocked.",
+        warning: `Allow location access in your ${settings}, then retry. A loop must start from your exact position.`,
+      }
+    case "timeout":
+      return {
+        hint: "Your location is taking too long.",
+        warning:
+          "No precise fix arrived in time. Check your signal and retry before building a loop.",
+      }
+    case "unavailable":
+      return {
+        hint: "Your location is unavailable.",
+        warning:
+          "Turn on location services, then retry. A loop must start from your exact position.",
+      }
+    case "unsupported":
+      return {
+        hint: "This device cannot share your location.",
+        warning:
+          "Location support is required to build a loop. Try a device that can share your position.",
+      }
+    case "granted":
+      return { hint: "Reading your position…" }
+    case "idle":
+      return {
+        hint: "Location access is needed to choose the start point.",
+      }
+  }
+}
+
 export type RoutePlannerSheetProps = {
   visible: boolean
   onClose: () => void
+  /** The precise fix the device returned, or null until it has one. */
+  userLocation: UserLocation | null
+  locationStatus: LocationStatus
+  /** Prompts for permission, or retries after a refusal. */
+  onRequestLocation: () => Promise<UserLocation | null>
   /** The new loop, or null while a request is in flight. */
   onRouteChange?: (route: LoopResponse | null) => void
 }
@@ -91,6 +134,9 @@ export type RoutePlannerSheetProps = {
 export default function RoutePlannerSheet({
   visible,
   onClose,
+  userLocation,
+  locationStatus,
+  onRequestLocation,
   onRouteChange,
 }: RoutePlannerSheetProps) {
   const insets = useSafeAreaInsets()
@@ -101,17 +147,22 @@ export default function RoutePlannerSheet({
   const [seed, setSeed] = useState("")
 
   const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
+    "idle" | "locating" | "loading" | "success" | "error"
   >("idle")
   const [result, setResult] = useState<LoopResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<{
+    message: string
+    needsLocation?: boolean
+  } | null>(null)
+
+  const notice = locationNotice(locationStatus)
 
   function randomizeSeed() {
     setSeed(String(Math.floor(Math.random() * (MAX_SEED + 1))))
   }
 
   async function handleGenerate() {
-    if (status === "loading") return
+    if (status === "loading" || status === "locating") return
 
     const trimmedSeed = seed.trim()
     const seedValue = trimmedSeed === "" ? undefined : Number(trimmedSeed)
@@ -123,14 +174,36 @@ export default function RoutePlannerSheet({
       setStatus("error")
       setResult(null)
       onRouteChange?.(null)
-      setError(
-        `Seed must be a whole number between 0 and ${MAX_SEED.toLocaleString()}.`,
-      )
+      setError({
+        message: `Seed must be a whole number between 0 and ${MAX_SEED.toLocaleString()}.`,
+      })
       return
     }
 
+    /* The loop is anchored to the athlete, so a request without a fix waits
+       for the permission prompt instead of falling back to a fixed city. */
+    let origin = userLocation
+
+    if (!origin) {
+      setStatus("locating")
+      setError(null)
+      origin = await onRequestLocation()
+
+      if (!origin) {
+        setStatus("error")
+        setResult(null)
+        onRouteChange?.(null)
+        setError({
+          message:
+            "Location access is required to build a loop. Allow the app to use your precise location, then try again.",
+          needsLocation: true,
+        })
+        return
+      }
+    }
+
     const payload: LoopRequest = {
-      origin: ORIGIN,
+      origin: { lat: origin.latitude, lon: origin.longitude },
       distanceMeters: distanceKm * 1_000,
       profile,
       ...(seedValue === undefined ? {} : { seed: seedValue }),
@@ -155,13 +228,13 @@ export default function RoutePlannerSheet({
 
       if (res.error) {
         setStatus("error")
-        setError(readError(res.error))
+        setError({ message: readError(res.error) })
         return
       }
 
       if (!res.data) {
         setStatus("error")
-        setError("The route engine returned an empty response.")
+        setError({ message: "The route engine returned an empty response." })
         return
       }
 
@@ -170,8 +243,18 @@ export default function RoutePlannerSheet({
       onRouteChange?.(res.data)
     } catch (err) {
       setStatus("error")
-      setError(readError(err))
+      setError({ message: readError(err) })
     }
+  }
+
+  /** A retry after a refusal should clear the stale location error, not stack
+   *  another one on top of it. Other errors belong to their own attempt. */
+  async function retryLocation() {
+    if (error?.needsLocation) {
+      setError(null)
+      setStatus("idle")
+    }
+    await onRequestLocation()
   }
 
   return (
@@ -201,8 +284,8 @@ export default function RoutePlannerSheet({
                   Plan a loop
                 </Text>
                 <Text className="mt-1.5 text-[12px] leading-5 text-ink-secondary">
-                  Pick a distance and an activity. The engine finds a route that
-                  starts and finishes at the same point.
+                  Pick a distance and an activity. The loop starts and finishes
+                  at your current location.
                 </Text>
               </View>
 
@@ -226,18 +309,60 @@ export default function RoutePlannerSheet({
                 paddingBottom: Math.max(insets.bottom, 18) + 8,
               }}
             >
-              <View className="flex-row items-center gap-2.5 rounded-xl border border-line bg-surface-muted px-3 py-2.5">
-                <View className="size-8 shrink-0 items-center justify-center rounded-lg bg-surface">
-                  <Ionicons name="location" size={15} color={colors.accentText} />
+              <View className="rounded-xl border border-line bg-surface-muted px-3 py-2.5">
+                <View className="flex-row items-center gap-2.5">
+                  <View className="size-8 shrink-0 items-center justify-center rounded-lg bg-surface">
+                    <Ionicons name="location" size={15} color={colors.accentText} />
+                  </View>
+                  <View className="min-w-0 flex-1">
+                    <Text className="text-[12px] font-semibold text-ink">
+                      {userLocation
+                        ? "Starting at your precise location"
+                        : "Start point needs location"}
+                    </Text>
+                    <Text
+                      className="text-[11px] text-ink-muted"
+                      style={{ fontVariant: ["tabular-nums"] }}
+                    >
+                      {userLocation
+                        ? `${userLocation.latitude.toFixed(5)}, ${userLocation.longitude.toFixed(5)}${
+                            userLocation.accuracy !== null
+                              ? ` · ±${Math.round(userLocation.accuracy)} m`
+                              : ""
+                          }`
+                        : notice.hint}
+                    </Text>
+                  </View>
+                  {!userLocation && locationStatus !== "requesting" ? (
+                    <Pressable
+                      onPress={() => void retryLocation()}
+                      accessibilityRole="button"
+                      accessibilityLabel="Allow location access"
+                      className="shrink-0 rounded-lg border border-line bg-surface px-2.5 py-1.5 active:opacity-80"
+                    >
+                      <Text className="text-[11px] font-semibold text-accent-text">
+                        {locationStatus === "denied" ? "Retry" : "Allow"}
+                      </Text>
+                    </Pressable>
+                  ) : null}
                 </View>
-                <View className="min-w-0 flex-1">
-                  <Text className="text-[12px] font-semibold text-ink">
-                    {ORIGIN_LABEL}
-                  </Text>
-                  <Text className="text-[11px] text-ink-muted">
-                    Fixed start for this first version
-                  </Text>
-                </View>
+
+                {notice.warning ? (
+                  <View
+                    accessibilityRole="alert"
+                    className="mt-2 flex-row items-start gap-1.5 rounded-lg border border-warning/30 bg-warning-soft px-2.5 py-2"
+                  >
+                    <Ionicons
+                      name="warning-outline"
+                      size={13}
+                      color={colors.warning}
+                      style={{ marginTop: 1 }}
+                    />
+                    <Text className="flex-1 text-[11px] leading-4 text-warning-text">
+                      {notice.warning}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               <View className="mt-5">
@@ -412,24 +537,28 @@ export default function RoutePlannerSheet({
 
               <Pressable
                 onPress={handleGenerate}
-                disabled={status === "loading"}
+                disabled={status === "loading" || status === "locating"}
                 accessibilityRole="button"
                 accessibilityLabel="Generate loop"
                 accessibilityState={{
-                  disabled: status === "loading",
-                  busy: status === "loading",
+                  disabled: status === "loading" || status === "locating",
+                  busy: status === "loading" || status === "locating",
                 }}
                 className={`mt-5 h-12 flex-row items-center justify-center gap-2 rounded-xl bg-accent active:bg-accent-hover ${
-                  status === "loading" ? "opacity-60" : ""
+                  status === "loading" || status === "locating" ? "opacity-60" : ""
                 }`}
               >
-                {status === "loading" ? (
+                {status === "loading" || status === "locating" ? (
                   <ActivityIndicator size="small" color={colors.onAccent} />
                 ) : (
                   <Ionicons name="sparkles" size={17} color={colors.onAccent} />
                 )}
                 <Text className="text-[14px] font-semibold text-on-accent">
-                  {status === "loading" ? "Building your loop…" : "Generate loop"}
+                  {status === "locating"
+                    ? "Finding your location…"
+                    : status === "loading"
+                      ? "Building your loop…"
+                      : "Generate loop"}
                 </Text>
               </Pressable>
 
@@ -491,17 +620,19 @@ export default function RoutePlannerSheet({
                 <View className="mt-3 rounded-xl border border-danger/30 bg-danger-soft px-3.5 py-3">
                   <View className="flex-row items-start gap-2">
                     <Ionicons
-                      name="alert-circle"
+                      name={error.needsLocation ? "location-outline" : "alert-circle"}
                       size={15}
                       color={colors.danger}
                       style={{ marginTop: 2 }}
                     />
                     <View className="min-w-0 flex-1">
                       <Text className="text-[12px] font-semibold text-danger-text">
-                        Could not build the loop
+                        {error.needsLocation
+                          ? "Location required"
+                          : "Could not build the loop"}
                       </Text>
                       <Text className="mt-0.5 text-[11px] leading-4 text-ink-secondary">
-                        {error}
+                        {error.message}
                       </Text>
                     </View>
                   </View>

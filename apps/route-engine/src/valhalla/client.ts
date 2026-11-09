@@ -4,7 +4,7 @@ import { ValhallaError } from "./errors.js"
 import { errorMessageOf, isRecord } from "./guards.js"
 import type { CallOptions } from "./types.js"
 
-const DEFAULT_TIMEOUT_MS = 2_000
+const DEFAULT_TIMEOUT_MS = 10_000
 
 function transportError(
   error: unknown,
