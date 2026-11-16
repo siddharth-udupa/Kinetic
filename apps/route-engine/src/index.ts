@@ -2,17 +2,18 @@ import { env } from "./env.js"
 import { buildServer } from "./server/index.js"
 import { getStatus } from "./valhalla/index.js"
 
-// Prefer the configured instance. If it is down and a fallback exists, switch
-// once at boot rather than making every route request try the dead endpoint.
-if (env.valhallaFallbackUrl) {
-  try {
-    await getStatus()
-  } catch {
-    console.warn(
-      `Valhalla at ${env.valhallaUrl} is unreachable; using ${env.valhallaFallbackUrl}`
-    )
-    env.valhallaUrl = env.valhallaFallbackUrl
-  }
+// Loop generation routes every candidate through Valhalla, so there is no
+// useful degraded mode without it. Check once at boot to put the fix in the
+// log, but keep serving `/health` so the failure is visible.
+try {
+  await getStatus()
+} catch {
+  console.warn(
+    `Valhalla is not available at ${env.valhallaUrl}. Loop requests will fail until it is running.`
+  )
+  console.warn(
+    "Start the local graph with: docker compose --profile routing up -d valhalla"
+  )
 }
 
 const app = buildServer()

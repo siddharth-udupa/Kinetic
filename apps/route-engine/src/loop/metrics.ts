@@ -1,7 +1,4 @@
-import {
-  ELEVATION_NOISE_THRESHOLD,
-  LOOPINESS_SCORE_TARGET,
-} from "./config.js"
+import { ELEVATION_NOISE_THRESHOLD } from "./config.js"
 
 /**
  * The same 2 m dead band as `@repo/gpx`'s `computeElevation`, so a generated
@@ -24,9 +21,4 @@ export function distanceAccuracy(
   targetDistanceMeters: number
 ): number {
   return Math.abs(distanceMeters - targetDistanceMeters) / targetDistanceMeters
-}
-
-/** Distance first, then shape quality. */
-export function scoreCandidate(accuracy: number, loopiness: number): number {
-  return accuracy + 0.5 * (1 - Math.min(1, loopiness / LOOPINESS_SCORE_TARGET))
 }

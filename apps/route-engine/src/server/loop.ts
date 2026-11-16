@@ -1,6 +1,9 @@
 import type { Request, Response } from "express"
 import { LoopRequestSchema } from "@repo/validation"
-import { generateLoop } from "../loop/index.js"
+import {
+  generateLoop,
+  type LoopDiagnostics,
+} from "../loop/index.js"
 import { requestIdOf } from "./request-id.js"
 
 export async function loop(
@@ -18,16 +21,29 @@ export async function loop(
     return
   }
 
-  const result = await generateLoop(parsed.data, { requestId })
+  let diagnostics: LoopDiagnostics | undefined
+  const result = await generateLoop(parsed.data, {
+    requestId,
+    onDiagnostics: (stats) => {
+      diagnostics = stats
+    },
+  })
 
-  // The engine logs a one-line summary and leaves the response to clients to
-  // render. Keeping the payload out of this log makes `pnpm engine` readable
-  // while the endpoint is being exercised by hand.
+  const best = result.routes[0]
+
+  // One line per request: enough to tell whether a generation failed because
+  // of distance, overlap or the shape, without dumping the payload.
   console.log(
-    `[loop] ${requestId} ${result.profile} ${result.distanceMeters}m ` +
+    `[loop] ${requestId} ${result.profile} ${best.distanceMeters}m ` +
       `(target ${result.requestedDistanceMeters}m, accuracy ${(
-        result.accuracy * 100
-      ).toFixed(1)}%, ${result.warnings.length} warning(s))`
+        best.accuracy * 100
+      ).toFixed(1)}%, ${result.routes.length} route(s), ` +
+      `${diagnostics?.routedCount ?? 0} routed from ${
+        diagnostics?.candidateCount ?? 0
+      } seeds, ${diagnostics?.refinedCount ?? 0} refined, ` +
+      `overlap ${best.repeatedRoadPercent.toFixed(1)}%, ` +
+      `crossings ${best.selfIntersections}, ` +
+      `${result.warnings.length} warning(s))`
   )
 
   response.json(result)

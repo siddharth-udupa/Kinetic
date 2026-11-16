@@ -1,3 +1,4 @@
+export * from "./analysis.js"
 export * from "./point.js"
 export * from "./polyline.js"
 export * from "./shape.js"

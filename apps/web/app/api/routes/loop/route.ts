@@ -7,7 +7,9 @@ const ROUTE_ENGINE_URL = (
   process.env.ROUTE_ENGINE_URL ?? "http://localhost:8003"
 ).replace(/\/+$/, "")
 
-const ENGINE_TIMEOUT_MS = 10_000
+// The engine routes 30 candidates and may spend a little time refining the
+// best distances, so this has to cover the engine's own 25 s budget.
+const ENGINE_TIMEOUT_MS = 30_000
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null

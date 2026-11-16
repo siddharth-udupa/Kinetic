@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto"
 
-/** Deterministic PRNG so one seed always rebuilds the same four candidates. */
+/** Deterministic PRNG so one seed always rebuilds the same candidate set. */
 export function mulberry32(seed: number): () => number {
   let state = seed >>> 0
 

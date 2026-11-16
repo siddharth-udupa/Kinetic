@@ -1,28 +1,71 @@
 import { randomInt } from "node:crypto"
 import { encodePolyline } from "@repo/gpx"
-import type { LoopRequest, LoopResponse } from "@repo/validation"
+import type { LoopRequest, LoopResponse, LoopRoute } from "@repo/validation"
 import { createBudget } from "./budget.js"
 import {
   ACCURACY_WARNING_THRESHOLD,
-  clampDistance,
-  DETOUR_FACTOR,
-  LOOPINESS_WARNING_THRESHOLD,
+  CANDIDATE_COUNT,
+  COMPACTNESS_WARNING_THRESHOLD,
   MAX_DISTANCE_METERS,
   MIN_DISTANCE_METERS,
-  TARGET_TOLERANCE,
+  REPEATED_ROAD_WARNING_THRESHOLD,
+  clampDistance,
 } from "./config.js"
 import { LoopError } from "./errors.js"
+import { isUsableFallback } from "./quality.js"
 import { mulberry32, resolveSeed } from "./random.js"
-import { correctCandidate, findInitialCandidates } from "./search.js"
+import { searchLoops, type LoopSearchResult } from "./search.js"
+import type { Candidate } from "./types.js"
 
 const STOPPED_EARLY_WARNING =
-  "Stopped early; returning the best loop found so far."
+  "Stopped early; returning the best loops found so far."
+const NO_CLEAN_WARNING =
+  "No loop met every quality check; returning the closest usable match."
+
+export type LoopDiagnostics = {
+  candidateCount: number
+  routedCount: number
+  acceptedCount: number
+  returnedCount: number
+  refinedCount: number
+  fallback: boolean
+  stoppedEarly: boolean
+  rejectionCounts: LoopSearchResult["rejectionCounts"]
+}
+
+export type GenerateLoopOptions = {
+  requestId?: string
+  /** Test hook; production always uses `CANDIDATE_COUNT`. */
+  candidateCount?: number
+  onDiagnostics?: (stats: LoopDiagnostics) => void
+}
+
+function toRoute(candidate: Candidate, rank: number): LoopRoute {
+  return {
+    rank,
+    distanceMeters: Math.round(candidate.distanceMeters),
+    durationSeconds: Math.round(candidate.durationSeconds),
+    elevationGainMeters: candidate.elevationGainMeters,
+    accuracy: Number(candidate.accuracy.toFixed(4)),
+    loopiness: Number(candidate.loopiness.toFixed(4)),
+    repeatedRoadPercent: Number(
+      (candidate.repeatedRoadFraction * 100).toFixed(1)
+    ),
+    repeatedRoadMeters: Math.round(candidate.repeatedRoadMeters),
+    selfIntersections: candidate.selfIntersections,
+    sharpTurns: candidate.sharpTurns,
+    uTurns: candidate.uTurns,
+    score: Number(candidate.score.toFixed(4)),
+    polyline: encodePolyline(candidate.shape),
+  }
+}
 
 export async function generateLoop(
   input: LoopRequest,
-  options: { requestId?: string } = {}
+  options: GenerateLoopOptions = {}
 ): Promise<LoopResponse> {
-  const requestId = options.requestId ?? `loop_${randomInt(0, 4_294_967_296)}`
+  const requestId =
+    options.requestId ?? `loop_${randomInt(0, 4_294_967_296)}`
   const targetDistanceMeters = clampDistance(input.distanceMeters)
   const seed = resolveSeed(input.seed)
   const random = mulberry32(seed)
@@ -38,43 +81,45 @@ export async function generateLoop(
     )
   }
 
-  const context = {
-    origin: { lat: input.origin.lat, lng: input.origin.lon },
-    profile: input.profile,
-    targetDistanceMeters,
-    requestId,
-    budget: createBudget(),
+  const search = await searchLoops(
+    {
+      origin: { lat: input.origin.lat, lng: input.origin.lon },
+      profile: input.profile,
+      targetDistanceMeters,
+      requestId,
+      budget: createBudget(),
+    },
+    random,
+    options.candidateCount ?? CANDIDATE_COUNT
+  )
+
+  if (search.stoppedEarly) warn(STOPPED_EARLY_WARNING)
+
+  const selected = search.accepted.slice(0, 3)
+  let fallback = false
+
+  if (selected.length === 0) {
+    const usable = search.ranked.find(isUsableFallback)
+    if (usable) {
+      selected.push(usable)
+      fallback = true
+      warn(NO_CLEAN_WARNING)
+    }
   }
 
-  const startBearing = random() * 360
-  const radius =
-    targetDistanceMeters / (3 * Math.sqrt(3) * DETOUR_FACTOR)
-
-  const initial = await findInitialCandidates(context, startBearing, radius)
-  if (initial.stoppedEarly) warn(STOPPED_EARLY_WARNING)
-
-  if (initial.candidates.length === 0) {
+  if (selected.length === 0) {
     throw new LoopError(
-      "Could not build a loop from this start point. Try a different distance or profile."
+      "Could not build a usable loop from this start point. Try a different distance or profile."
     )
   }
 
-  initial.candidates.sort((a, b) => a.score - b.score)
-  let best = initial.candidates[0]
-
-  // Stop as soon as the best shape is inside the band. Correcting a runner-up
-  // while the winner already satisfies the target only spends Valhalla calls.
-  for (const contender of initial.candidates.slice(0, 2)) {
-    if (best.accuracy <= TARGET_TOLERANCE) break
-
-    const outcome = await correctCandidate(context, contender, best)
-    best = outcome.best
-
-    if (outcome.stoppedEarly) {
-      warn(STOPPED_EARLY_WARNING)
-      break
-    }
+  if (!fallback && selected.length < 3) {
+    warn(
+      `Only ${selected.length} clean loop${selected.length === 1 ? "" : "s"} could be built from this start point.`
+    )
   }
+
+  const best = selected[0]
 
   if (best.accuracy > ACCURACY_WARNING_THRESHOLD) {
     warn(
@@ -82,20 +127,46 @@ export async function generateLoop(
     )
   }
 
-  if (best.loopiness < LOOPINESS_WARNING_THRESHOLD) {
-    warn("The loop doubles back on itself.")
+  if (best.repeatedRoadFraction > REPEATED_ROAD_WARNING_THRESHOLD) {
+    warn("The best loop repeats some of the same road.")
   }
+
+  if (best.loopiness < COMPACTNESS_WARNING_THRESHOLD) {
+    warn("The best loop is less rounded than usual.")
+  }
+
+  if (best.selfIntersections > 0) {
+    warn("The best loop crosses itself.")
+  }
+
+  const routes = selected.map((candidate, index) =>
+    toRoute(candidate, index + 1)
+  )
+
+  options.onDiagnostics?.({
+    candidateCount: search.candidateCount,
+    routedCount: search.routedCount,
+    acceptedCount: search.accepted.length,
+    returnedCount: routes.length,
+    refinedCount: search.refinedCount,
+    fallback,
+    stoppedEarly: search.stoppedEarly,
+    rejectionCounts: search.rejectionCounts,
+  })
 
   return {
     seed,
     profile: input.profile,
     requestedDistanceMeters: targetDistanceMeters,
-    distanceMeters: Math.round(best.distanceMeters),
-    durationSeconds: Math.round(best.durationSeconds),
-    elevationGainMeters: best.elevationGainMeters,
-    accuracy: Number(best.accuracy.toFixed(4)),
-    loopiness: Number(best.loopiness.toFixed(4)),
-    polyline: encodePolyline(best.shape),
+    // The best route is mirrored at the top level so clients that only render
+    // one loop keep working while the UI moves to the ranked `routes` list.
+    distanceMeters: routes[0].distanceMeters,
+    durationSeconds: routes[0].durationSeconds,
+    elevationGainMeters: routes[0].elevationGainMeters,
+    accuracy: routes[0].accuracy,
+    loopiness: routes[0].loopiness,
+    polyline: routes[0].polyline,
+    routes,
     warnings,
   }
 }
