@@ -11,9 +11,7 @@ try {
   console.warn(
     `Valhalla is not available at ${env.valhallaUrl}. Loop requests will fail until it is running.`
   )
-  console.warn(
-    "Start the local graph with: docker compose --profile routing up -d valhalla"
-  )
+  console.warn("Start the local graph with: pnpm valhalla:up")
 }
 
 const app = buildServer()

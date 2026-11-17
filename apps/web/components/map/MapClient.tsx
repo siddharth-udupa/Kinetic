@@ -127,12 +127,17 @@ export default function MapClient({
 }: MapClientProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
+  /* Effects must key off the live map instance, not just `mapRef`: React can
+     mount, discard and re-create the map (Strict Mode does exactly this), and a
+     camera or layer applied to the discarded instance would never be repeated. */
+  const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
   const fittedPolylineRef = useRef<string | null>(null)
-  const centeredOnUserRef = useRef(false)
+  const centeredOnMapRef = useRef<maplibregl.Map | null>(null)
   /* `style.load` fires once per style, before the source tiles finish. Track it
      explicitly: `isStyleLoaded()` can still be false afterwards when a source is
-     unreachable, and a listener added that late would never fire. */
-  const styleReadyRef = useRef(false)
+     unreachable, and a listener added that late would never fire. The map itself
+     records which instance is ready, so a stale map cannot mark a new one. */
+  const styleReadyRef = useRef<maplibregl.Map | null>(null)
   const [currentProviderId, setCurrentProviderId] = useState<TileProviderId>(DEFAULT_TILE_PROVIDER)
   // MapLibre paints from a literal, not a class, so read the route colour off the palette.
   const { colors } = useTheme()
@@ -183,7 +188,6 @@ export default function MapClient({
   useEffect(() => {
     if (!mapContainerRef.current) return
 
-    styleReadyRef.current = false
     const initialStyle = getMapLibreStyle(currentProviderId) as maplibregl.StyleSpecification
 
     const map = new maplibregl.Map({
@@ -196,7 +200,7 @@ export default function MapClient({
     })
 
     const handleStyleLoad = () => {
-      styleReadyRef.current = true
+      styleReadyRef.current = map
     }
     map.on('style.load', handleStyleLoad)
 
@@ -205,9 +209,12 @@ export default function MapClient({
     }
 
     mapRef.current = map
+    fittedPolylineRef.current = null
+    setMapInstance(map)
 
     return () => {
       map.off('style.load', handleStyleLoad)
+      if (styleReadyRef.current === map) styleReadyRef.current = null
       map.remove()
       mapRef.current = null
     }
@@ -217,7 +224,7 @@ export default function MapClient({
      replaces the old one. Kept out of the map-building effect so a new route
      does not recreate the map and reset the camera. */
   useEffect(() => {
-    const map = mapRef.current
+    const map = mapInstance
     if (!map) return
 
     const drawRoute = () => {
@@ -238,7 +245,7 @@ export default function MapClient({
       fittedPolylineRef.current = encodedPolyline ?? null
     }
 
-    if (map.isStyleLoaded()) {
+    if (styleReadyRef.current === map || map.isStyleLoaded()) {
       drawRoute()
     } else {
       map.once('style.load', drawRoute)
@@ -247,19 +254,19 @@ export default function MapClient({
     return () => {
       map.off('style.load', drawRoute)
     }
-  }, [routeGeoJSON, cameraBounds, encodedPolyline, colors.accent])
+  }, [mapInstance, routeGeoJSON, cameraBounds, encodedPolyline, colors.accent])
 
   /* The fix arrives after the permission prompt, so the dot is painted on a
      later render too and re-applied after a tile-provider style swap. */
   useEffect(() => {
-    const map = mapRef.current
+    const map = mapInstance
     if (!map) return
 
     const drawUserLocation = () => {
       syncUserLocationLayer(map, userLocation ?? null, colors.accent, colors.onAccent)
     }
 
-    if (styleReadyRef.current || map.isStyleLoaded()) {
+    if (styleReadyRef.current === map || map.isStyleLoaded()) {
       drawUserLocation()
     } else {
       map.once('style.load', drawUserLocation)
@@ -268,32 +275,33 @@ export default function MapClient({
     return () => {
       map.off('style.load', drawUserLocation)
     }
-  }, [userLocation, colors.accent, colors.onAccent])
+  }, [mapInstance, userLocation, colors.accent, colors.onAccent])
 
   /* An accepted permission should put the athlete in the middle of the screen.
-     Only once: panning afterwards is the visitor's choice, and a loop fitted
-     from a route request must not be pulled back to the start point. The camera
-     does not need the style, so move it now rather than waiting for `style.load`. */
+     Only once per map: panning afterwards is the visitor's choice, and a loop
+     fitted from a route request must not be pulled back to the start point. The
+     camera does not need the style, so move it now rather than waiting for
+     `style.load`. */
   useEffect(() => {
-    const map = mapRef.current
-    if (!map || !userLocation || encodedPolyline || centeredOnUserRef.current) return
+    const map = mapInstance
+    if (!map || !userLocation || encodedPolyline || centeredOnMapRef.current === map) return
 
     map.flyTo({
       center: [userLocation.lng, userLocation.lat],
       zoom: 15,
       duration: 900,
     })
-    centeredOnUserRef.current = true
-  }, [userLocation, encodedPolyline])
+    centeredOnMapRef.current = map
+  }, [mapInstance, userLocation, encodedPolyline])
 
   /* Repaints the route on a theme switch. Not a dep of the map-building effect
      above: that would tear down and re-create the map, losing the camera. */
   useEffect(() => {
-    const map = mapRef.current
+    const map = mapInstance
     if (!map?.getLayer('routeLine')) return
 
     map.setPaintProperty('routeLine', 'line-color', colors.accent)
-  }, [colors.accent])
+  }, [mapInstance, colors.accent])
 
   const handleSelectProvider = (newProviderId: TileProviderId) => {
     setCurrentProviderId(newProviderId)
@@ -301,11 +309,11 @@ export default function MapClient({
     if (!map) return
 
     const newStyle = getMapLibreStyle(newProviderId) as maplibregl.StyleSpecification
-    styleReadyRef.current = false
+    styleReadyRef.current = null
     map.setStyle(newStyle)
 
     map.once('style.load', () => {
-      styleReadyRef.current = true
+      styleReadyRef.current = map
       syncRouteLayer(map, routeGeoJSON, colors.accent)
       syncUserLocationLayer(map, userLocation ?? null, colors.accent, colors.onAccent)
     })

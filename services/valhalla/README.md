@@ -1,8 +1,7 @@
 # Valhalla — local routing graph
 
-The routing engine behind loop generation. Opt-in: it is not started by
-`pnpm compose:up` or `pnpm dev`, and it is only useful once the graph has been
-built.
+The routing engine behind loop generation. `pnpm dev` starts it automatically
+once the graph has been built, and keeps it running across host restarts.
 
 The graph is built from the **same** `south-india.osm.pbf` the vector tiles are
 built from, so routing and rendering agree at the edges of the region.
@@ -36,9 +35,9 @@ left running.
 ## Run
 
 ```bash
-docker compose --profile routing up -d valhalla
+pnpm valhalla:up                       # start + wait for healthy
 docker compose --profile routing logs -f valhalla
-docker compose --profile routing down
+pnpm valhalla:down                     # stop it without touching the apps
 ```
 
 Bound to `127.0.0.1:8002` only. The routing engine will reach it over the

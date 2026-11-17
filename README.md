@@ -6,16 +6,23 @@ pnpm dev
 
 from the root. This starts all four workspace apps — web (`:3000`),
 mobile/Metro (`:8081`), tile provider (`:4000`) and route engine (`:8003`) — in
-parallel.
+parallel, plus the Valhalla routing server (`:8002`) in Docker. The script waits
+for Valhalla to report healthy before starting the apps, so the engine does not
+boot in a degraded state.
 
-The route engine needs Valhalla. Start the local graph before generating loops:
+The route engine needs Valhalla, and Valhalla needs its graph built once:
 
 ```bash
-docker compose --profile routing up -d valhalla
+./services/valhalla/build.sh
 ```
 
-If it is not running, loop requests fail with a `502` naming the Valhalla URL;
-the engine does not fall back to a public instance.
+If the graph is missing or Docker is not running, `pnpm dev` stops with an
+actionable message instead of starting a route engine that cannot route. Use
+`pnpm dev:apps` to run only the workspace apps, and `pnpm valhalla:down` to stop
+the routing container.
+
+If Valhalla is not running, loop requests fail with a `502` naming the Valhalla
+URL; the engine does not fall back to a public instance.
 
 ## Docker
 

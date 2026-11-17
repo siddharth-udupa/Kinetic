@@ -101,11 +101,16 @@ services:
     tty: true
 
   # Valhalla routing graph. Built offline by services/valhalla/build.sh, then
-  # served from here. Not part of `pnpm compose:up` or `pnpm dev`; opt in with:
+  # served from here. `pnpm dev` starts it through services/valhalla/up.sh;
+  # it stays out of `pnpm compose:up` because the graph is optional. Run it
+  # directly with:
   #   docker compose --profile routing up -d valhalla
   valhalla:
     profiles: ["routing"]
     image: ${VALHALLA_IMAGE:-ghcr.io/valhalla/valhalla-scripted:latest}
+    # Keep serving across Docker/host restarts and recover from a crash. The
+    # graph is expensive to load, so it should not wait for `pnpm dev`.
+    restart: unless-stopped
     ports:
       # Loopback only. The engine reaches this over the compose network.
       - "127.0.0.1:8002:8002"
