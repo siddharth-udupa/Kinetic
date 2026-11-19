@@ -13,6 +13,8 @@ type MapProps = {
   isStatic?: boolean
   isChangeable: boolean
   userLocation?: UserLocation | null
+  isPicking?: boolean
+  onPickLocation?: (fix: { lat: number; lng: number }) => void
 }
 
 export default function MapView({
@@ -20,6 +22,8 @@ export default function MapView({
   isStatic,
   isChangeable,
   userLocation,
+  isPicking,
+  onPickLocation,
 }: MapProps) {
   return (
     <MapClient
@@ -27,6 +31,8 @@ export default function MapView({
       isStatic={isStatic}
       isChangeable={isChangeable}
       userLocation={userLocation}
+      isPicking={isPicking}
+      onPickLocation={onPickLocation}
     />
   )
 }

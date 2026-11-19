@@ -2,13 +2,15 @@ import ActivityFeed from "@/components/ActivityFeed"
 import { auth } from "@/lib/auth"
 import { createUserPreferences, getActivitiesByUser, getUserPreferences } from "@repo/db"
 import { headers } from "next/headers"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
+    // The feed renders the session user's avatar. Read it from the database
+    // rather than the cookie cache, which can predate the avatar being set.
+    query: { disableCookieCache: true },
   })
   if (!session) {
     redirect("/auth")

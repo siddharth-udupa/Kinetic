@@ -15,6 +15,9 @@ type MapClientProps = {
   isStatic?: boolean
   isChangeable: boolean
   userLocation?: UserLocation | null
+  /** Crosshair mode: the next map click becomes the start point. */
+  isPicking?: boolean
+  onPickLocation?: (fix: { lat: number; lng: number }) => void
 }
 
 function syncRouteLayer(
@@ -119,11 +122,36 @@ function syncUserLocationLayer(
   })
 }
 
+/* Metres between two fixes, for telling a real move from the watch tightening
+   its accuracy a few times in a row. */
+function distanceMetres(
+  a: { lng: number; lat: number },
+  b: { lng: number; lat: number },
+) {
+  const earthRadius = 6_371_000
+  const toRadians = Math.PI / 180
+  const dLat = (b.lat - a.lat) * toRadians
+  const dLng = (b.lng - a.lng) * toRadians
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(a.lat * toRadians) *
+      Math.cos(b.lat * toRadians) *
+      Math.sin(dLng / 2) ** 2
+  return 2 * earthRadius * Math.asin(Math.min(1, Math.sqrt(h)))
+}
+
+/* A watched fix arrives several times as the platform refines it. Below this
+   the movement is accuracy noise — recentring on it would make the map twitch
+   under the visitor — so only a correction past it moves the camera. */
+const RECENTER_THRESHOLD_METRES = 100
+
 export default function MapClient({
   encodedPolyline,
   isStatic = false,
   isChangeable,
   userLocation,
+  isPicking = false,
+  onPickLocation,
 }: MapClientProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
@@ -132,7 +160,14 @@ export default function MapClient({
      camera or layer applied to the discarded instance would never be repeated. */
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
   const fittedPolylineRef = useRef<string | null>(null)
-  const centeredOnMapRef = useRef<maplibregl.Map | null>(null)
+  /* The fix that last centred the camera, and which map it was centred on. A
+     retry (or a refined fix) should move the map again; a re-render of the same
+     fix, or a pan the visitor made, should not. */
+  const centeredOnRef = useRef<{
+    map: maplibregl.Map
+    lng: number
+    lat: number
+  } | null>(null)
   /* `style.load` fires once per style, before the source tiles finish. Track it
      explicitly: `isStyleLoaded()` can still be false afterwards when a source is
      unreachable, and a listener added that late would never fire. The map itself
@@ -176,14 +211,19 @@ export default function MapClient({
   // rather than a world city whose tiles it does not contain.
   const providerView = getTileProviderView(DEFAULT_TILE_PROVIDER)
 
-  const defaultCenter: [number, number] =
-    points.length > 0
-      ? [points[0]!.lng, points[0]!.lat]
+  /* A fix can land before this component mounts (the page asks for it on load),
+     so open on the athlete when it is already known; a fix that arrives later is
+     animated by the effect below. Otherwise a granted permission still opened on
+     the provider's city and the map read as the wrong location. */
+  const defaultCenter: [number, number] = points.length > 0
+    ? [points[0]!.lng, points[0]!.lat]
+    : userLocation
+      ? [userLocation.lng, userLocation.lat]
       : providerView.center
         ? [providerView.center[0], providerView.center[1]]
         : [-0.09, 51.505]
 
-  const defaultZoom = providerView.center?.[2] ?? 13
+  const defaultZoom = userLocation ? 15 : (providerView.center?.[2] ?? 13)
 
   useEffect(() => {
     if (!mapContainerRef.current) return
@@ -277,21 +317,73 @@ export default function MapClient({
     }
   }, [mapInstance, userLocation, colors.accent, colors.onAccent])
 
-  /* An accepted permission should put the athlete in the middle of the screen.
-     Only once per map: panning afterwards is the visitor's choice, and a loop
-     fitted from a route request must not be pulled back to the start point. The
-     camera does not need the style, so move it now rather than waiting for
-     `style.load`. */
+  /* Picking a start point: while the crosshair is armed, the next click on the
+     map is the visitor's correction. The handler is only attached in that mode,
+     so ordinary map clicks keep their normal meaning. */
   useEffect(() => {
     const map = mapInstance
-    if (!map || !userLocation || encodedPolyline || centeredOnMapRef.current === map) return
+    if (!map || !isPicking || !onPickLocation) return
 
-    map.flyTo({
-      center: [userLocation.lng, userLocation.lat],
-      zoom: 15,
-      duration: 900,
-    })
-    centeredOnMapRef.current = map
+    const canvas = map.getCanvas()
+    const previousCursor = canvas.style.cursor
+    canvas.style.cursor = "crosshair"
+
+    const handleClick = (event: maplibregl.MapMouseEvent) => {
+      onPickLocation({ lat: event.lngLat.lat, lng: event.lngLat.lng })
+    }
+
+    map.on("click", handleClick)
+
+    return () => {
+      map.off("click", handleClick)
+      canvas.style.cursor = previousCursor
+    }
+  }, [mapInstance, isPicking, onPickLocation])
+
+  /* An accepted permission should put the athlete in the middle of the screen.
+     The map may already open on the fix (see `defaultCenter`), in which case
+     there is nothing to animate. A later, different fix — a retry after a
+     refusal, or the watch refining a coarse first answer — moves the camera
+     again, because a dot in the right place under a map panned to the old one
+     still reads as wrong. A refinement under the threshold is only the accuracy
+     estimate moving, so it updates the dot without dragging the map. Panning
+     afterwards is the visitor's choice, and a loop fitted from a route request
+     must not be pulled back to the start point. The camera does not need the
+     style, so move it now rather than waiting for `style.load`. */
+  useEffect(() => {
+    const map = mapInstance
+    if (!map || !userLocation || encodedPolyline) return
+
+    const previous = centeredOnRef.current
+    // A new map has to be positioned even if the fix itself has not changed.
+    const isFirstFixForMap = previous?.map !== map
+    const movedMetres =
+      !isFirstFixForMap && previous
+        ? distanceMetres(previous, userLocation)
+        : Number.POSITIVE_INFINITY
+
+    if (movedMetres < RECENTER_THRESHOLD_METRES) return
+
+    const current = map.getCenter()
+    const alreadyThere =
+      Math.abs(current.lng - userLocation.lng) < 1e-6 &&
+      Math.abs(current.lat - userLocation.lat) < 1e-6
+
+    if (!alreadyThere) {
+      map.flyTo({
+        center: [userLocation.lng, userLocation.lat],
+        // Only the first fix picks a zoom. A refinement pans at whatever zoom
+        // the visitor has chosen instead of undoing their look around.
+        zoom: isFirstFixForMap ? 15 : map.getZoom(),
+        duration: 900,
+      })
+    }
+
+    centeredOnRef.current = {
+      map,
+      lng: userLocation.lng,
+      lat: userLocation.lat,
+    }
   }, [mapInstance, userLocation, encodedPolyline])
 
   /* Repaints the route on a theme switch. Not a dep of the map-building effect

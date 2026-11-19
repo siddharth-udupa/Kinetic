@@ -165,8 +165,8 @@ export default function ActivityCard({
 		router.push(`/activities/${activities.activityId}`);
 
 	return (
-		<article className="mx-auto my-5 w-[calc(100%-1.5rem)] max-w-2xl overflow-hidden rounded-3xl border border-line/80 bg-surface text-ink shadow-card transition-colors duration-200 sm:my-7 sm:w-[calc(100%-3rem)]">
-			<div className="p-4 sm:p-6">
+		<article className="mx-auto my-4 w-[calc(100%-1.5rem)] max-w-xl overflow-hidden rounded-2xl border border-line/80 bg-surface text-ink shadow-card transition-colors duration-200 sm:my-5 sm:w-[calc(100%-2.5rem)]">
+			<div className="p-4 sm:p-5">
 				<header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
 					<button
 						type="button"
@@ -176,15 +176,15 @@ export default function ActivityCard({
 					>
 						{userImage ? (
 							<Image
-								width={48}
-								height={48}
+								width={44}
+								height={44}
 								src={userImage}
 								alt={userName || "User Profile"}
-								className="size-12 rounded-full object-cover ring-2 ring-surface transition-transform duration-200 hover:scale-105 sm:size-13"
+								className="size-10 rounded-full object-cover ring-2 ring-surface transition-transform duration-200 hover:scale-105 sm:size-11"
 							/>
 						) : (
-							<span className="flex size-12 items-center justify-center rounded-full bg-surface-muted text-ink-muted ring-2 ring-surface sm:size-13">
-								<User className="size-6" aria-hidden="true" />
+							<span className="flex size-10 items-center justify-center rounded-full bg-surface-muted text-ink-muted ring-2 ring-surface sm:size-11">
+								<User className="size-5" aria-hidden="true" />
 							</span>
 						)}
 					</button>
@@ -197,7 +197,7 @@ export default function ActivityCard({
 						>
 							{userName || "User"}
 						</button>
-						<div className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
+						<div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
 							<CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
 							<span className="truncate">
 								{formattedDate} · {formattedTime}
@@ -205,36 +205,36 @@ export default function ActivityCard({
 						</div>
 					</div>
 
-					<div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft ring-1 ring-inset ring-accent/20 sm:size-12">
+					<div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft ring-1 ring-inset ring-accent/20 sm:size-11">
 						<SportIcon
-							className="size-5 text-accent sm:size-5.5"
+							className="size-4.5 text-accent sm:size-5"
 							strokeWidth={2.25}
 							aria-hidden="true"
 						/>
 					</div>
 				</header>
 
-				<div className="mt-5 sm:mt-6">
+				<div className="mt-4">
 					<p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-accent-text">
 						{sport.label}
 					</p>
 					<button
 						type="button"
 						onClick={clickHandler}
-						className="group/title mt-1.5 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+						className="group/title mt-1 block w-full text-left focus-visible:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
 					>
-						<h2 className="text-[21px] font-extrabold leading-[1.2] tracking-[-0.035em] text-ink transition-colors group-hover/title:text-accent-text sm:text-[26px]">
+						<h2 className="text-[19px] font-extrabold leading-[1.2] tracking-[-0.03em] text-ink transition-colors group-hover/title:text-accent-text sm:text-[22px]">
 							{activities.title || "Untitled activity"}
 						</h2>
 					</button>
 					{activities.description ? (
-						<p className="mt-2.5 line-clamp-4 text-sm leading-6 text-ink-secondary">
+						<p className="mt-2 line-clamp-3 text-[13px] leading-5 text-ink-secondary sm:text-sm sm:leading-6">
 							{activities.description}
 						</p>
 					) : null}
 				</div>
 
-				<div className="mt-5 grid grid-cols-3 divide-x divide-line-strong rounded-2xl bg-surface-muted-hover px-2 py-3.5 ring-1 ring-inset ring-line-muted sm:mt-6 sm:px-3 sm:py-4">
+				<div className="mt-4 grid grid-cols-3 divide-x divide-line-strong rounded-xl bg-surface-muted-hover px-2 py-3 ring-1 ring-inset ring-line-muted sm:px-2.5 sm:py-3.5">
 					{stats.map(({ label, value, icon: StatIcon }) => (
 						<div
 							key={label}
@@ -249,7 +249,7 @@ export default function ActivityCard({
 									{label}
 								</span>
 							</div>
-							<p className="mt-1 truncate text-base font-extrabold tabular-nums tracking-[-0.035em] text-ink sm:text-xl">
+							<p className="mt-1 truncate text-[15px] font-extrabold tabular-nums tracking-[-0.03em] text-ink sm:text-lg">
 								{value}
 							</p>
 						</div>
@@ -257,7 +257,7 @@ export default function ActivityCard({
 				</div>
 
 				{activities.location ? (
-					<div className="mt-3.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
+					<div className="mt-3 flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink-muted">
 						<MapPin className="size-3.5 shrink-0" aria-hidden="true" />
 						<span className="truncate">{activities.location}</span>
 					</div>
@@ -268,7 +268,7 @@ export default function ActivityCard({
 				<Link
 					ref={mapContainerRef}
 					href={`/activities/${activities.activityId}`}
-					className="relative mx-3 block h-64 w-[calc(100%-1.5rem)] overflow-hidden rounded-2xl border border-line bg-surface-muted sm:mx-6 sm:h-80 sm:w-[calc(100%-3rem)]"
+					className="relative mx-3 block h-56 w-[calc(100%-1.5rem)] overflow-hidden rounded-xl border border-line bg-surface-muted sm:mx-5 sm:h-64 sm:w-[calc(100%-2.5rem)]"
 					aria-label="Open activity map"
 				>
 					{isVisible ? (
@@ -289,7 +289,7 @@ export default function ActivityCard({
 				</Link>
 			) : null}
 
-			<footer className="mt-4 flex items-center justify-between gap-3 border-t border-line-muted px-4 py-3.5 sm:mt-5 sm:px-6 sm:py-4">
+			<footer className="mt-3.5 flex items-center justify-between gap-3 border-t border-line-muted px-4 py-3 sm:mt-4 sm:px-5">
 				<p className="hidden min-w-0 truncate text-xs font-medium text-ink-muted sm:block">
 					Enjoyed this activity?
 				</p>

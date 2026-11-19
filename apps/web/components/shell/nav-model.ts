@@ -51,7 +51,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       {
         label: "Loop builder",
-        href: "/maps/route",
+        href: "/maps?planner=1",
         detail: "Generate a route from preferences",
         icon: Route,
       },

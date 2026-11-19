@@ -33,6 +33,7 @@ export const auth = betterAuth({
     "mobile://",
     "exp://",
     process.env.EXPO_PUBLIC_API_URL ?? "",
+    "http://192.168.31.240:3000"
   ].filter(Boolean),
   socialProviders: {
     google: {

@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import type { ReactNode } from "react"
-import { ChevronRight } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { ChevronRight, UserRound } from "lucide-react"
 import { useTheme } from "@/hooks/useTheme"
 
 /** Keyboard focus ring, shared by every nav control. */
@@ -40,7 +40,8 @@ export function BrandMark({
   )
 }
 
-/** The circular avatar. Falls back to initials on an accent plate. */
+/** The circular avatar. Falls back to a neutral silhouette when there is no
+ *  image, or when the image fails to load. */
 export function Avatar({
   src,
   name,
@@ -51,41 +52,43 @@ export function Avatar({
   size?: number
 }) {
   const { colors } = useTheme()
+  // A signed-out or changed account must get a fresh attempt, so remember which
+  // URL failed rather than a plain boolean.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const imageSrc = src && failedSrc !== src ? src : null
 
-  if (src) {
+  if (imageSrc) {
     // A plain <img>: the avatar host is unknown at build time, so next/image
     // would need every host allow-listed to optimise a 36px circle.
     return (
       // biome-ignore lint/performance/noImgElement: remote avatar host is not known at build time, so next/image cannot be configured for it
       <img
-        src={src}
-        alt=""
+        src={imageSrc}
+        alt={name ?? ""}
+        // Google's avatar CDN throttles hotlinks that arrive with a Referer,
+        // which is why this one image can fail while the rest of the page loads.
+        referrerPolicy="no-referrer"
+        decoding="async"
+        onError={() => setFailedSrc(imageSrc)}
         className="shrink-0 rounded-full object-cover"
         style={{ width: size, height: size, border: `1px solid ${colors.line}` }}
       />
     )
   }
 
-  const initials = (name ?? "")
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-
   return (
     <span
-      className="flex shrink-0 items-center justify-center rounded-full text-[13px] font-bold"
+      className="flex shrink-0 items-center justify-center rounded-full"
       style={{
         width: size,
         height: size,
-        backgroundColor: colors.accentSoft,
-        color: colors.accent,
+        backgroundColor: colors.surfaceMuted,
+        color: colors.inkMuted,
         border: `1px solid ${colors.line}`,
       }}
       aria-hidden
     >
-      {initials || "?"}
+      <UserRound size={Math.round(size * 0.54)} strokeWidth={2} aria-hidden />
     </span>
   )
 }

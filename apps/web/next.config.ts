@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     "@repo/validation",
     "@repo/units",
   ],
+  allowedDevOrigins: ['192.168.31.240'],
 };
 
 export default nextConfig;

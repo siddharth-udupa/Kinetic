@@ -1,16 +1,6 @@
-import RoutePlannerScreen from "@/components/map/RoutePlannerScreen"
-import { APP_NAME } from "@repo/shared"
+import { redirect } from "next/navigation"
 
-export const metadata = {
-  title: `Plan a loop · ${APP_NAME}`,
-}
-
+/** The loop builder now opens over `/maps`; keep old links working. */
 export default function RoutePlannerPage() {
-  /* Same shell height as `/maps`: the map fills the viewport below the header
-     and the preference panel floats over it. */
-  return (
-    <main className="relative h-[calc(100dvh-var(--shell-header-h))] w-full">
-      <RoutePlannerScreen />
-    </main>
-  )
+  redirect("/maps")
 }

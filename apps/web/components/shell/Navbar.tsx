@@ -37,7 +37,7 @@ type OpenPanel = "feed" | "training" | "create" | "account" | "search" | null
 export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, refetch } = useSession()
   const { colors } = useTheme()
 
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null)
@@ -51,6 +51,17 @@ export default function Navbar() {
   const searchRef = useRef<HTMLInputElement>(null)
 
   const user = session?.user
+
+  // `useSession` reads the cookie cache, which stores the user as they were when
+  // the session was signed — an avatar added later (say, by a Google sign-in on
+  // another device) is missing from it. Re-read the user from the database once
+  // on mount, which also repairs the cache for later requests.
+  const refreshedUser = useRef(false)
+  useEffect(() => {
+    if (refreshedUser.current) return
+    refreshedUser.current = true
+    refetch({ query: { disableCookieCache: true } })
+  }, [refetch])
 
   useEffect(() => setMounted(true), [])
 

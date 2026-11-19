@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import {
   AlertCircle,
@@ -20,6 +20,7 @@ import {
   Sparkles,
   Trees,
   Waves,
+  X,
   type LucideIcon,
 } from "lucide-react"
 import type {
@@ -91,29 +92,31 @@ function locationNotice(status: LocationStatus): {
   switch (status) {
     case "requesting":
       return { hint: "Getting a precise fix…" }
+    case "manual":
+      return { hint: "Using the start point you set on the map." }
     case "denied":
       return {
         hint: "Location access is blocked.",
         warning:
-          "Allow location access for this site in your browser settings, then retry. A loop must start from your exact position.",
+          "Allow location access for this site in your browser settings and retry, or set the start point on the map.",
       }
     case "timeout":
       return {
         hint: "Your location is taking too long.",
         warning:
-          "No precise fix arrived in time. Check your signal and retry before building a loop.",
+          "No precise fix arrived in time. Check your signal and retry, or set the start point on the map.",
       }
     case "unavailable":
       return {
         hint: "Your location is unavailable.",
         warning:
-          "Turn on location services, then retry. A loop must start from your exact position.",
+          "Turn on location services and retry, or set the start point on the map.",
       }
     case "unsupported":
       return {
         hint: "This browser cannot share your location.",
         warning:
-          "Location support is required to build a loop. Try a browser or device that can share your position.",
+          "Set the start point on the map to build a loop without location access.",
       }
     case "granted":
       return { hint: "Reading your position…" }
@@ -125,24 +128,42 @@ function locationNotice(status: LocationStatus): {
 }
 
 type RoutePlannerProps = {
-  /** The precise fix the browser returned, or null until it has one. */
+  /** The start point: a chosen map point, the browser's fix, or null. */
   userLocation: UserLocation | null
   locationStatus: LocationStatus
+  /** True when the point came from the map, not the browser. */
+  isManualLocation: boolean
+  /** True when the browser's fix is only city-level and worth correcting. */
+  isApproximateLocation: boolean
   /** Prompts for permission, or retries after a refusal. */
   onRequestLocation: () => Promise<UserLocation | null>
+  /** Hands control to the map so the visitor can tap a start point. */
+  onPickLocation: () => void
+  /** Drops a chosen point and goes back to the browser's fix. */
+  onClearManualLocation: () => void
   /** The new loop, or null while a request is in flight. */
   onRouteChange?: (route: LoopResponse | null) => void
+  /** Dismisses the panel floating over the map. */
+  onClose: () => void
 }
 
 export default function RoutePlanner({
   userLocation,
   locationStatus,
+  isManualLocation,
+  isApproximateLocation,
   onRequestLocation,
+  onPickLocation,
+  onClearManualLocation,
   onRouteChange,
+  onClose,
 }: RoutePlannerProps) {
   const [distanceKm, setDistanceKm] = useState(10)
   const [profile, setProfile] = useState<RouteProfile>("bike")
   const [seed, setSeed] = useState("")
+
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const hasFocusedRef = useRef(false)
 
   const [status, setStatus] = useState<
     "idle" | "locating" | "loading" | "success" | "error"
@@ -155,6 +176,23 @@ export default function RoutePlanner({
   } | null>(null)
 
   const notice = locationNotice(locationStatus)
+
+  /* A popup should take focus, and Escape should dismiss it like any other
+     dialog. Focus once: the parent may pass a new inline callback on a render. */
+  useEffect(() => {
+    if (hasFocusedRef.current) return
+    hasFocusedRef.current = true
+    closeButtonRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose()
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [onClose])
 
   function randomizeSeed() {
     setSeed(String(Math.floor(Math.random() * (MAX_SEED + 1))))
@@ -265,19 +303,35 @@ export default function RoutePlanner({
   return (
     <aside
       className="absolute inset-x-3 bottom-3 z-10 max-h-[68%] overflow-y-auto overscroll-contain rounded-2xl border border-line bg-surface/95 p-5 shadow-card backdrop-blur-md sm:inset-y-4 sm:right-auto sm:left-4 sm:max-h-none sm:w-97.5 sm:p-6"
-      aria-label="Loop preferences"
+      aria-labelledby="loop-planner-title"
+      role="dialog"
     >
-      <header>
-        <p className="text-[11px] font-semibold tracking-widest text-accent-text uppercase">
-          Route builder
-        </p>
-        <h1 className="mt-1 text-[22px] font-bold tracking-tight text-ink">
-          Plan a loop
-        </h1>
-        <p className="mt-1.5 text-[12px] leading-5 text-ink-secondary">
-          Pick a distance and an activity. The loop starts and finishes at your
-          current location.
-        </p>
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold tracking-widest text-accent-text uppercase">
+            Route builder
+          </p>
+          <h1
+            id="loop-planner-title"
+            className="mt-1 text-[22px] font-bold tracking-tight text-ink"
+          >
+            Plan a loop
+          </h1>
+          <p className="mt-1.5 text-[12px] leading-5 text-ink-secondary">
+            Pick a distance and an activity. The loop starts and finishes at
+            your start point.
+          </p>
+        </div>
+
+        <button
+          ref={closeButtonRef}
+          type="button"
+          onClick={onClose}
+          aria-label="Close route builder"
+          className={`-mt-1 -mr-1 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-muted transition hover:bg-surface-muted hover:text-ink active:opacity-70 ${FOCUS}`}
+        >
+          <X size={18} strokeWidth={2} aria-hidden />
+        </button>
       </header>
 
       <div className="mt-4 rounded-xl border border-line bg-surface-muted px-3 py-2.5">
@@ -287,9 +341,13 @@ export default function RoutePlanner({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[12px] font-semibold text-ink">
-              {userLocation
-                ? "Starting at your precise location"
-                : "Start point needs location"}
+              {isManualLocation
+                ? "Starting at your chosen point"
+                : isApproximateLocation
+                  ? "Approximate location"
+                  : userLocation
+                    ? "Starting at your precise location"
+                    : "Start point needs location"}
             </p>
             <p className="text-[11px] text-ink-muted tabular-nums">
               {userLocation
@@ -311,6 +369,35 @@ export default function RoutePlanner({
             </button>
           ) : null}
         </div>
+
+        {/* A browser fix can be a network guess, and a refusal leaves no point
+            at all, so the start point is always placeable by hand. */}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+          {isManualLocation ? (
+            <button
+              type="button"
+              onClick={onClearManualLocation}
+              className="cursor-pointer text-[11px] font-semibold text-accent-text hover:underline"
+            >
+              Use browser location
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onPickLocation}
+              className="cursor-pointer text-[11px] font-semibold text-accent-text hover:underline"
+            >
+              Set the start point on the map
+            </button>
+          )}
+        </div>
+
+        {isApproximateLocation && !isManualLocation ? (
+          <p className="mt-1.5 text-[11px] leading-4 text-warning-text">
+            The browser only has a network estimate for this device. Set the
+            start point on the map for an exact loop.
+          </p>
+        ) : null}
 
         {notice.warning ? (
           <div
@@ -556,7 +643,7 @@ export default function RoutePlanner({
                   ) : null}
                   {error.needsSignIn ? (
                     <Link
-                      href="/auth?callbackUrl=/maps/route"
+                      href="/auth?callbackUrl=/maps"
                       className="mt-1.5 inline-block text-[11px] font-semibold text-accent-text hover:underline"
                     >
                       Sign in to generate a loop
