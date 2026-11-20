@@ -29,6 +29,7 @@ import type {
   RouteProfile,
 } from "@repo/validation"
 import type { LocationStatus, UserLocation } from "@/hooks/useUserLocation"
+import { formatDistance, formatDuration } from "./routeFormat"
 
 const MIN_DISTANCE_KM = 2
 const MAX_DISTANCE_KM = 50
@@ -63,18 +64,6 @@ const UNAVAILABLE_PREFERENCES: {
   { label: "Scenery", icon: Trees, options: ["Parks", "Water", "Open"] },
   { label: "Avoid areas", icon: Compass, options: ["Draw a zone"] },
 ]
-
-function formatDistance(meters: number): string {
-  return `${(meters / 1_000).toFixed(1)} km`
-}
-
-function formatDuration(seconds: number): string {
-  const hours = Math.floor(seconds / 3_600)
-  const minutes = Math.round((seconds % 3_600) / 60)
-
-  if (hours === 0) return `${minutes} min`
-  return `${hours} h ${minutes} min`
-}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null
@@ -584,7 +573,9 @@ export default function RoutePlanner({
                   aria-hidden
                 />
                 <p className="text-[12px] font-semibold text-success-text">
-                  Loop generated
+                  {result.routes.length > 1
+                    ? `${result.routes.length} loops generated`
+                    : "Loop generated"}
                 </p>
               </div>
               <p className="mt-1.5 text-[12px] text-ink-secondary">
@@ -596,6 +587,11 @@ export default function RoutePlanner({
                 Seed {result.seed} ·{" "}
                 {(result.accuracy * 100).toFixed(1)}% from target.
               </p>
+              {result.routes.length > 1 ? (
+                <p className="mt-1 text-[11px] leading-4 text-ink-muted">
+                  Pick a route card on the map to highlight a different loop.
+                </p>
+              ) : null}
               {result.warnings.length > 0 ? (
                 <ul className="mt-2 space-y-1">
                   {result.warnings.map((warning) => (

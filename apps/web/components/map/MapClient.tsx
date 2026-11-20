@@ -3,15 +3,20 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import type { Feature, LineString, Point } from 'geojson'
+import type { Feature, FeatureCollection, LineString, Point } from 'geojson'
 import { TileLayers } from './TileLayers'
 import { decodePolyline } from '@repo/gpx'
 import { getMapLibreStyle, getTileProviderView, DEFAULT_TILE_PROVIDER, type TileProviderId } from '@repo/maps'
 import { useTheme } from '@/hooks/useTheme'
 import type { UserLocation } from '@/hooks/useUserLocation'
+import type { MapRoute } from './types'
 
 type MapClientProps = {
   encodedPolyline?: string
+  /** A set of alternative routes. When present these replace `encodedPolyline`. */
+  routes?: MapRoute[]
+  /** Which route in `routes` is drawn at full strength; the rest stay faint. */
+  activeRouteId?: string
   isStatic?: boolean
   isChangeable: boolean
   userLocation?: UserLocation | null
@@ -20,42 +25,57 @@ type MapClientProps = {
   onPickLocation?: (fix: { lat: number; lng: number }) => void
 }
 
+type RouteProperties = {
+  id: string
+  active: boolean
+}
+
+type RouteCollection = FeatureCollection<LineString, RouteProperties>
+
+/* Alternative loops share the same start and finish, so the visitor needs to
+   see a hint of all of them while one is read at full strength. The active
+   feature is appended last so it paints over the faint ones. */
 function syncRouteLayer(
   map: maplibregl.Map,
-  route: Feature<LineString> | null,
-  color: string
+  collection: RouteCollection,
+  activeColor: string,
 ) {
-  const source = map.getSource('route') as maplibregl.GeoJSONSource | undefined
+  const source = map.getSource('routes') as maplibregl.GeoJSONSource | undefined
 
-  if (!route) {
-    if (map.getLayer('routeLine')) map.removeLayer('routeLine')
-    if (source) map.removeSource('route')
+  if (collection.features.length === 0) {
+    if (map.getLayer('routesLine')) map.removeLayer('routesLine')
+    if (source) map.removeSource('routes')
     return
+  }
+
+  const paint = {
+    'line-color': activeColor,
+    'line-width': ['case', ['get', 'active'], 4.5, 3] as maplibregl.ExpressionSpecification,
+    'line-opacity': ['case', ['get', 'active'], 0.95, 0.3] as maplibregl.ExpressionSpecification,
   }
 
   if (source) {
-    source.setData(route)
+    source.setData(collection)
+    map.setPaintProperty('routesLine', 'line-color', paint['line-color'])
+    map.setPaintProperty('routesLine', 'line-width', paint['line-width'])
+    map.setPaintProperty('routesLine', 'line-opacity', paint['line-opacity'])
     return
   }
 
-  map.addSource('route', {
+  map.addSource('routes', {
     type: 'geojson',
-    data: route,
+    data: collection,
   })
 
   map.addLayer({
-    id: 'routeLine',
+    id: 'routesLine',
     type: 'line',
-    source: 'route',
+    source: 'routes',
     layout: {
       'line-cap': 'round',
       'line-join': 'round',
     },
-    paint: {
-      'line-color': color,
-      'line-width': 4,
-      'line-opacity': 0.9,
-    },
+    paint,
   })
 }
 
@@ -147,6 +167,8 @@ const RECENTER_THRESHOLD_METRES = 100
 
 export default function MapClient({
   encodedPolyline,
+  routes,
+  activeRouteId,
   isStatic = false,
   isChangeable,
   userLocation,
@@ -159,7 +181,7 @@ export default function MapClient({
      mount, discard and re-create the map (Strict Mode does exactly this), and a
      camera or layer applied to the discarded instance would never be repeated. */
   const [mapInstance, setMapInstance] = useState<maplibregl.Map | null>(null)
-  const fittedPolylineRef = useRef<string | null>(null)
+  const fittedRoutesRef = useRef<string | null>(null)
   /* The fix that last centred the camera, and which map it was centred on. A
      retry (or a refined fix) should move the map again; a re-render of the same
      fix, or a pan the visitor made, should not. */
@@ -177,23 +199,63 @@ export default function MapClient({
   // MapLibre paints from a literal, not a class, so read the route colour off the palette.
   const { colors } = useTheme()
 
-  const points = useMemo(() => {
-    return encodedPolyline ? decodePolyline(encodedPolyline) : []
-  }, [encodedPolyline])
+  const routeInputs = useMemo<MapRoute[]>(() => {
+    if (routes && routes.length > 0) return routes
+    return encodedPolyline ? [{ id: 'route', polyline: encodedPolyline }] : []
+  }, [routes, encodedPolyline])
 
-  const routeGeoJSON = useMemo<Feature<LineString> | null>(() => {
-    if (points.length < 2) return null
+  const decodedRoutes = useMemo(() => {
+    return routeInputs
+      .map((route) => ({
+        id: route.id,
+        polyline: route.polyline,
+        points: decodePolyline(route.polyline),
+      }))
+      .filter((route) => route.points.length >= 2)
+  }, [routeInputs])
+
+  /* A response with no selection yet (the first route is the best one) and an
+     id that no longer exists both fall back to the first route. */
+  const activeId = decodedRoutes.some((route) => route.id === activeRouteId)
+    ? activeRouteId
+    : decodedRoutes[0]?.id
+
+  const routeGeoJSON = useMemo<RouteCollection>(() => {
+    const features = decodedRoutes.map<Feature<LineString, RouteProperties>>(
+      (route) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: route.points.map(
+            (point) => [point.lng, point.lat] as [number, number],
+          ),
+        },
+        properties: {
+          id: route.id,
+          active: route.id === activeId,
+        },
+      }),
+    )
+
     return {
-      type: 'Feature' as const,
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: points.map((p) => [p.lng, p.lat] as [number, number]),
-      },
-      properties: {},
+      type: 'FeatureCollection',
+      // The active loop goes last so MapLibre paints it over the faint ones.
+      features: [
+        ...features.filter((feature) => !feature.properties.active),
+        ...features.filter((feature) => feature.properties.active),
+      ],
     }
-  }, [points])
+  }, [decodedRoutes, activeId])
+
+  /* Identifies the set, not the selection: switching cards must not move the
+     camera, while a new request should frame its loops. */
+  const routesKey = useMemo(
+    () => decodedRoutes.map((route) => `${route.id}:${route.polyline}`).join('|'),
+    [decodedRoutes],
+  )
 
   const cameraBounds = useMemo<[[number, number], [number, number]] | null>(() => {
+    const points = decodedRoutes.flatMap((route) => route.points)
     if (points.length < 2) return null
     const lngs = points.map((p) => p.lng)
     const lats = points.map((p) => p.lat)
@@ -205,7 +267,9 @@ export default function MapClient({
       [minLng, minLat],
       [maxLng, maxLat],
     ]
-  }, [points])
+  }, [decodedRoutes])
+
+  const hasRoutes = routeGeoJSON.features.length > 0
 
   // The default provider has bounded coverage, so open on the view it declares
   // rather than a world city whose tiles it does not contain.
@@ -215,8 +279,9 @@ export default function MapClient({
      so open on the athlete when it is already known; a fix that arrives later is
      animated by the effect below. Otherwise a granted permission still opened on
      the provider's city and the map read as the wrong location. */
-  const defaultCenter: [number, number] = points.length > 0
-    ? [points[0]!.lng, points[0]!.lat]
+  const firstRoutePoint = decodedRoutes[0]?.points[0]
+  const defaultCenter: [number, number] = firstRoutePoint
+    ? [firstRoutePoint.lng, firstRoutePoint.lat]
     : userLocation
       ? [userLocation.lng, userLocation.lat]
       : providerView.center
@@ -249,7 +314,7 @@ export default function MapClient({
     }
 
     mapRef.current = map
-    fittedPolylineRef.current = null
+    fittedRoutesRef.current = null
     setMapInstance(map)
 
     return () => {
@@ -260,41 +325,49 @@ export default function MapClient({
     }
   }, [isStatic])
 
-  /* Draws the route once the map is ready, and again whenever a new loop
-     replaces the old one. Kept out of the map-building effect so a new route
-     does not recreate the map and reset the camera. */
+  /* Draws the loops once the map is ready, and again whenever a new response
+     replaces the old one or the visitor highlights another option. Kept out of
+     the map-building effect so a new route does not recreate the map and reset
+     the camera. */
   useEffect(() => {
     const map = mapInstance
     if (!map) return
 
-    const drawRoute = () => {
+    const drawRoutes = () => {
       syncRouteLayer(map, routeGeoJSON, colors.accent)
 
-      if (!routeGeoJSON) {
-        fittedPolylineRef.current = null
+      if (!hasRoutes) {
+        fittedRoutesRef.current = null
         return
       }
 
-      if (!cameraBounds || fittedPolylineRef.current === encodedPolyline) return
+      if (!cameraBounds || fittedRoutesRef.current === routesKey) return
 
       map.fitBounds(cameraBounds, {
         padding: 40,
         maxZoom: 16,
         animate: false,
       })
-      fittedPolylineRef.current = encodedPolyline ?? null
+      fittedRoutesRef.current = routesKey
     }
 
     if (styleReadyRef.current === map || map.isStyleLoaded()) {
-      drawRoute()
+      drawRoutes()
     } else {
-      map.once('style.load', drawRoute)
+      map.once('style.load', drawRoutes)
     }
 
     return () => {
-      map.off('style.load', drawRoute)
+      map.off('style.load', drawRoutes)
     }
-  }, [mapInstance, routeGeoJSON, cameraBounds, encodedPolyline, colors.accent])
+  }, [
+    mapInstance,
+    routeGeoJSON,
+    cameraBounds,
+    routesKey,
+    hasRoutes,
+    colors.accent,
+  ])
 
   /* The fix arrives after the permission prompt, so the dot is painted on a
      later render too and re-applied after a tile-provider style swap. */
@@ -352,7 +425,7 @@ export default function MapClient({
      style, so move it now rather than waiting for `style.load`. */
   useEffect(() => {
     const map = mapInstance
-    if (!map || !userLocation || encodedPolyline) return
+    if (!map || !userLocation || hasRoutes) return
 
     const previous = centeredOnRef.current
     // A new map has to be positioned even if the fix itself has not changed.
@@ -384,15 +457,15 @@ export default function MapClient({
       lng: userLocation.lng,
       lat: userLocation.lat,
     }
-  }, [mapInstance, userLocation, encodedPolyline])
+  }, [mapInstance, userLocation, hasRoutes])
 
-  /* Repaints the route on a theme switch. Not a dep of the map-building effect
+  /* Repaints the routes on a theme switch. Not a dep of the map-building effect
      above: that would tear down and re-create the map, losing the camera. */
   useEffect(() => {
     const map = mapInstance
-    if (!map?.getLayer('routeLine')) return
+    if (!map?.getLayer('routesLine')) return
 
-    map.setPaintProperty('routeLine', 'line-color', colors.accent)
+    map.setPaintProperty('routesLine', 'line-color', colors.accent)
   }, [mapInstance, colors.accent])
 
   const handleSelectProvider = (newProviderId: TileProviderId) => {

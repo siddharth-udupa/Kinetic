@@ -1,8 +1,10 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { Crosshair, MapPin, Route } from "lucide-react"
+import type { LoopResponse, LoopRoute } from "@repo/validation"
 import MapView from "./Map"
+import RouteOptions from "./RouteOptions"
 import RoutePlanner from "./RoutePlanner"
 import { isApproximateFix, useUserLocation } from "@/hooks/useUserLocation"
 
@@ -18,7 +20,10 @@ export default function MapsScreen({
 }: {
   openPlanner?: boolean
 }) {
-  const [encodedPolyline, setEncodedPolyline] = useState<string>()
+  const [routeOptions, setRouteOptions] = useState<LoopRoute[]>([])
+  /* The best route in the response is highlighted until the visitor picks
+     another card. Rank is unique within a response, so it doubles as the id. */
+  const [activeRouteId, setActiveRouteId] = useState<string>()
   const [isPlannerOpen, setIsPlannerOpen] = useState(openPlanner)
   const [isPicking, setIsPicking] = useState(false)
   /* Whether a pick started from the planner, and should hand control back to it
@@ -31,6 +36,28 @@ export default function MapsScreen({
   /* A city-level guess is not a start point: it is usually an IP lookup rather
      than a Wi-Fi or GPS fix, and it can be hundreds of kilometres out. */
   const isApproximate = !isManual && isApproximateFix(location)
+
+  /* A successful request replaces the whole set; a failure or a request in
+     flight clears it, so no cards survive an error. */
+  const handleRouteChange = useCallback((response: LoopResponse | null) => {
+    if (!response || response.routes.length === 0) {
+      setRouteOptions([])
+      setActiveRouteId(undefined)
+      return
+    }
+
+    setRouteOptions(response.routes)
+    setActiveRouteId(String(response.routes[0].rank))
+  }, [])
+
+  const mapRoutes = useMemo(
+    () =>
+      routeOptions.map((route) => ({
+        id: String(route.rank),
+        polyline: route.polyline,
+      })),
+    [routeOptions],
+  )
 
   const startPicking = useCallback((returnToPlanner: boolean) => {
     returnToPlannerRef.current = returnToPlanner
@@ -57,7 +84,8 @@ export default function MapsScreen({
   return (
     <main className="relative h-[calc(100dvh-var(--shell-header-h))] w-full">
       <MapView
-        encodedPolyline={encodedPolyline}
+        routes={mapRoutes}
+        activeRouteId={activeRouteId}
         isChangeable
         userLocation={location}
         isPicking={isPicking}
@@ -140,8 +168,14 @@ export default function MapsScreen({
       ) : null}
 
       {/* The loop builder floats over this map. Hide its entry point while it is
-          open; the panel would otherwise sit on top of it on a small screen. */}
-      <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+          open; the panel would otherwise sit on top of it on a small screen.
+          The route cards get the bottom edge once a request succeeds, so the
+          controls step up above them on a phone. */}
+      <div
+        className={`absolute bottom-3 left-3 z-10 flex items-center gap-2 ${
+          routeOptions.length > 0 && !isPlannerOpen ? "max-sm:bottom-28" : ""
+        }`}
+      >
         {isPlannerOpen ? null : (
           <button
             type="button"
@@ -173,6 +207,20 @@ export default function MapsScreen({
         )}
       </div>
 
+      {/* One card per loop from the latest response. They sit along the bottom
+          of the map, clear of the planner on a desktop and above it on a phone,
+          so the visitor can switch which loop is read at full strength. */}
+      <RouteOptions
+        routes={routeOptions}
+        activeRouteId={activeRouteId}
+        onSelect={(route) => setActiveRouteId(String(route.rank))}
+        className={`pointer-events-none absolute z-20 flex justify-center ${
+          isPlannerOpen
+            ? "right-3 bottom-[calc(68%+0.75rem)] left-3 sm:right-3 sm:bottom-3 sm:left-[26.5rem]"
+            : "right-3 bottom-3 left-3 sm:left-52"
+        }`}
+      />
+
       {isPlannerOpen ? (
         <RoutePlanner
           userLocation={location}
@@ -182,7 +230,7 @@ export default function MapsScreen({
           onRequestLocation={request}
           onPickLocation={() => startPicking(true)}
           onClearManualLocation={() => setManualLocation(null)}
-          onRouteChange={(route) => setEncodedPolyline(route?.polyline)}
+          onRouteChange={handleRouteChange}
           onClose={() => setIsPlannerOpen(false)}
         />
       ) : null}
