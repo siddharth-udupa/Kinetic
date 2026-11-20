@@ -122,8 +122,8 @@ function syncUserLocationLayer(
   })
 }
 
-/* Metres between two fixes, for telling a real move from the watch tightening
-   its accuracy a few times in a row. */
+/* Metres between two fixes, for telling a real move from the same fix being
+   re-applied a few times in a row. */
 function distanceMetres(
   a: { lng: number; lat: number },
   b: { lng: number; lat: number },
@@ -140,9 +140,9 @@ function distanceMetres(
   return 2 * earthRadius * Math.asin(Math.min(1, Math.sqrt(h)))
 }
 
-/* A watched fix arrives several times as the platform refines it. Below this
-   the movement is accuracy noise — recentring on it would make the map twitch
-   under the visitor — so only a correction past it moves the camera. */
+/* A refreshed fix can differ from the previous one by accuracy noise. Below
+   this the movement is not a real relocation — recentring on it would make the
+   map twitch under the visitor — so only a correction past it moves the camera. */
 const RECENTER_THRESHOLD_METRES = 100
 
 export default function MapClient({
@@ -345,8 +345,8 @@ export default function MapClient({
      there is nothing to animate. A later, different fix — a retry after a
      refusal, or the watch refining a coarse first answer — moves the camera
      again, because a dot in the right place under a map panned to the old one
-     still reads as wrong. A refinement under the threshold is only the accuracy
-     estimate moving, so it updates the dot without dragging the map. Panning
+     still reads as wrong. A small correction under the threshold is only the
+     accuracy estimate moving, so it updates the dot without dragging the map. Panning
      afterwards is the visitor's choice, and a loop fitted from a route request
      must not be pulled back to the start point. The camera does not need the
      style, so move it now rather than waiting for `style.load`. */
