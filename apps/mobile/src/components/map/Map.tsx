@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react"
-import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native"
+import { View, Text, StyleSheet, type StyleProp, type ViewStyle } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import type { LngLatBounds } from "@maplibre/maplibre-react-native"
 import { decodePolyline } from "@repo/gpx"
@@ -10,12 +10,23 @@ let MapLibreModule: typeof import("@maplibre/maplibre-react-native") | null = nu
 
 try {
   MapLibreModule = require("@maplibre/maplibre-react-native")
-} catch (err) {
+} catch {
   MapLibreModule = null
+}
+
+/** One alternative from a route search. `id` only needs to be unique within
+ *  the set, so the engine's rank is enough. */
+export type MapRoute = {
+  id: string
+  polyline: string
 }
 
 export type MapProps = {
   encodedPolyline?: string
+  /** A set of alternative routes. When present these replace `encodedPolyline`. */
+  routes?: MapRoute[]
+  /** Which route in `routes` is drawn at full strength; the rest stay faint. */
+  activeRouteId?: string
   isStatic?: boolean
   providerId?: TileProviderId
   style?: StyleProp<ViewStyle>
@@ -23,10 +34,20 @@ export type MapProps = {
   userLocation?: { latitude: number; longitude: number } | null
   livePoints?: Array<{ latitude: number; longitude: number }>
   recenterTrigger?: number
+  /** Crosshair mode: the next tap becomes the start point. */
+  isPicking?: boolean
+  onPickLocation?: (fix: { lat: number; lng: number }) => void
+}
+
+type RouteProperties = {
+  id: string
+  active: boolean
 }
 
 export default function MapView({
   encodedPolyline,
+  routes,
+  activeRouteId,
   isStatic = false,
   providerId = DEFAULT_TILE_PROVIDER,
   style,
@@ -34,35 +55,75 @@ export default function MapView({
   userLocation,
   livePoints,
   recenterTrigger,
+  isPicking = false,
+  onPickLocation,
 }: MapProps) {
   // MapLibre paint props take literal colours, so the layer colours come from
   // the theme hook rather than a CSS var.
   const { colors } = useTheme()
 
-  const points = useMemo(() => {
+  const decodedRoutes = useMemo(() => {
     if (livePoints && livePoints.length > 0) {
-      return livePoints.map((p) => ({ lat: p.latitude, lng: p.longitude }))
+      return [
+        {
+          id: "live",
+          points: livePoints.map((p) => ({ lat: p.latitude, lng: p.longitude })),
+        },
+      ]
     }
-    if (encodedPolyline) {
-      return decodePolyline(encodedPolyline)
-    }
-    return []
-  }, [livePoints, encodedPolyline])
 
-  const routeGeoJSON: GeoJSON.Feature<GeoJSON.LineString> | null = useMemo(
-    () =>
-      points.length >= 2
-        ? {
-            type: "Feature",
-            geometry: {
-              type: "LineString",
-              coordinates: points.map((p) => [p.lng, p.lat]),
-            },
-            properties: {},
-          }
-        : null,
-    [points]
-  )
+    const inputs: MapRoute[] =
+      routes && routes.length > 0
+        ? routes
+        : encodedPolyline
+          ? [{ id: "route", polyline: encodedPolyline }]
+          : []
+
+    return inputs
+      .map((route) => ({
+        id: route.id,
+        points: decodePolyline(route.polyline),
+      }))
+      .filter((route) => route.points.length >= 2)
+  }, [livePoints, routes, encodedPolyline])
+
+  /* A response with no selection yet (the first route is the best one) and an
+     id that no longer exists both fall back to the first route. */
+  const activeId = decodedRoutes.some((route) => route.id === activeRouteId)
+    ? activeRouteId
+    : decodedRoutes[0]?.id
+
+  const routeGeoJSON: GeoJSON.FeatureCollection<
+    GeoJSON.LineString,
+    RouteProperties
+  > | null = useMemo(() => {
+    if (decodedRoutes.length === 0) return null
+
+    const features = decodedRoutes.map<
+      GeoJSON.Feature<GeoJSON.LineString, RouteProperties>
+    >((route) => ({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: route.points.map(
+          (point) => [point.lng, point.lat] as [number, number],
+        ),
+      },
+      properties: {
+        id: route.id,
+        active: route.id === activeId,
+      },
+    }))
+
+    return {
+      type: "FeatureCollection",
+      // The active loop goes last so MapLibre paints it over the faint ones.
+      features: [
+        ...features.filter((feature) => !feature.properties.active),
+        ...features.filter((feature) => feature.properties.active),
+      ],
+    }
+  }, [decodedRoutes, activeId])
 
   const userLocationGeoJSON: GeoJSON.Feature<GeoJSON.Point> | null = useMemo(
     () =>
@@ -80,7 +141,8 @@ export default function MapView({
   )
 
   const cameraBounds = useMemo(() => {
-    if (!routeGeoJSON || points.length < 2) return null
+    const points = decodedRoutes.flatMap((route) => route.points)
+    if (points.length < 2) return null
     let minLng = Math.min(...points.map((p) => p.lng))
     let minLat = Math.min(...points.map((p) => p.lat))
     let maxLng = Math.max(...points.map((p) => p.lng))
@@ -104,7 +166,7 @@ export default function MapView({
     }
 
     return [minLng, minLat, maxLng, maxLat] as LngLatBounds
-  }, [routeGeoJSON, points])
+  }, [decodedRoutes])
 
   /* The Camera is declarative, so a cleared route would snap back to the
      provider default while the next loop is being built. Hold the last route
@@ -142,11 +204,16 @@ export default function MapView({
 
   const activeProvider = tileProviders[providerId] || tileProviders[DEFAULT_TILE_PROVIDER]
 
+  const pointCount = decodedRoutes.reduce(
+    (total, route) => total + route.points.length,
+    0,
+  )
+
   const containerStyles = [styles.container, style]
   const mapStyles = style ? [styles.map, style] : styles.map
 
   // MapLibre is native-only, so Expo Go and the web build get this placeholder.
-  if (!MapLibreModule || !MapLibreModule.Map) {
+  if (!MapLibreModule?.Map) {
     return (
       <View style={containerStyles} className="bg-page justify-center items-center relative overflow-hidden flex-1 w-full h-full">
         <View className="absolute inset-0 opacity-10 bg-line" />
@@ -163,7 +230,7 @@ export default function MapView({
             )}
           </View>
           <Text className="text-ink-secondary text-xs font-semibold mt-1">
-            Map Route ({points.length} points)
+            Map Route ({pointCount} points)
           </Text>
           {userLocation ? (
             <Text className="text-accent text-[11px] font-bold mt-1 bg-accent-soft px-2.5 py-1 rounded-full border border-accent/30">
@@ -197,6 +264,15 @@ export default function MapView({
         attribution={false}
         logo={false}
         compass={false}
+        /* Only armed while picking, so ordinary taps keep their normal meaning. */
+        onPress={
+          isPicking && onPickLocation
+            ? (event) => {
+                const [lng, lat] = event.nativeEvent.lngLat
+                onPickLocation({ lat, lng })
+              }
+            : undefined
+        }
       >
         <Camera
           key={recenterTrigger ? `recenter-${recenterTrigger}` : undefined}
@@ -214,14 +290,14 @@ export default function MapView({
         />
 
         {routeGeoJSON && (
-          <GeoJSONSource id="route" data={routeGeoJSON}>
+          <GeoJSONSource id="routes" data={routeGeoJSON}>
             <Layer
-              id="routeLine"
+              id="routesLine"
               type="line"
               paint={{
                 "line-color": colors.accent,
-                "line-width": 4,
-                "line-opacity": 0.9,
+                "line-width": ["case", ["get", "active"], 4.5, 3],
+                "line-opacity": ["case", ["get", "active"], 0.95, 0.3],
               }}
               layout={{
                 "line-cap": "round",

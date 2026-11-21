@@ -16,6 +16,7 @@ import type { LoopRequest, LoopResponse, RouteProfile } from "@repo/validation"
 import { authClient } from "@/lib/auth-client"
 import { useTheme } from "@/hooks/useTheme"
 import type { LocationStatus, UserLocation } from "@/hooks/useUserLocation"
+import { formatDistance, formatDuration } from "./routeFormat"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
 
@@ -49,18 +50,6 @@ const UNAVAILABLE_PREFERENCES: {
   { label: "Avoid areas", icon: "ban", options: ["Draw a zone"] },
 ]
 
-function formatDistance(meters: number): string {
-  return `${(meters / 1_000).toFixed(1)} km`
-}
-
-function formatDuration(seconds: number): string {
-  const hours = Math.floor(seconds / 3_600)
-  const minutes = Math.round((seconds % 3_600) / 60)
-
-  if (hours === 0) return `${minutes} min`
-  return `${hours} h ${minutes} min`
-}
-
 function clampDistance(value: number): number {
   return Math.max(MIN_DISTANCE_KM, Math.min(MAX_DISTANCE_KM, value))
 }
@@ -87,28 +76,30 @@ function locationNotice(status: LocationStatus): {
   switch (status) {
     case "requesting":
       return { hint: "Getting a precise fix…" }
+    case "manual":
+      return { hint: "Using the start point you set on the map." }
     case "denied":
       return {
         hint: "Location access is blocked.",
-        warning: `Allow location access in your ${settings}, then retry. A loop must start from your exact position.`,
+        warning: `Allow location access in your ${settings} and retry, or set the start point on the map.`,
       }
     case "timeout":
       return {
         hint: "Your location is taking too long.",
         warning:
-          "No precise fix arrived in time. Check your signal and retry before building a loop.",
+          "No precise fix arrived in time. Check your signal and retry, or set the start point on the map.",
       }
     case "unavailable":
       return {
         hint: "Your location is unavailable.",
         warning:
-          "Turn on location services, then retry. A loop must start from your exact position.",
+          "Turn on location services and retry, or set the start point on the map.",
       }
     case "unsupported":
       return {
         hint: "This device cannot share your location.",
         warning:
-          "Location support is required to build a loop. Try a device that can share your position.",
+          "Set the start point on the map to build a loop without location access.",
       }
     case "granted":
       return { hint: "Reading your position…" }
@@ -125,8 +116,16 @@ export type RoutePlannerSheetProps = {
   /** The precise fix the device returned, or null until it has one. */
   userLocation: UserLocation | null
   locationStatus: LocationStatus
+  /** True when the point came from the map, not the device. */
+  isManualLocation: boolean
+  /** True when the device's fix is only city-level and worth correcting. */
+  isApproximateLocation: boolean
   /** Prompts for permission, or retries after a refusal. */
   onRequestLocation: () => Promise<UserLocation | null>
+  /** Hands control to the map so the visitor can tap a start point. */
+  onPickLocation: () => void
+  /** Drops a chosen point and goes back to the device's fix. */
+  onClearManualLocation: () => void
   /** The new loop, or null while a request is in flight. */
   onRouteChange?: (route: LoopResponse | null) => void
 }
@@ -136,7 +135,11 @@ export default function RoutePlannerSheet({
   onClose,
   userLocation,
   locationStatus,
+  isManualLocation,
+  isApproximateLocation,
   onRequestLocation,
+  onPickLocation,
+  onClearManualLocation,
   onRouteChange,
 }: RoutePlannerSheetProps) {
   const insets = useSafeAreaInsets()
@@ -285,7 +288,7 @@ export default function RoutePlannerSheet({
                 </Text>
                 <Text className="mt-1.5 text-[12px] leading-5 text-ink-secondary">
                   Pick a distance and an activity. The loop starts and finishes
-                  at your current location.
+                  at your start point.
                 </Text>
               </View>
 
@@ -316,9 +319,13 @@ export default function RoutePlannerSheet({
                   </View>
                   <View className="min-w-0 flex-1">
                     <Text className="text-[12px] font-semibold text-ink">
-                      {userLocation
-                        ? "Starting at your precise location"
-                        : "Start point needs location"}
+                      {isManualLocation
+                        ? "Starting at your chosen point"
+                        : isApproximateLocation
+                          ? "Approximate location"
+                          : userLocation
+                            ? "Starting at your precise location"
+                            : "Start point needs location"}
                     </Text>
                     <Text
                       className="text-[11px] text-ink-muted"
@@ -346,6 +353,42 @@ export default function RoutePlannerSheet({
                     </Pressable>
                   ) : null}
                 </View>
+
+                {/* A device fix can be a network guess, and a refusal leaves
+                    no point at all, so the start point is always placeable by
+                    hand. */}
+                <View className="mt-2 flex-row flex-wrap items-center gap-2">
+                  {isManualLocation ? (
+                    <Pressable
+                      onPress={onClearManualLocation}
+                      accessibilityRole="button"
+                      accessibilityLabel="Use the device location instead"
+                      className="active:opacity-70"
+                    >
+                      <Text className="text-[11px] font-semibold text-accent-text">
+                        Use device location
+                      </Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onPress={onPickLocation}
+                      accessibilityRole="button"
+                      accessibilityLabel="Set the start point on the map"
+                      className="active:opacity-70"
+                    >
+                      <Text className="text-[11px] font-semibold text-accent-text">
+                        Set the start point on the map
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+
+                {isApproximateLocation && !isManualLocation ? (
+                  <Text className="mt-1.5 text-[11px] leading-4 text-warning-text">
+                    The device only has a network estimate for this position.
+                    Set the start point on the map for an exact loop.
+                  </Text>
+                ) : null}
 
                 {notice.warning ? (
                   <View
@@ -571,7 +614,9 @@ export default function RoutePlannerSheet({
                       color={colors.success}
                     />
                     <Text className="text-[12px] font-semibold text-success-text">
-                      Loop generated
+                      {result.routes.length > 1
+                        ? `${result.routes.length} loops generated`
+                        : "Loop generated"}
                     </Text>
                   </View>
 
@@ -584,6 +629,12 @@ export default function RoutePlannerSheet({
                     Seed {result.seed} ·{" "}
                     {(result.accuracy * 100).toFixed(1)}% from target.
                   </Text>
+
+                  {result.routes.length > 1 ? (
+                    <Text className="mt-1 text-[11px] leading-4 text-ink-muted">
+                      Close the sheet to pick a route card on the map.
+                    </Text>
+                  ) : null}
 
                   {result.warnings.length > 0 ? (
                     <View className="mt-2 gap-1">

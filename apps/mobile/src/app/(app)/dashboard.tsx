@@ -54,7 +54,7 @@ export default function DashboardScreen() {
         <Suspense
           fallback={
             <View className="flex-1 justify-center items-center">
-              <ActivityIndicator size="large" />
+              <ActivityIndicator size="large" color={colors.accent} />
             </View>
           }
         >

@@ -164,7 +164,7 @@ export default function ActivityCard({
 	};
 
 	return (
-		<View className="w-full max-w-[680px] self-center mx-2.5 sm:mx-4 my-2 rounded-3xl border border-line bg-surface p-4 sm:p-5 md:p-6 shadow-card">
+		<View className="w-full max-w-[680px] self-center mx-2.5 sm:mx-4 my-4 rounded-3xl border border-line bg-surface p-4 sm:p-5 md:p-6 shadow-card">
 			<TouchableOpacity
 				onPress={handlePressCard}
 				activeOpacity={0.75}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Platform } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export type UserLocation = {
   latitude: number
@@ -12,6 +13,7 @@ export type LocationStatus =
   | "idle"
   | "requesting"
   | "granted"
+  | "manual"
   | "denied"
   | "unavailable"
   | "timeout"
@@ -27,6 +29,24 @@ type UseUserLocationOptions = {
  * planner would sit in "locating" forever without a deadline.
  */
 const FIX_TIMEOUT_MS = 20_000
+
+/** Above this the device's answer is a network guess rather than a position
+ *  worth starting a loop from — typically a browser's IP lookup. */
+export const APPROXIMATE_ACCURACY_METRES = 1_000
+
+export function isApproximateFix(location: UserLocation | null): boolean {
+  return (
+    location !== null &&
+    (location.accuracy === null ||
+      location.accuracy > APPROXIMATE_ACCURACY_METRES)
+  )
+}
+
+/* A browser fix can land in the wrong city, and a device may refuse location
+   entirely. The point a visitor places on the map is therefore remembered, so
+   their correction survives a reload instead of being replaced by the same
+   bad guess. */
+const MANUAL_LOCATION_KEY = "kinetic:start-location"
 
 /** Web geolocation codes: 1 is denied, 3 is a timeout. */
 function statusForWebError(code: number): LocationStatus {
@@ -51,18 +71,30 @@ try {
  * On native the OS only prompts while permission is undecided, so `request`
  * doubles as the retry action: after a denial it resolves to null until the
  * visitor changes the app permission in settings.
+ *
+ * A fix can still be wrong, so `setManualLocation` lets the map override it
+ * with a point the visitor chose. That choice outranks the device until they
+ * ask for the device location again.
  */
 export function useUserLocation({
   requestOnMount = false,
 }: UseUserLocationOptions = {}) {
-  const [location, setLocation] = useState<UserLocation | null>(null)
+  const [gpsLocation, setGpsLocation] = useState<UserLocation | null>(null)
+  const [manualLocation, setManualLocationState] =
+    useState<UserLocation | null>(null)
   const [status, setStatus] = useState<LocationStatus>("idle")
+  const [isHydrated, setIsHydrated] = useState(false)
 
+  const manualRef = useRef<UserLocation | null>(null)
   const mountedRef = useRef(true)
   const pendingRef = useRef<Promise<UserLocation | null> | null>(null)
   const autoRequestedRef = useRef(false)
 
   const request = useCallback((): Promise<UserLocation | null> => {
+    // The visitor's own choice is already a valid start point; never replace it
+    // with the device's guess just because something asked to locate.
+    if (manualRef.current) return Promise.resolve(manualRef.current)
+
     // Every caller shares the one in-flight fix, so a route request that lands
     // while the page-load prompt is still open waits for the same answer.
     if (pendingRef.current) return pendingRef.current
@@ -72,7 +104,9 @@ export function useUserLocation({
       nextStatus: LocationStatus,
     ): UserLocation | null => {
       if (!mountedRef.current) return null
-      if (next) setLocation(next)
+      // A point chosen while the device was answering outranks the fix.
+      if (manualRef.current) return manualRef.current
+      if (next) setGpsLocation(next)
       setStatus(nextStatus)
       return next
     }
@@ -162,6 +196,39 @@ export function useUserLocation({
     return pendingRef.current
   }, [])
 
+  /* A point the visitor placed on the map, or null to go back to the device.
+     Stored so a wrong fix does not come back on the next visit. */
+  const setManualLocation = useCallback(
+    (fix: { lat: number; lng: number } | null) => {
+      if (!fix) {
+        manualRef.current = null
+        void AsyncStorage.removeItem(MANUAL_LOCATION_KEY).catch(() => {})
+        setManualLocationState(null)
+        setStatus("idle")
+        void request()
+        return
+      }
+
+      const next: UserLocation = {
+        latitude: fix.lat,
+        longitude: fix.lng,
+        accuracy: null,
+      }
+
+      manualRef.current = next
+      void AsyncStorage.setItem(
+        MANUAL_LOCATION_KEY,
+        JSON.stringify({
+          latitude: next.latitude,
+          longitude: next.longitude,
+        }),
+      ).catch(() => {})
+      setManualLocationState(next)
+      setStatus("manual")
+    },
+    [request],
+  )
+
   useEffect(() => {
     mountedRef.current = true
     return () => {
@@ -169,11 +236,62 @@ export function useUserLocation({
     }
   }, [])
 
+  /* Adopt a stored choice before the auto-request effect runs, so a reload
+     does not first prompt and jump the map to a place already corrected. */
   useEffect(() => {
-    if (!requestOnMount || autoRequestedRef.current) return
+    let cancelled = false
+
+    AsyncStorage.getItem(MANUAL_LOCATION_KEY)
+      .then((raw) => {
+        if (cancelled || !raw) return
+
+        const parsed: unknown = JSON.parse(raw)
+        if (typeof parsed !== "object" || parsed === null) return
+
+        const { latitude, longitude } = parsed as {
+          latitude?: unknown
+          longitude?: unknown
+        }
+        if (
+          typeof latitude !== "number" ||
+          typeof longitude !== "number" ||
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude)
+        ) {
+          return
+        }
+
+        const next: UserLocation = { latitude, longitude, accuracy: null }
+        manualRef.current = next
+        setManualLocationState(next)
+        setStatus("manual")
+      })
+      .catch(() => {
+        // Private mode, a disabled store or corrupt JSON: fall back to the device.
+      })
+      .finally(() => {
+        if (!cancelled) setIsHydrated(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    // Wait for the stored choice before asking, so a manual point is not
+    // immediately overwritten by a prompt the visitor already answered.
+    if (!requestOnMount || !isHydrated || autoRequestedRef.current) return
     autoRequestedRef.current = true
     void request()
-  }, [requestOnMount, request])
+  }, [requestOnMount, isHydrated, request])
 
-  return { location, status, request }
+  return {
+    /** The chosen point if there is one, otherwise the device's fix. */
+    location: manualLocation ?? gpsLocation,
+    status,
+    request,
+    isManual: manualLocation !== null,
+    setManualLocation,
+  }
 }
